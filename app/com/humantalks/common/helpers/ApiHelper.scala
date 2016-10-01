@@ -153,13 +153,13 @@ object ApiHelper {
       "error" -> error,
       "metas" -> metas(start)
     ))
-  private def writeResult(status: Status, data: JsObject)(implicit req: RequestHeader): Result =
+  def writeResult(status: Status, data: JsObject)(implicit req: RequestHeader): Result =
     req.queryString.get("pretty").flatMap(_.find(_ == "false")).map { _ =>
       status(data).as("application/json;charset=utf-8")
     }.getOrElse {
       status(Json.prettyPrint(data)).as("application/json;charset=utf-8") // pretty print to be more developper friendly
     }
-  private def metas(start: DateTime): JsObject = Json.obj(
+  def metas(start: DateTime): JsObject = Json.obj(
     "exec" -> (new DateTime().getMillis - start.getMillis)
   )
 }

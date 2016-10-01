@@ -52,7 +52,8 @@ lazy val root =
       ),
       buildInfoKeys := Seq[BuildInfoKey](
         name, version, scalaVersion, sbtVersion,
-        "gitHash" -> new java.lang.Object(){
+        "gitHash" -> "TODO"/*new java.lang.Object(){
+          // http://stackoverflow.com/questions/26671073/can-the-runtime-of-a-heroku-app-know-its-commit-id
           override def toString(): String = {
             try {
               val extracted = new java.io.InputStreamReader(java.lang.Runtime.getRuntime().exec("git rev-parse --short HEAD").getInputStream())
@@ -61,7 +62,7 @@ lazy val root =
               case t: Throwable => "get git hash failed"
             }
           }
-        }.toString()
+        }.toString()*/
       ),
       buildInfoPackage := "global",
       buildInfoOptions := Seq(BuildInfoOption.BuildTime)

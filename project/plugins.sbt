@@ -24,3 +24,5 @@ addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.6.1")
 addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.6.0")
 
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.2.0")
+
+resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
