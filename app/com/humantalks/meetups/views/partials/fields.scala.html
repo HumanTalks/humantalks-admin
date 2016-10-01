@@ -1,11 +1,12 @@
 @import com.humantalks.meetups.Meetup
-@import com.humantalks.venues.Venue
 @import com.humantalks.talks.Talk
+@import com.humantalks.persons.Person
+@import com.humantalks.venues.Venue
 @import global.views.html.form._
-@(meetupForm: Form[Meetup.Data], venueList: List[Venue], talkList: List[Talk])(implicit messagesApi: MessagesApi)
+@(meetupForm: Form[Meetup.Data], talkList: List[Talk], personMap: Map[Person.Id, Person], venueList: List[Venue])(implicit messagesApi: MessagesApi)
 @fieldHorizontal(meetupForm("title"), 'label -> "Titre") { field => @inputText(field, 'placeholder -> "ex: HumanTalks Paris Juillet 2016") }
 @fieldHorizontal(meetupForm("date"), 'label -> "Date") { field => @inputDatetime(field, 'placeholder -> "ex: 12/07/2016 19:00") }
 @fieldHorizontal(meetupForm("venue"), 'label -> "Lieu") { field => @inputSelect2(field, venueList.map(v => (v.id.toString, v.data.name+v.data.location.map(l => " ("+l.formatted+")").getOrElse(""))), 'placeholder -> "Sélectionner un lieu") }
-@fieldHorizontal(meetupForm("talks"), 'label -> "Talks") { field => @inputSelectMulti2(field, talkList.map(t => (t.id.toString, t.data.title)), 'placeholder -> "Sélectionner les talks") }
+@fieldHorizontal(meetupForm("talks"), 'label -> "Talks") { field => @inputSelectMulti2(field, talkList.map(t => (t.id.toString, t.data.title+t.data.speakers.map(id => personMap.get(id)).flatten.map(_.data.name).mkString(" (", ", ", ")"))), 'placeholder -> "Sélectionner les talks") }
 @fieldHorizontal(meetupForm("description"), 'label -> "Description") { field => @inputTextarea(field, 'placeholder -> "ex: ...") }
 @fieldHorizontal(meetupForm("roti"), 'label -> "Roti") { field => @inputText(field, 'placeholder -> "ex: https://image.freepik.com/free-icon/male-user-shadow_318-34042.png") }

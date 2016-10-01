@@ -4,13 +4,15 @@ declare const google: any;
 // https://select2.github.io/
 (function(){
     $('.select2').each(function(){
-        $(this).select2({
+        var $select = $(this);
+        $select.select2({
             width: '100%',
             theme: 'bootstrap',
-            placeholder: $(this).attr('placeholder'),
-            allowClear: $(this).attr('placeholder') !== undefined
+            placeholder: $select.attr('placeholder'),
+            allowClear: $select.attr('placeholder') !== undefined
         });
     });
+
     $('.select2-multi').each(function(){
         $(this).select2({
             width: '100%',

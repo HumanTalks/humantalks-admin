@@ -1,6 +1,7 @@
 package com.humantalks.meetups
 
 import com.humantalks.common.models.User
+import com.humantalks.persons.PersonRepository
 import com.humantalks.talks.TalkRepository
 import com.humantalks.venues.VenueRepository
 import com.humantalks.meetups.views.html
@@ -11,7 +12,7 @@ import play.api.mvc._
 
 import scala.concurrent.Future
 
-case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, venueRepository: VenueRepository, talkRepository: TalkRepository)(implicit messageApi: MessagesApi) extends Controller {
+case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRepository: TalkRepository, personRepository: PersonRepository, venueRepository: VenueRepository)(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.ctrlToEC
   import ctx._
   val meetupForm = Form(Meetup.fields)
@@ -45,7 +46,8 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, venueRe
       for {
         venueList <- venueListFut
         talkList <- talkListFut
-      } yield Ok(html.detail(meetup, venueList.map(v => (v.id, v)).toMap, talkList.map(t => (t.id, t)).toMap))
+        personList <- personRepository.findByIds(talkList.flatMap(_.data.speakers))
+      } yield Ok(html.detail(meetup, talkList.map(e => (e.id, e)).toMap, personList.map(e => (e.id, e)).toMap, venueList.map(e => (e.id, e)).toMap))
     }
   }
 
@@ -73,12 +75,13 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, venueRe
   }
 
   private def formView(status: Status, meetupForm: Form[Meetup.Data], meetupOpt: Option[Meetup]): Future[Result] = {
-    val venueListFut = venueRepository.find()
     val talkListFut = talkRepository.find()
+    val venueListFut = venueRepository.find()
     for {
-      venueList <- venueListFut
       talkList <- talkListFut
-    } yield status(html.form(meetupForm, meetupOpt, venueList, talkList))
+      personList <- personRepository.findByIds(talkList.flatMap(_.data.speakers))
+      venueList <- venueListFut
+    } yield status(html.form(meetupForm, meetupOpt, talkList, personList.map(e => (e.id, e)).toMap, venueList))
   }
   private def notFound(id: Meetup.Id): Result =
     NotFound(com.humantalks.common.views.html.errors.notFound("Unable to find a Meetup with id " + id))

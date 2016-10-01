@@ -50,7 +50,7 @@ class MyComponents(context: ApplicationLoader.Context)
     new PersonCtrl(ctx, personRepository),
     new VenueCtrl(ctx, venueRepository),
     new TalkCtrl(ctx, talkRepository, personRepository),
-    new MeetupCtrl(ctx, meetupRepository, venueRepository, talkRepository),
+    new MeetupCtrl(ctx, meetupRepository, talkRepository, personRepository, venueRepository),
     new TwitterScraper(ctx, wsClient),
     new _root_.global.controllers.Application(ctx, mongo),
     new _root_.controllers.Assets(httpErrorHandler)
