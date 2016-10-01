@@ -1,10 +1,10 @@
 package com.humantalks.common
 
+import com.humantalks.common.infrastructure.Repository
 import com.humantalks.meetups.Meetup
 import com.humantalks.persons.Person
 import com.humantalks.talks.Talk
 import com.humantalks.venues.Venue
-import global.infrastructure.GenericRepository
 import play.api.Configuration
 import play.api.i18n.DefaultLangs
 
@@ -13,9 +13,9 @@ case class Conf(configuration: Configuration) {
     val langs = new DefaultLangs(configuration).availables
   }
   object Repositories {
-    val person = GenericRepository.Collection[Person]("Person")
-    val venue = GenericRepository.Collection[Venue]("Venue")
-    val talk = GenericRepository.Collection[Talk]("Talk")
-    val meetup = GenericRepository.Collection[Meetup]("Meetup")
+    val person = Repository.Collection[Person]("Person")
+    val venue = Repository.Collection[Venue]("Venue")
+    val talk = Repository.Collection[Talk]("Talk")
+    val meetup = Repository.Collection[Meetup]("Meetup")
   }
 }

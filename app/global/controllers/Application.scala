@@ -1,8 +1,8 @@
 package global.controllers
 
+import com.humantalks.common.infrastructure.Mongo
 import global.Contexts
 import global.helpers.ApiHelper
-import global.infrastructure.Mongo
 import org.joda.time.DateTime
 import play.api.i18n.{ Lang, MessagesApi }
 import play.api.libs.json.Json

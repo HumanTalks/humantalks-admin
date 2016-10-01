@@ -34,6 +34,30 @@ POST    /meetups/$id<.{36}>/edit                com.humantalks.meetups.MeetupCtr
 GET     /meetups/$id<.{36}>/publish             com.humantalks.meetups.MeetupCtrl.publish(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/publish             com.humantalks.meetups.MeetupCtrl.doPublish(id: Meetup.Id)
 
+GET     /api/persons                            com.humantalks.persons.PersonApi.find
+POST    /api/persons                            com.humantalks.persons.PersonApi.create
+GET     /api/persons/$id<.{36}>                 com.humantalks.persons.PersonApi.get(id: Person.Id)
+PUT     /api/persons/$id<.{36}>                 com.humantalks.persons.PersonApi.update(id: Person.Id)
+DELETE  /api/persons/$id<.{36}>                 com.humantalks.persons.PersonApi.delete(id: Person.Id)
+
+GET     /api/venues                             com.humantalks.venues.VenueApi.find
+POST    /api/venues                             com.humantalks.venues.VenueApi.create
+GET     /api/venues/$id<.{36}>                  com.humantalks.venues.VenueApi.get(id: Venue.Id)
+PUT     /api/venues/$id<.{36}>                  com.humantalks.venues.VenueApi.update(id: Venue.Id)
+DELETE  /api/venues/$id<.{36}>                  com.humantalks.venues.VenueApi.delete(id: Venue.Id)
+
+GET     /api/talks                              com.humantalks.talks.TalkApi.find
+POST    /api/talks                              com.humantalks.talks.TalkApi.create
+GET     /api/talks/$id<.{36}>                   com.humantalks.talks.TalkApi.get(id: Talk.Id)
+PUT     /api/talks/$id<.{36}>                   com.humantalks.talks.TalkApi.update(id: Talk.Id)
+DELETE  /api/talks/$id<.{36}>                   com.humantalks.talks.TalkApi.delete(id: Talk.Id)
+
+GET     /api/meetups                            com.humantalks.meetups.MeetupApi.find
+POST    /api/meetups                            com.humantalks.meetups.MeetupApi.create
+GET     /api/meetups/$id<.{36}>                 com.humantalks.meetups.MeetupApi.get(id: Meetup.Id)
+PUT     /api/meetups/$id<.{36}>                 com.humantalks.meetups.MeetupApi.update(id: Meetup.Id)
+DELETE  /api/meetups/$id<.{36}>                 com.humantalks.meetups.MeetupApi.delete(id: Meetup.Id)
+
 GET     /api/tools/scrapers/twitter/profil      com.humantalks.tools.scrapers.TwitterScraper.profil(account: String)
 
 GET     /status                                 global.controllers.Application.status

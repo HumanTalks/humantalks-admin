@@ -1,8 +1,8 @@
 package com.humantalks.tools.scrapers
 
-import com.humantalks.common.helpers.ScraperHelper
 import com.humantalks.common.services.TwitterSrv
 import global.Contexts
+import global.helpers.ScraperHelper
 import play.api.libs.ws.WSClient
 import play.api.mvc.{ Action, Controller, AnyContent, Request }
 

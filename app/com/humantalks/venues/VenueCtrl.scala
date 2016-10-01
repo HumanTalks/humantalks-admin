@@ -1,5 +1,6 @@
 package com.humantalks.venues
 
+import com.humantalks.common.helpers.CtrlHelper
 import com.humantalks.common.models.User
 import com.humantalks.venues.views.html
 import global.Contexts
@@ -27,52 +28,32 @@ case class VenueCtrl(ctx: Contexts, venueRepository: VenueRepository)(implicit m
   def doCreate() = Action.async { implicit req: Request[AnyContent] =>
     venueForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest(html.form(formWithErrors, None))),
-      venueData => {
-        venueRepository.create(venueData, User.fake).map {
-          case (success, id) => Redirect(routes.VenueCtrl.get(id))
-        }
+      venueData => venueRepository.create(venueData, User.fake).map {
+        case (success, id) => Redirect(routes.VenueCtrl.get(id))
       }
     )
   }
 
   def get(id: Venue.Id) = Action.async { implicit req: Request[AnyContent] =>
-    withVenue(id) { venue =>
-      Ok(html.detail(venue))
+    CtrlHelper.withItem(venueRepository)(id) { venue =>
+      Future(Ok(html.detail(venue)))
     }
   }
 
   def update(id: Venue.Id) = Action.async { implicit req: Request[AnyContent] =>
-    withVenue(id) { venue =>
-      Ok(html.form(venueForm.fill(venue.data), Some(venue)))
+    CtrlHelper.withItem(venueRepository)(id) { venue =>
+      Future(Ok(html.form(venueForm.fill(venue.data), Some(venue))))
     }
   }
 
   def doUpdate(id: Venue.Id) = Action.async { implicit req: Request[AnyContent] =>
     venueForm.bindFromRequest.fold(
-      formWithErrors => withVenue(id) { venue => BadRequest(html.form(formWithErrors, Some(venue))) },
-      venueData => {
-        venueRepository.get(id).flatMap { venueOpt =>
-          venueOpt.map { venue =>
-            venueRepository.update(venue.copy(data = venueData), User.fake).map {
-              case success => Redirect(routes.VenueCtrl.get(id))
-            }
-          }.getOrElse {
-            Future(notFound(id))
-          }
+      formWithErrors => CtrlHelper.withItem(venueRepository)(id) { venue => Future(BadRequest(html.form(formWithErrors, Some(venue)))) },
+      venueData => CtrlHelper.withItem(venueRepository)(id) { venue =>
+        venueRepository.update(venue, venueData, User.fake).map {
+          case success => Redirect(routes.VenueCtrl.get(id))
         }
       }
     )
-  }
-
-  private def notFound(id: Venue.Id): Result =
-    NotFound(com.humantalks.common.views.html.errors.notFound("Unable to find a Venue with id " + id))
-  private def withVenue(id: Venue.Id)(block: Venue => Result): Future[Result] = {
-    venueRepository.get(id).map { venueOpt =>
-      venueOpt.map { venue =>
-        block(venue)
-      }.getOrElse {
-        notFound(id)
-      }
-    }
   }
 }

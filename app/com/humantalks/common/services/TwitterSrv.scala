@@ -1,6 +1,6 @@
 package com.humantalks.common.services
 
-import com.humantalks.common.helpers.ScraperHelper
+import global.helpers.ScraperHelper
 import org.jsoup.Jsoup
 import play.api.libs.json.Json
 

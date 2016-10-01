@@ -1,5 +1,6 @@
 package com.humantalks.talks
 
+import com.humantalks.common.helpers.CtrlHelper
 import com.humantalks.common.models.User
 import com.humantalks.persons.PersonRepository
 import com.humantalks.talks.views.html
@@ -29,16 +30,14 @@ case class TalkCtrl(ctx: Contexts, talkRepository: TalkRepository, personReposit
   def doCreate() = Action.async { implicit req: Request[AnyContent] =>
     talkForm.bindFromRequest.fold(
       formWithErrors => formView(BadRequest, formWithErrors, None),
-      talkData => {
-        talkRepository.create(talkData, User.fake).map {
-          case (success, id) => Redirect(routes.TalkCtrl.get(id))
-        }
+      talkData => talkRepository.create(talkData, User.fake).map {
+        case (success, id) => Redirect(routes.TalkCtrl.get(id))
       }
     )
   }
 
   def get(id: Talk.Id) = Action.async { implicit req: Request[AnyContent] =>
-    withTalk(id) { talk =>
+    CtrlHelper.withItem(talkRepository)(id) { talk =>
       personRepository.findByIds(talk.data.speakers).map { personList =>
         Ok(html.detail(talk, personList.map(p => (p.id, p)).toMap))
       }
@@ -46,23 +45,17 @@ case class TalkCtrl(ctx: Contexts, talkRepository: TalkRepository, personReposit
   }
 
   def update(id: Talk.Id) = Action.async { implicit req: Request[AnyContent] =>
-    withTalk(id) { talk =>
+    CtrlHelper.withItem(talkRepository)(id) { talk =>
       formView(Ok, talkForm.fill(talk.data), Some(talk))
     }
   }
 
   def doUpdate(id: Talk.Id) = Action.async { implicit req: Request[AnyContent] =>
     talkForm.bindFromRequest.fold(
-      formWithErrors => withTalk(id) { talk => formView(BadRequest, formWithErrors, Some(talk)) },
-      talkData => {
-        talkRepository.get(id).flatMap { talkOpt =>
-          talkOpt.map { talk =>
-            talkRepository.update(talk.copy(data = talkData), User.fake).map {
-              case success => Redirect(routes.TalkCtrl.get(id))
-            }
-          }.getOrElse {
-            Future(notFound(id))
-          }
+      formWithErrors => CtrlHelper.withItem(talkRepository)(id) { talk => formView(BadRequest, formWithErrors, Some(talk)) },
+      talkData => CtrlHelper.withItem(talkRepository)(id) { talk =>
+        talkRepository.update(talk, talkData, User.fake).map {
+          case success => Redirect(routes.TalkCtrl.get(id))
         }
       }
     )
@@ -71,17 +64,6 @@ case class TalkCtrl(ctx: Contexts, talkRepository: TalkRepository, personReposit
   private def formView(status: Status, talkForm: Form[Talk.Data], talkOpt: Option[Talk]): Future[Result] = {
     personRepository.find().map { personList =>
       status(html.form(talkForm, talkOpt, personList))
-    }
-  }
-  private def notFound(id: Talk.Id): Result =
-    NotFound(com.humantalks.common.views.html.errors.notFound("Unable to find a Talk with id " + id))
-  private def withTalk(id: Talk.Id)(block: Talk => Future[Result]): Future[Result] = {
-    talkRepository.get(id).flatMap { talkOpt =>
-      talkOpt.map { talk =>
-        block(talk)
-      }.getOrElse {
-        Future(notFound(id))
-      }
     }
   }
 }

@@ -1,5 +1,6 @@
 package com.humantalks.persons
 
+import com.humantalks.common.helpers.CtrlHelper
 import com.humantalks.common.models.User
 import com.humantalks.persons.views.html
 import global.Contexts
@@ -27,52 +28,32 @@ case class PersonCtrl(ctx: Contexts, personRepository: PersonRepository)(implici
   def doCreate() = Action.async { implicit req: Request[AnyContent] =>
     personForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest(html.form(formWithErrors, None))),
-      personData => {
-        personRepository.create(personData, User.fake).map {
-          case (success, id) => Redirect(routes.PersonCtrl.get(id))
-        }
+      personData => personRepository.create(personData, User.fake).map {
+        case (success, id) => Redirect(routes.PersonCtrl.get(id))
       }
     )
   }
 
   def get(id: Person.Id) = Action.async { implicit req: Request[AnyContent] =>
-    withPerson(id) { person =>
-      Ok(html.detail(person))
+    CtrlHelper.withItem(personRepository)(id) { person =>
+      Future(Ok(html.detail(person)))
     }
   }
 
   def update(id: Person.Id) = Action.async { implicit req: Request[AnyContent] =>
-    withPerson(id) { person =>
-      Ok(html.form(personForm.fill(person.data), Some(person)))
+    CtrlHelper.withItem(personRepository)(id) { person =>
+      Future(Ok(html.form(personForm.fill(person.data), Some(person))))
     }
   }
 
   def doUpdate(id: Person.Id) = Action.async { implicit req: Request[AnyContent] =>
     personForm.bindFromRequest.fold(
-      formWithErrors => withPerson(id) { person => BadRequest(html.form(formWithErrors, Some(person))) },
-      personData => {
-        personRepository.get(id).flatMap { personOpt =>
-          personOpt.map { person =>
-            personRepository.update(person.copy(data = personData), User.fake).map {
-              case success => Redirect(routes.PersonCtrl.get(id))
-            }
-          }.getOrElse {
-            Future(notFound(id))
-          }
+      formWithErrors => CtrlHelper.withItem(personRepository)(id) { person => Future(BadRequest(html.form(formWithErrors, Some(person)))) },
+      personData => CtrlHelper.withItem(personRepository)(id) { person =>
+        personRepository.update(person, personData, User.fake).map {
+          case success => Redirect(routes.PersonCtrl.get(id))
         }
       }
     )
-  }
-
-  private def notFound(id: Person.Id): Result =
-    NotFound(com.humantalks.common.views.html.errors.notFound("Unable to find a Person with id " + id))
-  private def withPerson(id: Person.Id)(block: Person => Result): Future[Result] = {
-    personRepository.get(id).map { personOpt =>
-      personOpt.map { person =>
-        block(person)
-      }.getOrElse {
-        notFound(id)
-      }
-    }
   }
 }

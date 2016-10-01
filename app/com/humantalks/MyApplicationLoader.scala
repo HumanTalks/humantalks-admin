@@ -1,13 +1,13 @@
 package com.humantalks
 
 import com.humantalks.common.Conf
-import com.humantalks.meetups.{ MeetupRepository, MeetupCtrl }
-import com.humantalks.persons.{ PersonRepository, PersonCtrl }
-import com.humantalks.talks.{ TalkRepository, TalkCtrl }
+import com.humantalks.common.infrastructure.Mongo
+import com.humantalks.meetups.{ MeetupRepository, MeetupCtrl, MeetupApi }
+import com.humantalks.persons.{ PersonRepository, PersonCtrl, PersonApi }
+import com.humantalks.talks.{ TalkRepository, TalkCtrl, TalkApi }
 import com.humantalks.tools.scrapers.TwitterScraper
-import com.humantalks.venues.{ VenueRepository, VenueCtrl }
+import com.humantalks.venues.{ VenueRepository, VenueCtrl, VenueApi }
 import global.Contexts
-import global.infrastructure.Mongo
 import play.api.cache.EhCacheComponents
 import play.api.i18n.I18nComponents
 import play.api.inject.{ NewInstanceInjector, SimpleInjector }
@@ -51,6 +51,10 @@ class MyComponents(context: ApplicationLoader.Context)
     new VenueCtrl(ctx, venueRepository),
     new TalkCtrl(ctx, talkRepository, personRepository),
     new MeetupCtrl(ctx, meetupRepository, talkRepository, personRepository, venueRepository),
+    new PersonApi(ctx, personRepository),
+    new VenueApi(ctx, venueRepository),
+    new TalkApi(ctx, talkRepository),
+    new MeetupApi(ctx, meetupRepository),
     new TwitterScraper(ctx, wsClient),
     new _root_.global.controllers.Application(ctx, mongo),
     new _root_.controllers.Assets(httpErrorHandler)

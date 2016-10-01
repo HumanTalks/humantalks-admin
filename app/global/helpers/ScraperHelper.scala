@@ -1,4 +1,4 @@
-package com.humantalks.common.helpers
+package global.helpers
 
 import play.api.libs.json.{ Json, Writes }
 import play.api.libs.ws.{ WSClient, WSResponse }

@@ -1,7 +1,7 @@
-package global.infrastructure
+package com.humantalks.common.infrastructure
 
-import global.models.{ Status, Page }
 import global.Contexts
+import global.models.{ Page, Status }
 import play.api.libs.json._
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.commands.{ Command, MultiBulkWriteResult, UpdateWriteResult, WriteResult }
@@ -16,7 +16,7 @@ case class Mongo(ctx: Contexts, reactiveMongoApi: ReactiveMongoApi) {
   import Contexts.dbToEC
   import ctx._
 
-  def getCollection[T](name: GenericRepository.Collection[T]): MongoRepository[T] = MongoRepository[T](ctx, reactiveMongoApi, name.value)
+  def getCollection[T](name: Repository.Collection[T]): MongoRepository[T] = MongoRepository[T](ctx, reactiveMongoApi, name.value)
 
   def ping(): Future[BSONDocument] = {
     reactiveMongoApi.database.flatMap { db =>
