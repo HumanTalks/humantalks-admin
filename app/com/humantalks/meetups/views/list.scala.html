@@ -1,8 +1,9 @@
 @import com.humantalks.meetups.Meetup
+@import com.humantalks.venues.Venue
 @import com.humantalks.common.views.html.partials._
 @import com.humantalks.meetups.routes
 @import global.views.html.format._
-@(meetupList: List[Meetup])
+@(meetupList: List[Meetup], venueMap: Map[Venue.Id, Venue])
 @main("Home") {
     @header("meetup")
 
@@ -14,7 +15,7 @@
                     <h4 class="media-heading"><a href="@routes.MeetupCtrl.get(meetup.id)">@meetup.data.title</a></h4>
                     <p>
                         le @date(meetup.data.date.toLocalDate)
-                        @meetup.data.venue.map{v => à @v}
+                        @meetup.data.venue.flatMap(id => venueMap.get(id)).map{v => à @v.data.name},
                         @meetup.data.talks.length talks prévus
                     </p>
                 </div>

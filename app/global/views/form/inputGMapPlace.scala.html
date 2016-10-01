@@ -1,0 +1,19 @@
+@import global.views.Helpers
+@(field: Field, args: (Symbol, String)*)
+<div class="input-gmapplace">
+    @inputText(field("input"), Helpers.addArg(args, 'id, Helpers.fieldId(field, args)):_*)
+    @inputHidden(field("id"), 'class -> "gmapplace-id")
+    @inputHidden(field("name"), 'class -> "gmapplace-name")
+    @inputHidden(field("streetNo"), 'class -> "gmapplace-streetNo")
+    @inputHidden(field("street"), 'class -> "gmapplace-street")
+    @inputHidden(field("postalCode"), 'class -> "gmapplace-postalCode")
+    @inputHidden(field("locality"), 'class -> "gmapplace-locality")
+    @inputHidden(field("country"), 'class -> "gmapplace-country")
+    @inputHidden(field("formatted"), 'class -> "gmapplace-formatted")
+    @inputHidden(field("coords.lat"), 'class -> "gmapplace-lat")
+    @inputHidden(field("coords.lng"), 'class -> "gmapplace-lng")
+    @inputHidden(field("url"), 'class -> "gmapplace-url")
+    @inputHidden(field("website"), 'class -> "gmapplace-website")
+    @inputHidden(field("phone"), 'class -> "gmapplace-phone")
+    <div class="map" style="height: 300px; display: none;"></div>
+</div>

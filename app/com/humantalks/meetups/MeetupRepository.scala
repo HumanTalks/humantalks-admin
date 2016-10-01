@@ -22,7 +22,7 @@ case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) {
     collection.find(filter, sort)
 
   def findByIds(ids: Seq[Meetup.Id], sort: JsObject = defaultSort): Future[List[Meetup]] =
-    collection.find(Json.obj("id" -> Json.obj("$in" -> ids)), sort)
+    collection.find(Json.obj("id" -> Json.obj("$in" -> ids.distinct)), sort)
 
   def findPage(index: Page.Index, size: Page.Size, filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[Page[Meetup]] =
     collection.findPage(index, size, filter, sort)

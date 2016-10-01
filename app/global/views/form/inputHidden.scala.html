@@ -1,0 +1,9 @@
+@import global.views.Helpers
+@(field: Field, args: (Symbol, String)*)
+<input
+  class="@Helpers.getArg(args, "class")"
+  type="hidden"
+  id="@Helpers.fieldId(field, args)"
+  name="@Helpers.fieldName(field, args)"
+  value="@Helpers.fieldValue(field, args)"
+  @Helpers.toHtml(args)>

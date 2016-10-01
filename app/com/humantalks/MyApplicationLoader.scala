@@ -49,7 +49,7 @@ class MyComponents(context: ApplicationLoader.Context)
     new PersonCtrl(ctx, personRepository),
     new VenueCtrl(ctx, venueRepository),
     new TalkCtrl(ctx, talkRepository, personRepository),
-    new MeetupCtrl(ctx, meetupRepository, venueRepository),
+    new MeetupCtrl(ctx, meetupRepository, venueRepository, talkRepository),
     new _root_.global.controllers.Application(ctx, mongo),
     new _root_.controllers.Assets(httpErrorHandler)
   )

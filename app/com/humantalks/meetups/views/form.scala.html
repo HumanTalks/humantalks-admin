@@ -1,8 +1,9 @@
 @import com.humantalks.meetups.Meetup
 @import com.humantalks.venues.Venue
+@import com.humantalks.talks.Talk
 @import com.humantalks.common.views.html.partials._
 @import com.humantalks.meetups.routes
-@(meetupForm: Form[Meetup.Data], meetupOpt: Option[Meetup], venueList: List[Venue])(implicit messagesApi: MessagesApi)
+@(meetupForm: Form[Meetup.Data], meetupOpt: Option[Meetup], venueList: List[Venue], talkList: List[Talk])(implicit messagesApi: MessagesApi)
 @main("Home") {
     @header("meetup")
 
@@ -14,7 +15,7 @@
         <div class="row">
             <div class="col-md-8">
             @helper.form(action=meetupOpt.map(p => routes.MeetupCtrl.doUpdate(p.id)).getOrElse(routes.MeetupCtrl.doCreate()), 'class->"form-horizontal meetup-form") {
-                @partials.fields(meetupForm, venueList)
+                @partials.fields(meetupForm, venueList, talkList)
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
                         @meetupOpt.map{p => <a href="@routes.MeetupCtrl.get(p.id)" class="btn btn-default btn-lg">Annuler</a>}

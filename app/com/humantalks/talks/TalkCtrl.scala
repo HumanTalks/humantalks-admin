@@ -16,9 +16,10 @@ case class TalkCtrl(ctx: Contexts, talkRepository: TalkRepository, personReposit
   val talkForm = Form(Talk.fields)
 
   def find = Action.async { implicit req: Request[AnyContent] =>
-    talkRepository.find().map { talkList =>
-      Ok(html.list(talkList))
-    }
+    for {
+      talkList <- talkRepository.find()
+      personMap <- personRepository.findByIds(talkList.flatMap(_.data.speakers)).map(_.map(p => (p.id, p)).toMap)
+    } yield Ok(html.list(talkList, personMap))
   }
 
   def create = Action.async { implicit req: Request[AnyContent] =>
@@ -38,7 +39,9 @@ case class TalkCtrl(ctx: Contexts, talkRepository: TalkRepository, personReposit
 
   def get(id: Talk.Id) = Action.async { implicit req: Request[AnyContent] =>
     withTalk(id) { talk =>
-      Future(Ok(html.detail(talk)))
+      personRepository.findByIds(talk.data.speakers).map { personList =>
+        Ok(html.detail(talk, personList.map(p => (p.id, p)).toMap))
+      }
     }
   }
 

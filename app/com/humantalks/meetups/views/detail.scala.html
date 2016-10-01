@@ -1,8 +1,10 @@
 @import com.humantalks.meetups.Meetup
+@import com.humantalks.venues.Venue
+@import com.humantalks.talks.Talk
 @import com.humantalks.common.views.html.partials._
 @import com.humantalks.meetups.routes
 @import global.views.html.format._
-@(meetup: Meetup)
+@(meetup: Meetup, venueMap: Map[Venue.Id, Venue], talkMap: Map[Talk.Id, Talk])
 @main("Home") {
     @header("meetup")
 
@@ -13,11 +15,11 @@
         </h1>
         <p>
             le @date(meetup.data.date.toLocalDate)
-            @meetup.data.venue.map{v => à @v}
+            @meetup.data.venue.flatMap(id => venueMap.get(id)).map{v => à @v.data.name}
         </p>
         <p>@meetup.data.description</p>
-        @meetup.data.talks.map { talk =>
-            <div>Talk: @talk</div>
+        @meetup.data.talks.map(id => talkMap.get(id)).flatten.map { talk =>
+            <div>Talk: @talk.data.title</div>
         }
         @meetup.data.roti.map{r => <img src="@r">}
     </div>

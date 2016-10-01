@@ -1,8 +1,9 @@
 @import com.humantalks.talks.Talk
+@import com.humantalks.persons.Person
 @import com.humantalks.common.views.html.partials._
 @import com.humantalks.talks.routes
 @import global.views.html.format._
-@(talk: Talk)
+@(talk: Talk, personMap: Map[Person.Id, Person])
 @main("Home") {
     @header("talk")
 
@@ -12,7 +13,7 @@
             @talk.data.title
         </h1>
         <p>@multiline(talk.data.description)</p>
-        <p>par @talk.data.speakers.map{s => @s}</p>
+        <p>par @talk.data.speakers.map(id => personMap.get(id)).flatten.map(_.data.name).mkString(", ")</p>
         @talk.data.slides.map{s => <p>Slides: @s</p>}
         @talk.data.video.map{v => <p>Vidéo: @v</p>}
     </div>
