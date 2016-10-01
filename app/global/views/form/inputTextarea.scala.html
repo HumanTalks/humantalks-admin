@@ -1,0 +1,8 @@
+@import global.views.Helpers
+@(field: Field, args: (Symbol, String)*)
+<textarea
+    class="form-control @Helpers.getArg(args, "class")"
+    id="@Helpers.fieldId(field, args)"
+    name="@Helpers.fieldName(field, args)"
+    @Helpers.toHtml(args)
+    @if(Helpers.isRequired(field, args)){required}>@Helpers.fieldValue(field, args)</textarea>

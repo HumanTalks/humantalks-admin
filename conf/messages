@@ -1,0 +1,4 @@
+constraint.required=Obligatoire
+constraint.email=Email
+error.required=Ce champ est obligatoire
+error.date=Date invalide

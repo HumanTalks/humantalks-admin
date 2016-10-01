@@ -1,0 +1,2 @@
+@(field: Field, args: (Symbol, String)*)
+@inputText(field, ('type -> "email") :: args.toList.filter(_._1.name != "type"): _*)

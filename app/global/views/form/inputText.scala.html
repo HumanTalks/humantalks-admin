@@ -1,0 +1,10 @@
+@import global.views.Helpers
+@(field: Field, args: (Symbol, String)*)
+<input
+    class="form-control @Helpers.getArg(args, "class")"
+    type="@Helpers.getArg(args, "type", "text")"
+    id="@Helpers.fieldId(field, args)"
+    name="@Helpers.fieldName(field, args)"
+    value="@Helpers.fieldValue(field, args)"
+    @Helpers.toHtml(args, Seq("type"))
+    @if(Helpers.isRequired(field, args)){required}>

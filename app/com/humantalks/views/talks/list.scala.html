@@ -1,0 +1,21 @@
+@import com.humantalks.domain.Talk
+@import com.humantalks.views.html.partials._
+@import com.humantalks.controllers.html.routes
+@import global.views.html.format._
+@(talkList: List[Talk])
+@main("Home") {
+    @header("talk")
+
+    <div class="container">
+        <h1>Talk List</h1>
+        @talkList.map { talk =>
+            <div class="media card">
+                <div class="media-body">
+                    <h4 class="media-heading"><a href="@routes.Talks.get(talk.id)">@talk.data.title</a></h4>
+                    <p>@multiline(talk.data.description)</p>
+                    <p>par @talk.data.speakers.map{s => @s}</p>
+                </div>
+            </div>
+        }
+    </div>
+}

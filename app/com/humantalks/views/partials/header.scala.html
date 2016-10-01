@@ -1,0 +1,32 @@
+@import com.humantalks.controllers.html.routes
+@(menu: String)
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="@routes.Application.index">HumanTalks admin</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li @if(menu == "meetup"){class="active"}><a href="@routes.Meetups.find">Meetups</a></li>
+                <li @if(menu == "talk"){class="active"}><a href="@routes.Talks.find">Talks</a></li>
+                <li @if(menu == "person"){class="active"}><a href="@routes.Persons.find">Personnes</a></li>
+                <li @if(menu == "venue"){class="active"}><a href="@routes.Venues.find">Lieux</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-plus" style="color: #777;"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="@routes.Meetups.create">Ajouter un meetup</a></li>
+                        <li><a href="@routes.Talks.create">Ajouter un talk</a></li>
+                        <li><a href="@routes.Persons.create">Ajouter une personne</a></li>
+                        <li><a href="@routes.Venues.create">Ajouter un lieu</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

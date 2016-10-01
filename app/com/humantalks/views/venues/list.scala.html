@@ -1,0 +1,28 @@
+@import com.humantalks.domain.Venue
+@import com.humantalks.views.html.partials._
+@import com.humantalks.controllers.html.routes
+@import global.views.html.format._
+@(venueList: List[Venue])
+@main("Home") {
+    @header("venue")
+
+    <div class="container">
+        <h1>Venue List</h1>
+        @venueList.map { venue =>
+            <div class="media card">
+                @venue.data.logo.map { logo =>
+                    <div class="media-left">
+                        <a href="@routes.Venues.get(venue.id)"><img class="media-object" src="@logo" alt="Logo"></a>
+                    </div>
+                }
+                <div class="media-body">
+                    <h4 class="media-heading"><a href="@routes.Venues.get(venue.id)">@venue.data.name</a></h4>
+                    @venue.data.location.map{loc => <p>@loc.formatted</p>}
+                    @venue.data.comment.map{c => <p>@multiline(c)</p>}
+                    @venue.data.contact.map{contact => @contact.name}
+                    @venue.data.twitter.map{account => <a href="https://twitter.com/@account" target="_blank">@@@account</a>}
+                </div>
+            </div>
+        }
+    </div>
+}

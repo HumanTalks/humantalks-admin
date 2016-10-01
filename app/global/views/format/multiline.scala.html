@@ -1,0 +1,2 @@
+@(text: String)
+@Html(text.replace("\r\n", "<br>").replace("\n\r", "<br>").replace("\n", "<br>").replace("\r", "<br>"))

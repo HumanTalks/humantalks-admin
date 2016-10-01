@@ -1,0 +1,28 @@
+@import com.humantalks.domain.Person
+@import com.humantalks.domain.PersonData
+@import com.humantalks.views.html.partials._
+@import com.humantalks.controllers.html.routes
+@(personForm: Form[PersonData], personOpt: Option[Person])(implicit messagesApi: MessagesApi)
+@main("Home") {
+    @header("person")
+
+    <div class="container" role="main">
+        <div class="page-header">
+            <h1>@personOpt.map{ p => Modifier @p.data.name}.getOrElse{Ajouter une personne}</h1>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+            @helper.form(action=personOpt.map(p => routes.Persons.doUpdate(p.id)).getOrElse(routes.Persons.doCreate()), 'class->"form-horizontal person-form") {
+                @partials.fields(personForm)
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        @personOpt.map{p => <a href="@routes.Persons.get(p.id)" class="btn btn-default btn-lg">Annuler</a>}
+                        <button type="submit" class="btn btn-primary btn-lg">@personOpt.map{ p => Modifier @p.data.name}.getOrElse{Ajouter la personne}</button>
+                    </div>
+                </div>
+            }
+            </div>
+        </div>
+    </div>
+}

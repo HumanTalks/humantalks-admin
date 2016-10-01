@@ -1,0 +1,10 @@
+@import global.views.Helpers
+@(field: Field, args: (Symbol, String)*)(input: Field => Html)(implicit messagesApi: MessagesApi)
+<div class="form-group @Helpers.getArg(args, "class") @if(field.hasErrors && !Helpers.hasArg(args, "errors", "false")){has-error}">
+    <label for="@field.id" class="control-label col-md-3">@Helpers.getArg(args, "label", field.name)</label>
+    <div class="col-md-9">
+        @input(if(Helpers.hasArg(args, "constraints", "false")){ field.copy(constraints = Seq()) } else { field })
+        @if(!Helpers.hasArg(args, "errors", "false")){@fieldErrors(field)}
+        @if(!Helpers.hasArg(args, "constraints", "false")){@fieldConstraints(field)}
+    </div>
+</div>

@@ -1,0 +1,6 @@
+@(field: Field)(implicit messagesApi: MessagesApi)
+@if(!field.hasErrors && field.constraints.length > 0){
+	@for(constraint <- field.constraints) {
+		<p class="help-block">@messagesApi(constraint._1, constraint._2)</p>
+	}
+}
