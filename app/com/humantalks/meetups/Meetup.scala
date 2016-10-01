@@ -1,6 +1,7 @@
 package com.humantalks.meetups
 
 import com.humantalks.common.models.values.Meta
+import com.humantalks.persons.Person
 import com.humantalks.talks.Talk
 import com.humantalks.venues.Venue
 import global.models.{ TypedId, TypedIdHelper }
@@ -22,13 +23,19 @@ object Meetup {
   }
 
   case class Data(
-    title: String,
-    date: DateTime,
-    venue: Option[Venue.Id],
-    talks: List[Talk.Id],
-    description: Option[String],
-    roti: Option[String]
-  )
+      title: String,
+      date: DateTime,
+      venue: Option[Venue.Id],
+      talks: List[Talk.Id],
+      description: Option[String],
+      roti: Option[String]
+  ) {
+    def trim: Data = this.copy(
+      title = this.title.trim,
+      description = this.description.map(_.trim),
+      roti = this.roti.map(_.trim)
+    )
+  }
 
   implicit val formatData = Json.format[Data]
   implicit val format = Json.format[Meetup]
@@ -40,4 +47,26 @@ object Meetup {
     "description" -> optional(text),
     "roti" -> optional(text)
   )(Meetup.Data.apply)(Meetup.Data.unapply)
+
+  def meetupDescription(meetup: Meetup, talkMap: Map[Talk.Id, Talk], personMap: Map[Person.Id, Person], venueMap: Map[Venue.Id, Venue]): String = {
+    def br: String = "\r\n"
+    def image(url: String): String = url
+    def link(name: String, url: String): String = "<a href=\"" + url + "\">" + name + "</a>"
+    def bold(text: String): String = s"<b>$text</b>"
+    def venueToMarkdown(venue: Venue): String =
+      s"Ce mois-ci nous sommes chez ${venue.data.name}, merci à eux de nous accueillir dans leurs locaux :)$br$br" +
+        venue.data.logo.map(logo => image(logo) + br + br).getOrElse("")
+    def talkToMarkdown(talk: Talk, personMap: Map[Person.Id, Person]): String =
+      "- " + bold(talk.data.title) + talk.data.speakers.flatMap(id => personMap.get(id)).map(personToMarkdown).mkString(" par ", ", ", "") + br + br +
+        talk.data.description + br + br
+    def personToMarkdown(person: Person): String =
+      bold(person.data.name) + person.data.twitter.map(twitter => s" (" + link("@" + twitter, "https://twitter.com/" + twitter) + ")").getOrElse("")
+
+    val introduction = meetup.data.description.map(_ + br + br).getOrElse("")
+    val venueText = meetup.data.venue.flatMap(id => venueMap.get(id)).map(venueToMarkdown).getOrElse("")
+    val talksText = meetup.data.talks.flatMap(id => talkMap.get(id)).map(t => talkToMarkdown(t, personMap)).mkString("")
+    val conclusion = "Proposez vos sujets pour les prochaines sessions : " + link("http://bit.ly/HTParis-sujet", "http://bit.ly/HTParis-sujet")
+
+    introduction + venueText + talksText + conclusion
+  }
 }

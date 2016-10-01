@@ -11,11 +11,11 @@
         </div>
 
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-12">
             @helper.form(action=venueOpt.map(p => routes.VenueCtrl.doUpdate(p.id)).getOrElse(routes.VenueCtrl.doCreate()), 'class->"form-horizontal venue-form") {
                 @partials.fields(venueForm)
                 <div class="form-group">
-                    <div class="col-md-offset-3 col-md-9">
+                    <div class="col-md-offset-2 col-md-10">
                         @venueOpt.map{p => <a href="@routes.VenueCtrl.get(p.id)" class="btn btn-default btn-lg">Annuler</a>}
                         <button type="submit" class="btn btn-primary btn-lg">@venueOpt.map{ p => Modifier @p.data.name}.getOrElse{Ajouter le lieu}</button>
                     </div>

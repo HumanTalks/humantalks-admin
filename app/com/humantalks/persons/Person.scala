@@ -1,6 +1,7 @@
 package com.humantalks.persons
 
 import com.humantalks.common.models.values.Meta
+import com.humantalks.common.services.TwitterSrv
 import global.models.{ TypedId, TypedIdHelper }
 import play.api.data.Forms._
 import play.api.libs.json.Json
@@ -18,12 +19,20 @@ object Person {
   }
 
   case class Data(
-    name: String,
-    twitter: Option[String],
-    email: Option[String], // to match existing person when submiting a new talk
-    avatar: Option[String],
-    description: Option[String]
-  )
+      name: String,
+      twitter: Option[String],
+      email: Option[String], // to match existing person when submiting a new talk
+      avatar: Option[String],
+      description: Option[String]
+  ) {
+    def trim: Data = this.copy(
+      name = this.name.trim,
+      twitter = this.twitter.map(TwitterSrv.toAccount),
+      email = this.email.map(_.trim),
+      avatar = this.avatar.map(_.trim),
+      description = this.description.map(_.trim)
+    )
+  }
 
   implicit val formatData = Json.format[Person.Data]
   implicit val format = Json.format[Person]

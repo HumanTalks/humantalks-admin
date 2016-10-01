@@ -1,6 +1,7 @@
 package com.humantalks.venues
 
 import com.humantalks.common.models.values.{ Meta, GMapPlace }
+import com.humantalks.common.services.TwitterSrv
 import global.models.{ TypedId, TypedIdHelper }
 import play.api.data.Forms._
 import play.api.libs.json.Json
@@ -18,21 +19,36 @@ object Venue {
   }
 
   case class Data(
-    name: String, // nom de la société / salle
-    contact: Option[Venue.Contact],
-    location: Option[GMapPlace],
-    capacity: Option[Int], // nombre de place
-    twitter: Option[String],
-    logo: Option[String],
-    comment: Option[String] // information supplémentaires
-  )
+      name: String, // nom de la société / salle
+      contact: Option[Venue.Contact],
+      location: Option[GMapPlace],
+      capacity: Option[Int], // nombre de place
+      twitter: Option[String],
+      logo: Option[String],
+      comment: Option[String] // information supplémentaires
+  ) {
+    def trim: Data = this.copy(
+      name = this.name.trim,
+      contact = this.contact.map(_.trim),
+      twitter = this.twitter.map(TwitterSrv.toAccount),
+      logo = this.logo.map(_.trim),
+      comment = this.comment.map(_.trim)
+    )
+  }
 
   case class Contact(
-    name: String,
-    email: Option[String],
-    phone: Option[String],
-    comment: Option[String]
-  )
+      name: String,
+      email: Option[String],
+      phone: Option[String],
+      comment: Option[String]
+  ) {
+    def trim: Contact = this.copy(
+      name = this.name.trim,
+      email = this.email.map(_.trim),
+      phone = this.phone.map(_.trim),
+      comment = this.comment.map(_.trim)
+    )
+  }
 
   implicit val formatContact = Json.format[Venue.Contact]
   implicit val formatData = Json.format[Venue.Data]

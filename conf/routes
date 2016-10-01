@@ -31,6 +31,8 @@ POST    /meetups/create                         com.humantalks.meetups.MeetupCtr
 GET     /meetups/$id<.{36}>                     com.humantalks.meetups.MeetupCtrl.get(id: Meetup.Id)
 GET     /meetups/$id<.{36}>/edit                com.humantalks.meetups.MeetupCtrl.update(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/edit                com.humantalks.meetups.MeetupCtrl.doUpdate(id: Meetup.Id)
+GET     /meetups/$id<.{36}>/publish             com.humantalks.meetups.MeetupCtrl.publish(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/publish             com.humantalks.meetups.MeetupCtrl.doPublish(id: Meetup.Id)
 
 GET     /api/tools/scrapers/twitter/profil      com.humantalks.tools.scrapers.TwitterScraper.profil(account: String)
 

@@ -5,4 +5,4 @@
 @fieldHorizontal(personForm("twitter"), 'label -> "Compte twitter") { field => @inputText(field, 'twitterToImageUrl -> "avatar", 'placeholder -> "ex: @johndoe") }
 @fieldHorizontal(personForm("email"), 'label -> "Email") { field => @inputEmail(field, 'placeholder -> "ex: john@doe.com") }
 @fieldHorizontal(personForm("avatar"), 'label -> "Image de profil") { field => @inputImageUrl(field, 'placeholder -> "ex: https://image.freepik.com/free-icon/male-user-shadow_318-34042.png") }
-@fieldHorizontal(personForm("description"), 'label -> "Description") { field => @inputTextarea(field, 'placeholder -> "ex: Développeur chez XXX ...") }
+@fieldHorizontal(personForm("description"), 'label -> "Description") { field => @inputTextarea(field, 'rows -> "5", 'placeholder -> "ex: Développeur chez XXX ...") }

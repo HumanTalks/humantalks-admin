@@ -8,6 +8,7 @@ import com.humantalks.meetups.views.html
 import global.Contexts
 import play.api.data.Form
 import play.api.i18n.MessagesApi
+import play.api.libs.json.Json
 import play.api.mvc._
 
 import scala.concurrent.Future
@@ -72,6 +73,24 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
         }
       }
     )
+  }
+
+  def publish(id: Meetup.Id) = Action.async { implicit req: Request[AnyContent] =>
+    withMeetup(id) { meetup =>
+      val venueListFut = venueRepository.findByIds(meetup.data.venue.toSeq)
+      val talkListFut = talkRepository.findByIds(meetup.data.talks)
+      for {
+        venueList <- venueListFut
+        talkList <- talkListFut
+        personList <- personRepository.findByIds(talkList.flatMap(_.data.speakers))
+      } yield Ok(html.publish(meetup, talkList.map(e => (e.id, e)).toMap, personList.map(e => (e.id, e)).toMap, venueList.map(e => (e.id, e)).toMap))
+    }
+  }
+
+  def doPublish(id: Meetup.Id) = Action.async { implicit req: Request[AnyContent] =>
+    meetupRepository.partialUpdate(id, Json.obj("published" -> true)).map { res =>
+      Redirect(routes.MeetupCtrl.get(id))
+    }
   }
 
   private def formView(status: Status, meetupForm: Form[Meetup.Data], meetupOpt: Option[Meetup]): Future[Result] = {

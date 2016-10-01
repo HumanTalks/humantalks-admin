@@ -19,12 +19,19 @@ object Talk {
   }
 
   case class Data(
-    title: String,
-    description: String,
-    speakers: List[Person.Id],
-    slides: Option[String],
-    video: Option[String]
-  )
+      title: String,
+      description: String,
+      speakers: List[Person.Id],
+      slides: Option[String],
+      video: Option[String]
+  ) {
+    def trim: Data = this.copy(
+      title = this.title.trim,
+      description = this.description.trim,
+      slides = this.slides.map(_.trim),
+      video = this.video.map(_.trim)
+    )
+  }
 
   implicit val formatData = Json.format[Talk.Data]
   implicit val format = Json.format[Talk]

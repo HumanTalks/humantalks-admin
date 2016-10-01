@@ -14,6 +14,7 @@
                 <div class="media-body">
                     <h4 class="media-heading"><a href="@routes.MeetupCtrl.get(meetup.id)">@meetup.data.title</a></h4>
                     <p>
+                        @if(meetup.published){ <span class="label label-success">Publié</span> } else { <span class="label label-danger">Brouillon</span> }
                         le @date(meetup.data.date.toLocalDate)
                         @meetup.data.venue.flatMap(id => venueMap.get(id)).map{v => à @v.data.name},
                         @meetup.data.talks.length talks prévus

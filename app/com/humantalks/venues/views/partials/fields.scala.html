@@ -8,6 +8,6 @@
 @fieldHorizontal(venueForm("contact.name"), 'label -> "Nom du contact") { field => @inputText(field, 'placeholder -> "ex: John Doe") }
 @fieldHorizontal(venueForm("contact.email"), 'label -> "Email du contact") { field => @inputEmail(field, 'placeholder -> "ex: john@doe.com") }
 @fieldHorizontal(venueForm("contact.phone"), 'label -> "Téléphone du contact") { field => @inputText(field, 'placeholder -> "ex: 06 95 38 67 25") }
-@fieldHorizontal(venueForm("contact.comment"), 'label -> "Commentaire sur le contact") { field => @inputTextarea(field, 'placeholder -> "ex: Très sympa, propose un buffet") }
+@fieldHorizontal(venueForm("contact.comment"), 'label -> "Commentaire sur le contact") { field => @inputTextarea(field, 'rows -> "5", 'placeholder -> "ex: Très sympa, propose un buffet") }
 @fieldHorizontal(venueForm("logo"), 'label -> "Logo") { field => @inputImageUrl(field, 'placeholder -> "ex: https://image.freepik.com/free-icon/male-user-shadow_318-34042.png") }
-@fieldHorizontal(venueForm("comment"), 'label -> "Commentaire") { field => @inputTextarea(field, 'placeholder -> "ex: Super ambiance, à refaire !") }
+@fieldHorizontal(venueForm("comment"), 'label -> "Commentaire") { field => @inputTextarea(field, 'rows -> "5", 'placeholder -> "ex: Super ambiance, à refaire !") }

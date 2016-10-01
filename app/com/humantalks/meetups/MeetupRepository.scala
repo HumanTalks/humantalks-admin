@@ -31,12 +31,12 @@ case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) {
     collection.get(Json.obj("id" -> id))
 
   def create(elt: Meetup.Data, by: User.Id): Future[(WriteResult, Meetup.Id)] = {
-    val toCreate = Meetup(Meetup.Id.generate(), elt, published = false, Meta(new DateTime(), by, new DateTime(), by))
+    val toCreate = Meetup(Meetup.Id.generate(), elt.trim, published = false, Meta(new DateTime(), by, new DateTime(), by))
     collection.create(toCreate).map { res => (res, toCreate.id) }
   }
 
   def update(elt: Meetup, by: User.Id): Future[WriteResult] =
-    collection.fullUpdate(Json.obj("id" -> elt.id), elt.copy(meta = elt.meta.update(by)))
+    collection.fullUpdate(Json.obj("id" -> elt.id), elt.copy(data = elt.data.trim, meta = elt.meta.update(by)))
 
   def partialUpdate(id: Meetup.Id, patch: JsObject): Future[WriteResult] =
     collection.update(Json.obj("id" -> id), Json.obj("$set" -> (patch - "id")))
