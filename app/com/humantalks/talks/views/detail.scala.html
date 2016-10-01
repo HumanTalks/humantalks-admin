@@ -1,0 +1,19 @@
+@import com.humantalks.talks.Talk
+@import com.humantalks.common.views.html.partials._
+@import com.humantalks.talks.routes
+@import global.views.html.format._
+@(talk: Talk)
+@main("Home") {
+    @header("talk")
+
+    <div class="container">
+        <h1>
+            <a href="@routes.TalkCtrl.update(talk.id)" class="pull-right"><i class="glyphicon glyphicon-pencil"></i></a>
+            @talk.data.title
+        </h1>
+        <p>@multiline(talk.data.description)</p>
+        <p>par @talk.data.speakers.map{s => @s}</p>
+        @talk.data.slides.map{s => <p>Slides: @s</p>}
+        @talk.data.video.map{v => <p>Vidéo: @v</p>}
+    </div>
+}

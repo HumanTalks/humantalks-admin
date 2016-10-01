@@ -2,35 +2,35 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /                               com.humantalks.controllers.html.Application.index
+GET     /                               com.humantalks.common.controllers.Application.index
 
-GET     /persons                        com.humantalks.controllers.html.Persons.find
-GET     /persons/create                 com.humantalks.controllers.html.Persons.create
-POST    /persons/create                 com.humantalks.controllers.html.Persons.doCreate
-GET     /persons/$id<.{36}>             com.humantalks.controllers.html.Persons.get(id: Person.Id)
-GET     /persons/$id<.{36}>/edit        com.humantalks.controllers.html.Persons.update(id: Person.Id)
-POST    /persons/$id<.{36}>/edit        com.humantalks.controllers.html.Persons.doUpdate(id: Person.Id)
+GET     /persons                        com.humantalks.persons.PersonCtrl.find
+GET     /persons/create                 com.humantalks.persons.PersonCtrl.create
+POST    /persons/create                 com.humantalks.persons.PersonCtrl.doCreate
+GET     /persons/$id<.{36}>             com.humantalks.persons.PersonCtrl.get(id: Person.Id)
+GET     /persons/$id<.{36}>/edit        com.humantalks.persons.PersonCtrl.update(id: Person.Id)
+POST    /persons/$id<.{36}>/edit        com.humantalks.persons.PersonCtrl.doUpdate(id: Person.Id)
 
-GET     /venues                         com.humantalks.controllers.html.Venues.find
-GET     /venues/create                  com.humantalks.controllers.html.Venues.create
-POST    /venues/create                  com.humantalks.controllers.html.Venues.doCreate
-GET     /venues/$id<.{36}>              com.humantalks.controllers.html.Venues.get(id: Venue.Id)
-GET     /venues/$id<.{36}>/edit         com.humantalks.controllers.html.Venues.update(id: Venue.Id)
-POST    /venues/$id<.{36}>/edit         com.humantalks.controllers.html.Venues.doUpdate(id: Venue.Id)
+GET     /venues                         com.humantalks.venues.VenueCtrl.find
+GET     /venues/create                  com.humantalks.venues.VenueCtrl.create
+POST    /venues/create                  com.humantalks.venues.VenueCtrl.doCreate
+GET     /venues/$id<.{36}>              com.humantalks.venues.VenueCtrl.get(id: Venue.Id)
+GET     /venues/$id<.{36}>/edit         com.humantalks.venues.VenueCtrl.update(id: Venue.Id)
+POST    /venues/$id<.{36}>/edit         com.humantalks.venues.VenueCtrl.doUpdate(id: Venue.Id)
 
-GET     /talks                          com.humantalks.controllers.html.Talks.find
-GET     /talks/create                   com.humantalks.controllers.html.Talks.create
-POST    /talks/create                   com.humantalks.controllers.html.Talks.doCreate
-GET     /talks/$id<.{36}>               com.humantalks.controllers.html.Talks.get(id: Talk.Id)
-GET     /talks/$id<.{36}>/edit          com.humantalks.controllers.html.Talks.update(id: Talk.Id)
-POST    /talks/$id<.{36}>/edit          com.humantalks.controllers.html.Talks.doUpdate(id: Talk.Id)
+GET     /talks                          com.humantalks.talks.TalkCtrl.find
+GET     /talks/create                   com.humantalks.talks.TalkCtrl.create
+POST    /talks/create                   com.humantalks.talks.TalkCtrl.doCreate
+GET     /talks/$id<.{36}>               com.humantalks.talks.TalkCtrl.get(id: Talk.Id)
+GET     /talks/$id<.{36}>/edit          com.humantalks.talks.TalkCtrl.update(id: Talk.Id)
+POST    /talks/$id<.{36}>/edit          com.humantalks.talks.TalkCtrl.doUpdate(id: Talk.Id)
 
-GET     /meetups                        com.humantalks.controllers.html.Meetups.find
-GET     /meetups/create                 com.humantalks.controllers.html.Meetups.create
-POST    /meetups/create                 com.humantalks.controllers.html.Meetups.doCreate
-GET     /meetups/$id<.{36}>             com.humantalks.controllers.html.Meetups.get(id: Meetup.Id)
-GET     /meetups/$id<.{36}>/edit        com.humantalks.controllers.html.Meetups.update(id: Meetup.Id)
-POST    /meetups/$id<.{36}>/edit        com.humantalks.controllers.html.Meetups.doUpdate(id: Meetup.Id)
+GET     /meetups                        com.humantalks.meetups.MeetupCtrl.find
+GET     /meetups/create                 com.humantalks.meetups.MeetupCtrl.create
+POST    /meetups/create                 com.humantalks.meetups.MeetupCtrl.doCreate
+GET     /meetups/$id<.{36}>             com.humantalks.meetups.MeetupCtrl.get(id: Meetup.Id)
+GET     /meetups/$id<.{36}>/edit        com.humantalks.meetups.MeetupCtrl.update(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/edit        com.humantalks.meetups.MeetupCtrl.doUpdate(id: Meetup.Id)
 
 GET     /status                         global.controllers.Application.status
 

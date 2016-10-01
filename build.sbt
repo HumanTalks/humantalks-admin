@@ -18,10 +18,10 @@ libraryDependencies ++= Seq(
 )
 
 play.sbt.routes.RoutesKeys.routesImport ++= Seq(
-  "com.humantalks.domain.Person",
-  "com.humantalks.domain.Venue",
-  "com.humantalks.domain.Meetup",
-  "com.humantalks.domain.Talk")
+  "com.humantalks.persons.Person",
+  "com.humantalks.venues.Venue",
+  "com.humantalks.talks.Talk",
+  "com.humantalks.meetups.Meetup")
 
 lazy val root =
   (project in file("."))

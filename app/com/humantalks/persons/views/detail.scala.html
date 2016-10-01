@@ -1,0 +1,18 @@
+@import com.humantalks.persons.Person
+@import com.humantalks.common.views.html.partials._
+@import com.humantalks.persons.routes
+@import global.views.html.format._
+@(person: Person)
+@main("Home") {
+    @header("person")
+
+    <div class="container">
+        <h1>
+            <a href="@routes.PersonCtrl.update(person.id)" class="pull-right"><i class="glyphicon glyphicon-pencil"></i></a>
+            @person.data.name
+        </h1>
+        @person.data.description.map{d => <p>@multiline(d)</p>}
+        @person.data.email.map{email => <a href="mailto:@email" target="_blank">@email</a>}
+        @person.data.twitter.map{account => <a href="https://twitter.com/@account" target="_blank">@@@account</a>}
+    </div>
+}

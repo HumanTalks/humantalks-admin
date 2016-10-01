@@ -1,6 +1,9 @@
 package com.humantalks.common
 
-import com.humantalks.domain.{ Talk, Meetup, Venue, Person }
+import com.humantalks.meetups.Meetup
+import com.humantalks.persons.Person
+import com.humantalks.talks.Talk
+import com.humantalks.venues.Venue
 import global.infrastructure.GenericRepository
 import play.api.Configuration
 import play.api.i18n.DefaultLangs

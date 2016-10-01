@@ -1,8 +1,0 @@
-@import com.humantalks.domain.PersonData
-@import global.views.html.form._
-@(personForm: Form[PersonData])(implicit messagesApi: MessagesApi)
-@fieldHorizontal(personForm("name"), 'label -> "Nom") { field => @inputText(field, 'placeholder -> "ex: John Doe") }
-@fieldHorizontal(personForm("twitter"), 'label -> "Compte twitter") { field => @inputText(field, 'placeholder -> "ex: @johndoe") }
-@fieldHorizontal(personForm("email"), 'label -> "Email") { field => @inputEmail(field, 'placeholder -> "ex: john@doe.com") }
-@fieldHorizontal(personForm("avatar"), 'label -> "Image de profil") { field => @inputText(field, 'placeholder -> "ex: https://image.freepik.com/free-icon/male-user-shadow_318-34042.png") }
-@fieldHorizontal(personForm("description"), 'label -> "Description") { field => @inputTextarea(field, 'placeholder -> "ex: Développeur chez XXX ...") }

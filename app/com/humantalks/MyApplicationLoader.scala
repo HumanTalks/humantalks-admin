@@ -1,7 +1,10 @@
 package com.humantalks
 
 import com.humantalks.common.Conf
-import com.humantalks.infrastructure.{ TalkRepository, MeetupRepository, VenueRepository, PersonRepository }
+import com.humantalks.meetups.{ MeetupRepository, MeetupCtrl }
+import com.humantalks.persons.{ PersonRepository, PersonCtrl }
+import com.humantalks.talks.{ TalkRepository, TalkCtrl }
+import com.humantalks.venues.{ VenueRepository, VenueCtrl }
 import global.Contexts
 import global.infrastructure.Mongo
 import play.api.cache.EhCacheComponents
@@ -42,11 +45,11 @@ class MyComponents(context: ApplicationLoader.Context)
   implicit val messagesApiImp = messagesApi
   val router: Router = new Routes(
     httpErrorHandler,
-    new com.humantalks.controllers.html.Application(ctx),
-    new com.humantalks.controllers.html.Persons(ctx, personRepository),
-    new com.humantalks.controllers.html.Venues(ctx, venueRepository),
-    new com.humantalks.controllers.html.Talks(ctx, talkRepository, personRepository),
-    new com.humantalks.controllers.html.Meetups(ctx, meetupRepository, venueRepository),
+    new com.humantalks.common.controllers.Application(ctx),
+    new PersonCtrl(ctx, personRepository),
+    new VenueCtrl(ctx, venueRepository),
+    new TalkCtrl(ctx, talkRepository, personRepository),
+    new MeetupCtrl(ctx, meetupRepository, venueRepository),
     new _root_.global.controllers.Application(ctx, mongo),
     new _root_.controllers.Assets(httpErrorHandler)
   )

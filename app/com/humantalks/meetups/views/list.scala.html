@@ -1,0 +1,24 @@
+@import com.humantalks.meetups.Meetup
+@import com.humantalks.common.views.html.partials._
+@import com.humantalks.meetups.routes
+@import global.views.html.format._
+@(meetupList: List[Meetup])
+@main("Home") {
+    @header("meetup")
+
+    <div class="container">
+        <h1>Meetup List</h1>
+        @meetupList.map { meetup =>
+            <div class="media card">
+                <div class="media-body">
+                    <h4 class="media-heading"><a href="@routes.MeetupCtrl.get(meetup.id)">@meetup.data.title</a></h4>
+                    <p>
+                        le @date(meetup.data.date.toLocalDate)
+                        @meetup.data.venue.map{v => à @v}
+                        @meetup.data.talks.length talks prévus
+                    </p>
+                </div>
+            </div>
+        }
+    </div>
+}

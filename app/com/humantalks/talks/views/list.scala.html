@@ -1,0 +1,21 @@
+@import com.humantalks.talks.Talk
+@import com.humantalks.common.views.html.partials._
+@import com.humantalks.talks.routes
+@import global.views.html.format._
+@(talkList: List[Talk])
+@main("Home") {
+    @header("talk")
+
+    <div class="container">
+        <h1>Talk List</h1>
+        @talkList.map { talk =>
+            <div class="media card">
+                <div class="media-body">
+                    <h4 class="media-heading"><a href="@routes.TalkCtrl.get(talk.id)">@talk.data.title</a></h4>
+                    <p>@multiline(talk.data.description)</p>
+                    <p>par @talk.data.speakers.map{s => @s}</p>
+                </div>
+            </div>
+        }
+    </div>
+}
