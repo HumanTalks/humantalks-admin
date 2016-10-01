@@ -1,6 +1,28 @@
 declare const $: any;
 declare const google: any;
 
+// https://select2.github.io/
+(function(){
+    $('.select2').each(function(){
+        $(this).select2({
+            width: '100%',
+            theme: 'bootstrap',
+            placeholder: $(this).attr('placeholder'),
+            allowClear: $(this).attr('placeholder') !== undefined
+        });
+    });
+    $('.select2-multi').each(function(){
+        $(this).select2({
+            width: '100%',
+            theme: 'bootstrap',
+            placeholder: $(this).attr('placeholder'),
+            allowClear: $(this).attr('placeholder') !== undefined,
+            tags: true,
+            tokenSeparators: [',']
+        });
+    });
+})();
+
 // http://www.malot.fr/bootstrap-datetimepicker/
 (function(){
     $('input.input-datetime').each(function(){

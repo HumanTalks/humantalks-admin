@@ -13,6 +13,8 @@ libraryDependencies ++= Seq(
   "org.jsoup" % "jsoup" % "1.9.2",
   "org.webjars" % "jquery" % "1.12.4",
   "org.webjars" % "bootstrap" % "3.3.7-1",
+  "org.webjars.npm" % "select2" % "4.0.3",
+  "org.webjars.npm" % "select2-bootstrap-theme" % "0.1.0-beta.9",
   "org.webjars" % "bootstrap-datetimepicker" % "2.3.8",
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
   "com.github.simplyscala" %% "scalatest-embedmongo" % "0.2.2" % Test
