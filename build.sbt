@@ -10,6 +10,7 @@ libraryDependencies ++= Seq(
   ws,
   filters,
   "org.reactivemongo" %% "play2-reactivemongo" % "0.11.14",
+  "org.jsoup" % "jsoup" % "1.9.2",
   "org.webjars" % "jquery" % "1.12.4",
   "org.webjars" % "bootstrap" % "3.3.7-1",
   "org.webjars" % "bootstrap-datetimepicker" % "2.3.8",

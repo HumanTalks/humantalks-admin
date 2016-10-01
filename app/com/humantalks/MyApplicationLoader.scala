@@ -4,6 +4,7 @@ import com.humantalks.common.Conf
 import com.humantalks.meetups.{ MeetupRepository, MeetupCtrl }
 import com.humantalks.persons.{ PersonRepository, PersonCtrl }
 import com.humantalks.talks.{ TalkRepository, TalkCtrl }
+import com.humantalks.tools.scrapers.TwitterScraper
 import com.humantalks.venues.{ VenueRepository, VenueCtrl }
 import global.Contexts
 import global.infrastructure.Mongo
@@ -50,6 +51,7 @@ class MyComponents(context: ApplicationLoader.Context)
     new VenueCtrl(ctx, venueRepository),
     new TalkCtrl(ctx, talkRepository, personRepository),
     new MeetupCtrl(ctx, meetupRepository, venueRepository, talkRepository),
+    new TwitterScraper(ctx, wsClient),
     new _root_.global.controllers.Application(ctx, mongo),
     new _root_.controllers.Assets(httpErrorHandler)
   )

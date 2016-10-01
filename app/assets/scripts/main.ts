@@ -12,6 +12,53 @@ declare const google: any;
     });
 })();
 
+// inputImageUrl
+(function(){
+    $('.input-imageurl').each(function() {
+        var $elt = $(this);
+        var $input = $elt.find('input[type="text"]');
+        var $preview = $elt.find('img.preview');
+        update($input, $preview); // run on page load
+        $input.on('change', function(){
+            update($input, $preview);
+        });
+    });
+    function update($input, $preview){
+        if($input.val() === ''){
+            $preview.hide();
+        } else {
+            $preview.attr('src', $input.val());
+            $preview.show();
+        }
+    }
+})();
+
+// fill img url with twitter account (input having twitterToImg attribute pointing to imgUrl field id)
+(function(){
+    $('input[twitterToImageUrl]').each(function(){
+        var $twitterAccountField = $(this);
+        var $imgUrlField = $('#'+$twitterAccountField.attr('twitterToImageUrl'));
+        update($twitterAccountField, $imgUrlField); // run on page load
+        $twitterAccountField.on('change', function () {
+            update($twitterAccountField, $imgUrlField);
+        });
+    });
+    function update($twitterAccountField, $imgUrlField){
+        if ($twitterAccountField.val() !== '' && $imgUrlField.val() === '') {
+            getTwitterAccount($twitterAccountField.val()).then(function(account){
+                if (account && $imgUrlField.val() === '') {
+                    $imgUrlField.val(account.avatar).change();
+                }
+            });
+        }
+    }
+    function getTwitterAccount(account: String){
+        return $.get('/api/tools/scrapers/twitter/profil?account='+account).then(function(res){
+            return res.data;
+        });
+    }
+})();
+
 // GMapPlace picker (https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete?hl=fr)
 var GMapPlacePicker = (function(){
     return {

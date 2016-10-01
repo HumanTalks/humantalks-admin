@@ -5,6 +5,6 @@
     <div class="col-md-9">
         @input(if(Helpers.hasArg(args, "constraints", "false")){ field.copy(constraints = Seq()) } else { field })
         @if(!Helpers.hasArg(args, "errors", "false")){@fieldErrors(field)}
-        @if(!Helpers.hasArg(args, "constraints", "false")){@fieldConstraints(field)}
+        @* @if(!Helpers.hasArg(args, "constraints", "false")){@fieldConstraints(field)} *@
     </div>
 </div>

@@ -16,7 +16,7 @@
             @helper.form(action=talkOpt.map(p => routes.TalkCtrl.doUpdate(p.id)).getOrElse(routes.TalkCtrl.doCreate()), 'class->"form-horizontal talk-form") {
                 @partials.fields(talkForm, personList)
                 <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
+                    <div class="col-md-offset-3 col-md-9">
                         @talkOpt.map{p => <a href="@routes.TalkCtrl.get(p.id)" class="btn btn-default btn-lg">Annuler</a>}
                         <button type="submit" class="btn btn-primary btn-lg">@talkOpt.map{ p => Modifier @p.data.title}.getOrElse{Ajouter le talk}</button>
                     </div>
