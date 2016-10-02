@@ -2,6 +2,7 @@ package com.humantalks.talks
 
 import com.humantalks.common.helpers.CtrlHelper
 import com.humantalks.common.models.User
+import com.humantalks.meetups.MeetupRepository
 import com.humantalks.persons.PersonRepository
 import com.humantalks.talks.views.html
 import global.Contexts
@@ -11,7 +12,7 @@ import play.api.mvc._
 
 import scala.concurrent.Future
 
-case class TalkCtrl(ctx: Contexts, talkRepository: TalkRepository, personRepository: PersonRepository)(implicit messageApi: MessagesApi) extends Controller {
+case class TalkCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRepository: TalkRepository, personRepository: PersonRepository)(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.ctrlToEC
   import ctx._
   val talkForm = Form(Talk.fields)
@@ -38,9 +39,10 @@ case class TalkCtrl(ctx: Contexts, talkRepository: TalkRepository, personReposit
 
   def get(id: Talk.Id) = Action.async { implicit req: Request[AnyContent] =>
     CtrlHelper.withItem(talkRepository)(id) { talk =>
-      personRepository.findByIds(talk.data.speakers).map { personList =>
-        Ok(html.detail(talk, personList.map(p => (p.id, p)).toMap))
-      }
+      for {
+        personMap <- personRepository.findByIds(talk.data.speakers).map(_.map(p => (p.id, p)).toMap)
+        meetupList <- meetupRepository.findForTalk(id)
+      } yield Ok(html.detail(talk, personMap, meetupList))
     }
   }
 

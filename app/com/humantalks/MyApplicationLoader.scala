@@ -47,9 +47,9 @@ class MyComponents(context: ApplicationLoader.Context)
   val router: Router = new Routes(
     httpErrorHandler,
     new com.humantalks.common.controllers.Application(ctx),
-    new PersonCtrl(ctx, personRepository),
-    new VenueCtrl(ctx, venueRepository),
-    new TalkCtrl(ctx, talkRepository, personRepository),
+    new PersonCtrl(ctx, talkRepository, personRepository),
+    new VenueCtrl(ctx, meetupRepository, venueRepository),
+    new TalkCtrl(ctx, meetupRepository, talkRepository, personRepository),
     new MeetupCtrl(ctx, meetupRepository, talkRepository, personRepository, venueRepository),
     new PersonApi(ctx, personRepository),
     new VenueApi(ctx, venueRepository),

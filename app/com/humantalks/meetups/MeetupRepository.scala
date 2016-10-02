@@ -4,6 +4,8 @@ import com.humantalks.common.Conf
 import com.humantalks.common.infrastructure.{ Mongo, Repository }
 import com.humantalks.common.models.User
 import com.humantalks.common.models.values.Meta
+import com.humantalks.talks.Talk
+import com.humantalks.venues.Venue
 import global.Contexts
 import global.models.Page
 import org.joda.time.DateTime
@@ -22,11 +24,17 @@ case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   def find(filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[List[Meetup]] =
     collection.find(filter, sort)
 
+  def findPage(index: Page.Index, size: Page.Size, filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[Page[Meetup]] =
+    collection.findPage(index, size, filter, sort)
+
   def findByIds(ids: Seq[Meetup.Id], sort: JsObject = defaultSort): Future[List[Meetup]] =
     collection.find(Json.obj("id" -> Json.obj("$in" -> ids.distinct)), sort)
 
-  def findPage(index: Page.Index, size: Page.Size, filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[Page[Meetup]] =
-    collection.findPage(index, size, filter, sort)
+  def findForTalk(id: Talk.Id, sort: JsObject = defaultSort): Future[List[Meetup]] =
+    collection.find(Json.obj("data.talks" -> id), sort)
+
+  def findForVenue(id: Venue.Id, sort: JsObject = defaultSort): Future[List[Meetup]] =
+    collection.find(Json.obj("data.venue" -> id), sort)
 
   def get(id: Meetup.Id): Future[Option[Meetup]] =
     collection.get(Json.obj("id" -> id))

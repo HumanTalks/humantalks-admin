@@ -22,11 +22,11 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   def find(filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[List[Person]] =
     collection.find(filter, sort)
 
-  def findByIds(ids: Seq[Person.Id], sort: JsObject = defaultSort): Future[List[Person]] =
-    collection.find(Json.obj("id" -> Json.obj("$in" -> ids.distinct)), sort)
-
   def findPage(index: Page.Index, size: Page.Size, filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[Page[Person]] =
     collection.findPage(index, size, filter, sort)
+
+  def findByIds(ids: Seq[Person.Id], sort: JsObject = defaultSort): Future[List[Person]] =
+    collection.find(Json.obj("id" -> Json.obj("$in" -> ids.distinct)), sort)
 
   def get(id: Person.Id): Future[Option[Person]] =
     collection.get(Json.obj("id" -> id))

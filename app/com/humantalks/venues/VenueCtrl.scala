@@ -2,6 +2,7 @@ package com.humantalks.venues
 
 import com.humantalks.common.helpers.CtrlHelper
 import com.humantalks.common.models.User
+import com.humantalks.meetups.MeetupRepository
 import com.humantalks.venues.views.html
 import global.Contexts
 import play.api.data.Form
@@ -10,7 +11,7 @@ import play.api.mvc._
 
 import scala.concurrent.Future
 
-case class VenueCtrl(ctx: Contexts, venueRepository: VenueRepository)(implicit messageApi: MessagesApi) extends Controller {
+case class VenueCtrl(ctx: Contexts, meetupRepository: MeetupRepository, venueRepository: VenueRepository)(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.ctrlToEC
   import ctx._
   val venueForm = Form(Venue.fields)
@@ -36,7 +37,9 @@ case class VenueCtrl(ctx: Contexts, venueRepository: VenueRepository)(implicit m
 
   def get(id: Venue.Id) = Action.async { implicit req: Request[AnyContent] =>
     CtrlHelper.withItem(venueRepository)(id) { venue =>
-      Future(Ok(html.detail(venue)))
+      for {
+        meetupList <- meetupRepository.findForVenue(id)
+      } yield Ok(html.detail(venue, meetupList))
     }
   }
 

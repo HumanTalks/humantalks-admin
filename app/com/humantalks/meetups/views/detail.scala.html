@@ -16,14 +16,23 @@
         </h1>
         <p>
             @if(meetup.published){ <span class="label label-success">Publié</span> } else { <span class="label label-danger">Brouillon</span> }
+            @meetup.data.venue.flatMap(id => venueMap.get(id)).map{v => chez <a href="@com.humantalks.venues.routes.VenueCtrl.get(v.id)">@v.data.name</a>}
             le @date(meetup.data.date.toLocalDate)
-            @meetup.data.venue.flatMap(id => venueMap.get(id)).map{v => à @v.data.name}
         </p>
         <p>@meetup.data.description</p>
-        @meetup.data.talks.map(id => talkMap.get(id)).flatten.map { talk =>
-            <div>Talk: @talk.data.title par @talk.data.speakers.map(s => personMap.get(s)).flatten.map(_.data.name).mkString(", ")</div>
+        @if(!meetup.data.talks.isEmpty) {
+            <h3>Talks</h3>
+            <ol>
+            @meetup.data.talks.map(id => talkMap.get(id)).flatten.map { talk =>
+                <li>
+                    <a href="@com.humantalks.talks.routes.TalkCtrl.get(talk.id)">@talk.data.title</a>
+                    par @talk.data.speakers.map(s => personMap.get(s)).flatten.map { speaker => <a href="@com.humantalks.persons.routes.PersonCtrl.get(speaker.id)">@speaker.data.name</a> }
+                </li>
+            }
+            </ol>
         }
         @meetup.data.roti.map{r => <p><img src="@r"></p>}
+        <button class="btn btn-default btn-lg">Ajouter un talk (TODO: modal avec select2 et/ou form)</button><br>
         <a href="@routes.MeetupCtrl.publish(meetup.id)" class="btn btn-default btn-lg">Publier</a>
     </div>
 }

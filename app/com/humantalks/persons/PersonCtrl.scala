@@ -3,6 +3,7 @@ package com.humantalks.persons
 import com.humantalks.common.helpers.CtrlHelper
 import com.humantalks.common.models.User
 import com.humantalks.persons.views.html
+import com.humantalks.talks.TalkRepository
 import global.Contexts
 import play.api.data.Form
 import play.api.i18n.MessagesApi
@@ -10,7 +11,7 @@ import play.api.mvc._
 
 import scala.concurrent.Future
 
-case class PersonCtrl(ctx: Contexts, personRepository: PersonRepository)(implicit messageApi: MessagesApi) extends Controller {
+case class PersonCtrl(ctx: Contexts, talkRepository: TalkRepository, personRepository: PersonRepository)(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.ctrlToEC
   import ctx._
   val personForm = Form(Person.fields)
@@ -36,7 +37,9 @@ case class PersonCtrl(ctx: Contexts, personRepository: PersonRepository)(implici
 
   def get(id: Person.Id) = Action.async { implicit req: Request[AnyContent] =>
     CtrlHelper.withItem(personRepository)(id) { person =>
-      Future(Ok(html.detail(person)))
+      for {
+        talkList <- talkRepository.findFor(id)
+      } yield Ok(html.detail(person, talkList))
     }
   }
 

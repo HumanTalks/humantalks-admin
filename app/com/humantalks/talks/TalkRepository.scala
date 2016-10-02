@@ -4,6 +4,7 @@ import com.humantalks.common.Conf
 import com.humantalks.common.infrastructure.{ Mongo, Repository }
 import com.humantalks.common.models.User
 import com.humantalks.common.models.values.Meta
+import com.humantalks.persons.Person
 import global.Contexts
 import global.models.Page
 import org.joda.time.DateTime
@@ -22,11 +23,14 @@ case class TalkRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposito
   def find(filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[List[Talk]] =
     collection.find(filter, sort)
 
+  def findPage(index: Page.Index, size: Page.Size, filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[Page[Talk]] =
+    collection.findPage(index, size, filter, sort)
+
   def findByIds(ids: Seq[Talk.Id], sort: JsObject = defaultSort): Future[List[Talk]] =
     collection.find(Json.obj("id" -> Json.obj("$in" -> ids.distinct)), sort)
 
-  def findPage(index: Page.Index, size: Page.Size, filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[Page[Talk]] =
-    collection.findPage(index, size, filter, sort)
+  def findFor(id: Person.Id, sort: JsObject = defaultSort): Future[List[Talk]] =
+    collection.find(Json.obj("data.speakers" -> id), sort)
 
   def get(id: Talk.Id): Future[Option[Talk]] =
     collection.get(Json.obj("id" -> id))

@@ -1,8 +1,9 @@
 @import com.humantalks.persons.Person
+@import com.humantalks.talks.Talk
 @import com.humantalks.common.views.html.partials._
 @import com.humantalks.persons.routes
 @import global.views.html.format._
-@(person: Person)
+@(person: Person, talkList: List[Talk])
 @main("Home") {
     @header("person")
 
@@ -14,5 +15,13 @@
         @person.data.description.map{d => <p>@multiline(d)</p>}
         @person.data.email.map{email => <a href="mailto:@email" target="_blank">@email</a>}
         @person.data.twitter.map{account => <a href="https://twitter.com/@account" target="_blank">@@@account</a>}
+        @if(!talkList.isEmpty){
+            <h3>Talks</h3>
+            <ul>
+            @talkList.map { talk =>
+                <li><a href="@com.humantalks.talks.routes.TalkCtrl.get(talk.id)">@talk.data.title</a></li>
+            }
+            </ul>
+        }
     </div>
 }

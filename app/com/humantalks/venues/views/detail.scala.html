@@ -1,8 +1,9 @@
 @import com.humantalks.venues.Venue
+@import com.humantalks.meetups.Meetup
 @import com.humantalks.common.views.html.partials._
 @import com.humantalks.venues.routes
 @import global.views.html.format._
-@(venue: Venue)
+@(venue: Venue, meetupList: List[Meetup])
 @main("Home") {
     @header("venue")
 
@@ -15,5 +16,13 @@
         @venue.data.comment.map{c => <p>@multiline(c)</p>}
         @venue.data.contact.map{contact => @contact.name}
         @venue.data.twitter.map{account => <a href="https://twitter.com/@account" target="_blank">@@@account</a>}
+        @if(!meetupList.isEmpty){
+            <h3>Meetups</h3>
+            <ul>
+            @meetupList.map { meetup =>
+                <li><a href="@com.humantalks.meetups.routes.MeetupCtrl.get(meetup.id)">@meetup.data.title</a></li>
+            }
+            </ul>
+        }
     </div>
 }

@@ -22,11 +22,11 @@ case class VenueRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposit
   def find(filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[List[Venue]] =
     collection.find(filter, sort)
 
-  def findByIds(ids: Seq[Venue.Id], sort: JsObject = defaultSort): Future[List[Venue]] =
-    collection.find(Json.obj("id" -> Json.obj("$in" -> ids.distinct)), sort)
-
   def findPage(index: Page.Index, size: Page.Size, filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[Page[Venue]] =
     collection.findPage(index, size, filter, sort)
+
+  def findByIds(ids: Seq[Venue.Id], sort: JsObject = defaultSort): Future[List[Venue]] =
+    collection.find(Json.obj("id" -> Json.obj("$in" -> ids.distinct)), sort)
 
   def get(id: Venue.Id): Future[Option[Venue]] =
     collection.get(Json.obj("id" -> id))
