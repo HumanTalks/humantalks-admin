@@ -3,7 +3,7 @@
 @import com.humantalks.common.views.html.partials._
 @import com.humantalks.talks.routes
 @import global.views.html.format._
-@(talkList: List[Talk], personMap: Map[Person.Id, Person])
+@(talkList: List[Talk], personList: List[Person])
 @main("Home") {
     @header("talk")
 
@@ -14,7 +14,7 @@
                 <div class="media-body">
                     <h4 class="media-heading"><a href="@routes.TalkCtrl.get(talk.id)">@talk.data.title</a></h4>
                     <p>@multiline(talk.data.description)</p>
-                    <p>par @talk.data.speakers.map(id => personMap.get(id)).flatten.map(_.data.name).mkString(", ")</p>
+                    <p>par @talk.data.speakers.flatMap(id => personList.find(_.id == id)).map(_.data.name).mkString(", ")</p>
                 </div>
             </div>
         }

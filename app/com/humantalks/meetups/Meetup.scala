@@ -48,7 +48,7 @@ object Meetup {
     "roti" -> optional(text)
   )(Meetup.Data.apply)(Meetup.Data.unapply)
 
-  def meetupDescription(meetup: Meetup, talkMap: Map[Talk.Id, Talk], personMap: Map[Person.Id, Person], venueMap: Map[Venue.Id, Venue]): String = {
+  def meetupDescription(meetup: Meetup, talkList: List[Talk], personList: List[Person], venueList: List[Venue]): String = {
     def br: String = "\r\n"
     def image(url: String): String = url
     def link(name: String, url: String): String = "<a href=\"" + url + "\">" + name + "</a>"
@@ -56,15 +56,15 @@ object Meetup {
     def venueToMarkdown(venue: Venue): String =
       s"Ce mois-ci nous sommes chez ${venue.data.name}, merci à eux de nous accueillir dans leurs locaux :)$br$br" +
         venue.data.logo.map(logo => image(logo) + br + br).getOrElse("")
-    def talkToMarkdown(talk: Talk, personMap: Map[Person.Id, Person]): String =
-      "- " + bold(talk.data.title) + talk.data.speakers.flatMap(id => personMap.get(id)).map(personToMarkdown).mkString(" par ", ", ", "") + br + br +
+    def talkToMarkdown(talk: Talk, personList: List[Person]): String =
+      "- " + bold(talk.data.title) + talk.data.speakers.flatMap(id => personList.find(_.id == id)).map(personToMarkdown).mkString(" par ", ", ", "") + br + br +
         talk.data.description + br + br
     def personToMarkdown(person: Person): String =
       bold(person.data.name) + person.data.twitter.map(twitter => s" (" + link("@" + twitter, "https://twitter.com/" + twitter) + ")").getOrElse("")
 
     val introduction = meetup.data.description.map(_ + br + br).getOrElse("")
-    val venueText = meetup.data.venue.flatMap(id => venueMap.get(id)).map(venueToMarkdown).getOrElse("")
-    val talksText = meetup.data.talks.flatMap(id => talkMap.get(id)).map(t => talkToMarkdown(t, personMap)).mkString("")
+    val venueText = meetup.data.venue.flatMap(id => venueList.find(_.id == id)).map(venueToMarkdown).getOrElse("")
+    val talksText = meetup.data.talks.flatMap(id => talkList.find(_.id == id)).map(t => talkToMarkdown(t, personList)).mkString("")
     val conclusion = "Proposez vos sujets pour les prochaines sessions : " + link("http://bit.ly/HTParis-sujet", "http://bit.ly/HTParis-sujet")
 
     introduction + venueText + talksText + conclusion

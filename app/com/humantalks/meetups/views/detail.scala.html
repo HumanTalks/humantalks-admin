@@ -5,7 +5,7 @@
 @import com.humantalks.common.views.html.partials._
 @import com.humantalks.meetups.routes
 @import global.views.html.format._
-@(meetup: Meetup, talkMap: Map[Talk.Id, Talk], personMap: Map[Person.Id, Person], venueMap: Map[Venue.Id, Venue])
+@(meetup: Meetup, talkList: List[Talk], personList: List[Person], venueList: List[Venue], talkForm: Form[Talk.Data])(implicit messagesApi: MessagesApi)
 @main("Home") {
     @header("meetup")
 
@@ -16,23 +16,25 @@
         </h1>
         <p>
             @if(meetup.published){ <span class="label label-success">Publié</span> } else { <span class="label label-danger">Brouillon</span> }
-            @meetup.data.venue.flatMap(id => venueMap.get(id)).map{v => chez <a href="@com.humantalks.venues.routes.VenueCtrl.get(v.id)">@v.data.name</a>}
+            @meetup.data.venue.flatMap(id => venueList.find(_.id == id)).map{v => chez <a href="@com.humantalks.venues.routes.VenueCtrl.get(v.id)">@v.data.name</a>}
             le @date(meetup.data.date.toLocalDate)
         </p>
         <p>@meetup.data.description</p>
-        @if(!meetup.data.talks.isEmpty) {
+        @if(meetup.data.talks.nonEmpty) {
             <h3>Talks</h3>
             <ol>
-            @meetup.data.talks.map(id => talkMap.get(id)).flatten.map { talk =>
+            @meetup.data.talks.flatMap(id => talkList.find(_.id == id)).map { talk =>
                 <li>
                     <a href="@com.humantalks.talks.routes.TalkCtrl.get(talk.id)">@talk.data.title</a>
-                    par @talk.data.speakers.map(s => personMap.get(s)).flatten.map { speaker => <a href="@com.humantalks.persons.routes.PersonCtrl.get(speaker.id)">@speaker.data.name</a> }
+                    par @talk.data.speakers.flatMap(id => personList.find(_.id == id)).map { speaker => <a href="@com.humantalks.persons.routes.PersonCtrl.get(speaker.id)">@speaker.data.name</a> }
                 </li>
             }
             </ol>
         }
         @meetup.data.roti.map{r => <p><img src="@r"></p>}
-        <button class="btn btn-default btn-lg">Ajouter un talk (TODO: modal avec select2 et/ou form)</button><br>
+        <button class="btn btn-default btn-lg" data-toggle="modal" data-target="#create-talk-modal">Ajouter un talk (TODO: modal avec select2 et/ou form)</button><br>
         <a href="@routes.MeetupCtrl.publish(meetup.id)" class="btn btn-default btn-lg">Publier</a>
     </div>
+
+    @com.humantalks.talks.views.html.partials.modalForm(talkForm, personList, routes.MeetupCtrl.doCreateTalk(meetup.id))
 }

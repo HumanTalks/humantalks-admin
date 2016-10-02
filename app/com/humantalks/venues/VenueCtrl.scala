@@ -30,7 +30,7 @@ case class VenueCtrl(ctx: Contexts, meetupRepository: MeetupRepository, venueRep
     venueForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest(html.form(formWithErrors, None))),
       venueData => venueRepository.create(venueData, User.fake).map {
-        case (success, id) => Redirect(routes.VenueCtrl.get(id))
+        case (_, id) => Redirect(routes.VenueCtrl.get(id))
       }
     )
   }
@@ -54,7 +54,7 @@ case class VenueCtrl(ctx: Contexts, meetupRepository: MeetupRepository, venueRep
       formWithErrors => CtrlHelper.withItem(venueRepository)(id) { venue => Future(BadRequest(html.form(formWithErrors, Some(venue)))) },
       venueData => CtrlHelper.withItem(venueRepository)(id) { venue =>
         venueRepository.update(venue, venueData, User.fake).map {
-          case success => Redirect(routes.VenueCtrl.get(id))
+          case _ => Redirect(routes.VenueCtrl.get(id))
         }
       }
     )

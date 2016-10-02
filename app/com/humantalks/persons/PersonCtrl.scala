@@ -30,7 +30,7 @@ case class PersonCtrl(ctx: Contexts, talkRepository: TalkRepository, personRepos
     personForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest(html.form(formWithErrors, None))),
       personData => personRepository.create(personData, User.fake).map {
-        case (success, id) => Redirect(routes.PersonCtrl.get(id))
+        case (_, id) => Redirect(routes.PersonCtrl.get(id))
       }
     )
   }
@@ -54,7 +54,7 @@ case class PersonCtrl(ctx: Contexts, talkRepository: TalkRepository, personRepos
       formWithErrors => CtrlHelper.withItem(personRepository)(id) { person => Future(BadRequest(html.form(formWithErrors, Some(person)))) },
       personData => CtrlHelper.withItem(personRepository)(id) { person =>
         personRepository.update(person, personData, User.fake).map {
-          case success => Redirect(routes.PersonCtrl.get(id))
+          case _ => Redirect(routes.PersonCtrl.get(id))
         }
       }
     )

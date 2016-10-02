@@ -3,7 +3,7 @@ package com.humantalks.meetups
 import com.humantalks.common.helpers.CtrlHelper
 import com.humantalks.common.models.User
 import com.humantalks.persons.PersonRepository
-import com.humantalks.talks.TalkRepository
+import com.humantalks.talks.{ Talk, TalkRepository }
 import com.humantalks.venues.VenueRepository
 import com.humantalks.meetups.views.html
 import global.Contexts
@@ -18,12 +18,13 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
   import Contexts.ctrlToEC
   import ctx._
   val meetupForm = Form(Meetup.fields)
+  val talkForm = Form(Talk.fields)
 
   def find = Action.async { implicit req: Request[AnyContent] =>
     for {
       meetupList <- meetupRepository.find()
-      venueMap <- venueRepository.findByIds(meetupList.flatMap(_.data.venue)).map(_.map(v => (v.id, v)).toMap)
-    } yield Ok(html.list(meetupList, venueMap))
+      venueList <- venueRepository.findByIds(meetupList.flatMap(_.data.venue))
+    } yield Ok(html.list(meetupList, venueList))
   }
 
   def create = Action.async { implicit req: Request[AnyContent] =>
@@ -34,7 +35,7 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
     meetupForm.bindFromRequest.fold(
       formWithErrors => formView(BadRequest, formWithErrors, None),
       meetupData => meetupRepository.create(meetupData, User.fake).map {
-        case (success, id) => Redirect(routes.MeetupCtrl.get(id))
+        case (_, id) => Redirect(routes.MeetupCtrl.get(id))
       }
     )
   }
@@ -43,11 +44,12 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
     CtrlHelper.withItem(meetupRepository)(id) { meetup =>
       val venueListFut = venueRepository.findByIds(meetup.data.venue.toSeq)
       val talkListFut = talkRepository.findByIds(meetup.data.talks)
+      val personListFut = personRepository.find()
       for {
         venueList <- venueListFut
         talkList <- talkListFut
-        personList <- personRepository.findByIds(talkList.flatMap(_.data.speakers))
-      } yield Ok(html.detail(meetup, talkList.map(e => (e.id, e)).toMap, personList.map(e => (e.id, e)).toMap, venueList.map(e => (e.id, e)).toMap))
+        personList <- personListFut
+      } yield Ok(html.detail(meetup, talkList, personList, venueList, talkForm))
     }
   }
 
@@ -62,7 +64,18 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
       formWithErrors => CtrlHelper.withItem(meetupRepository)(id) { meetup => formView(BadRequest, formWithErrors, Some(meetup)) },
       meetupData => CtrlHelper.withItem(meetupRepository)(id) { meetup =>
         meetupRepository.update(meetup, meetupData, User.fake).map {
-          case success => Redirect(routes.MeetupCtrl.get(id))
+          case _ => Redirect(routes.MeetupCtrl.get(id))
+        }
+      }
+    )
+  }
+
+  def doCreateTalk(id: Meetup.Id) = Action.async { implicit req: Request[AnyContent] =>
+    talkForm.bindFromRequest.fold(
+      formWithErrors => Future(Redirect(routes.MeetupCtrl.get(id))), // TODO : add flashing message to show errors
+      talkData => talkRepository.create(talkData, User.fake).flatMap {
+        case (_, talkId) => meetupRepository.addTalk(id, talkId).map { _ =>
+          Redirect(routes.MeetupCtrl.get(id))
         }
       }
     )
@@ -76,12 +89,12 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
         venueList <- venueListFut
         talkList <- talkListFut
         personList <- personRepository.findByIds(talkList.flatMap(_.data.speakers))
-      } yield Ok(html.publish(meetup, talkList.map(e => (e.id, e)).toMap, personList.map(e => (e.id, e)).toMap, venueList.map(e => (e.id, e)).toMap))
+      } yield Ok(html.publish(meetup, talkList, personList, venueList))
     }
   }
 
   def doPublish(id: Meetup.Id) = Action.async { implicit req: Request[AnyContent] =>
-    meetupRepository.partialUpdate(id, Json.obj("published" -> true)).map { res =>
+    meetupRepository.setPublished(id).map { _ =>
       Redirect(routes.MeetupCtrl.get(id))
     }
   }
@@ -93,6 +106,6 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
       talkList <- talkListFut
       personList <- personRepository.findByIds(talkList.flatMap(_.data.speakers))
       venueList <- venueListFut
-    } yield status(html.form(meetupForm, meetupOpt, talkList, personList.map(e => (e.id, e)).toMap, venueList))
+    } yield status(html.form(meetupForm, meetupOpt, talkList, personList, venueList))
   }
 }

@@ -20,8 +20,8 @@ case class TalkCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRepos
   def find = Action.async { implicit req: Request[AnyContent] =>
     for {
       talkList <- talkRepository.find()
-      personMap <- personRepository.findByIds(talkList.flatMap(_.data.speakers)).map(_.map(p => (p.id, p)).toMap)
-    } yield Ok(html.list(talkList, personMap))
+      personList <- personRepository.findByIds(talkList.flatMap(_.data.speakers))
+    } yield Ok(html.list(talkList, personList))
   }
 
   def create = Action.async { implicit req: Request[AnyContent] =>
@@ -32,7 +32,7 @@ case class TalkCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRepos
     talkForm.bindFromRequest.fold(
       formWithErrors => formView(BadRequest, formWithErrors, None),
       talkData => talkRepository.create(talkData, User.fake).map {
-        case (success, id) => Redirect(routes.TalkCtrl.get(id))
+        case (_, id) => Redirect(routes.TalkCtrl.get(id))
       }
     )
   }
@@ -40,9 +40,9 @@ case class TalkCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRepos
   def get(id: Talk.Id) = Action.async { implicit req: Request[AnyContent] =>
     CtrlHelper.withItem(talkRepository)(id) { talk =>
       for {
-        personMap <- personRepository.findByIds(talk.data.speakers).map(_.map(p => (p.id, p)).toMap)
+        personList <- personRepository.findByIds(talk.data.speakers)
         meetupList <- meetupRepository.findForTalk(id)
-      } yield Ok(html.detail(talk, personMap, meetupList))
+      } yield Ok(html.detail(talk, personList, meetupList))
     }
   }
 
@@ -57,7 +57,7 @@ case class TalkCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRepos
       formWithErrors => CtrlHelper.withItem(talkRepository)(id) { talk => formView(BadRequest, formWithErrors, Some(talk)) },
       talkData => CtrlHelper.withItem(talkRepository)(id) { talk =>
         talkRepository.update(talk, talkData, User.fake).map {
-          case success => Redirect(routes.TalkCtrl.get(id))
+          case _ => Redirect(routes.TalkCtrl.get(id))
         }
       }
     )

@@ -15,11 +15,11 @@
         @person.data.description.map{d => <p>@multiline(d)</p>}
         @person.data.email.map{email => <a href="mailto:@email" target="_blank">@email</a>}
         @person.data.twitter.map{account => <a href="https://twitter.com/@account" target="_blank">@@@account</a>}
-        @if(!talkList.isEmpty){
+        @if(talkList.nonEmpty){
             <h3>Talks</h3>
             <ul>
             @talkList.map { talk =>
-                <li><a href="@com.humantalks.talks.routes.TalkCtrl.get(talk.id)">@talk.data.title</a></li>
+                <li><a href="@com.humantalks.talks.routes.TalkCtrl.get(talk.id)">@talk.data.title</a> à ???</li>
             }
             </ul>
         }

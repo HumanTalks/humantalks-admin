@@ -5,7 +5,7 @@
 @import com.humantalks.common.views.html.partials._
 @import com.humantalks.meetups.routes
 @import global.views.html.format._
-@(meetup: Meetup, talkMap: Map[Talk.Id, Talk], personMap: Map[Person.Id, Person], venueMap: Map[Venue.Id, Venue])
+@(meetup: Meetup, talkList: List[Talk], personList: List[Person], venueList: List[Venue])
 @main("Home") {
     @header("meetup")
 
@@ -23,7 +23,7 @@
                     <div class="form-group">
                         <label for="description" class="control-label col-md-2">Description</label>
                         <div class="col-md-10">
-                            <textarea class="form-control" id="description" name="description" rows="30">@Meetup.meetupDescription(meetup, talkMap, personMap, venueMap)</textarea>
+                            <textarea class="form-control" id="description" name="description" rows="30">@Meetup.meetupDescription(meetup, talkList, personList, venueList)</textarea>
                         </div>
                     </div>
                     <div class="form-group">

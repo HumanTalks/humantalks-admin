@@ -16,7 +16,7 @@
         @venue.data.comment.map{c => <p>@multiline(c)</p>}
         @venue.data.contact.map{contact => @contact.name}
         @venue.data.twitter.map{account => <a href="https://twitter.com/@account" target="_blank">@@@account</a>}
-        @if(!meetupList.isEmpty){
+        @if(meetupList.nonEmpty){
             <h3>Meetups</h3>
             <ul>
             @meetupList.map { meetup =>

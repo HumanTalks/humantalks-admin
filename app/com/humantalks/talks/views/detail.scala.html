@@ -4,7 +4,7 @@
 @import com.humantalks.common.views.html.partials._
 @import com.humantalks.talks.routes
 @import global.views.html.format._
-@(talk: Talk, personMap: Map[Person.Id, Person], meetupList: List[Meetup])
+@(talk: Talk, personList: List[Person], meetupList: List[Meetup])
 @main("Home") {
     @header("talk")
 
@@ -14,10 +14,10 @@
             @talk.data.title
         </h1>
         <p>@multiline(talk.data.description)</p>
-        <p>par @talk.data.speakers.map(id => personMap.get(id)).flatten.map { speaker => <a href="@com.humantalks.persons.routes.PersonCtrl.get(speaker.id)">@speaker.data.name</a> }</p>
+        <p>par @talk.data.speakers.flatMap(id => personList.find(_.id == id)).map { speaker => <a href="@com.humantalks.persons.routes.PersonCtrl.get(speaker.id)">@speaker.data.name</a> }</p>
         @talk.data.slides.map{s => <p>Slides: @s</p>}
         @talk.data.video.map{v => <p>Vidéo: @v</p>}
-        @if(!meetupList.isEmpty){
+        @if(meetupList.nonEmpty){
             <h3>Meetups</h3>
             <ul>
             @meetupList.map { meetup =>
