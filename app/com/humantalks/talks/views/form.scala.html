@@ -2,7 +2,7 @@
 @import com.humantalks.talks.Talk
 @import com.humantalks.common.views.html.partials._
 @import com.humantalks.talks.routes
-@(talkForm: Form[Talk.Data], talkOpt: Option[Talk], personList: List[Person])(implicit messagesApi: MessagesApi)
+@(talkForm: Form[Talk.Data], talkOpt: Option[Talk], personList: List[Person], personForm: Form[Person.Data])(implicit messagesApi: MessagesApi)
 @main("Home") {
     @header("talk")
 
@@ -25,4 +25,6 @@
             </div>
         </div>
     </div>
+
+    @com.humantalks.persons.views.html.partials.modalForm(personForm)
 }

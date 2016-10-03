@@ -5,7 +5,7 @@
 @import com.humantalks.common.views.html.partials._
 @import com.humantalks.meetups.routes
 @import global.views.html.format._
-@(meetup: Meetup, talkList: List[Talk], personList: List[Person], venueList: List[Venue], talkForm: Form[Talk.Data])(implicit messagesApi: MessagesApi)
+@(meetup: Meetup, talkList: List[Talk], personList: List[Person], venueList: List[Venue], talkForm: Form[Talk.Data], personForm: Form[Person.Data])(implicit messagesApi: MessagesApi)
 @main("Home") {
     @header("meetup")
 
@@ -36,5 +36,6 @@
         <a href="@routes.MeetupCtrl.publish(meetup.id)" class="btn btn-default btn-lg">Publier</a>
     </div>
 
-    @com.humantalks.talks.views.html.partials.modalForm(talkForm, personList, routes.MeetupCtrl.doCreateTalk(meetup.id))
+    @com.humantalks.talks.views.html.partials.modalForm(talkForm, personList, Some(routes.MeetupCtrl.doCreateTalk(meetup.id)))
+    @com.humantalks.persons.views.html.partials.modalForm(personForm)
 }

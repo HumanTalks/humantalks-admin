@@ -3,7 +3,7 @@ package com.humantalks.talks
 import com.humantalks.common.helpers.CtrlHelper
 import com.humantalks.common.models.User
 import com.humantalks.meetups.MeetupRepository
-import com.humantalks.persons.PersonRepository
+import com.humantalks.persons.{ Person, PersonRepository }
 import com.humantalks.talks.views.html
 import global.Contexts
 import play.api.data.Form
@@ -16,6 +16,7 @@ case class TalkCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRepos
   import Contexts.ctrlToEC
   import ctx._
   val talkForm = Form(Talk.fields)
+  val personForm = Form(Person.fields)
 
   def find = Action.async { implicit req: Request[AnyContent] =>
     for {
@@ -65,7 +66,7 @@ case class TalkCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRepos
 
   private def formView(status: Status, talkForm: Form[Talk.Data], talkOpt: Option[Talk]): Future[Result] = {
     personRepository.find().map { personList =>
-      status(html.form(talkForm, talkOpt, personList))
+      status(html.form(talkForm, talkOpt, personList, personForm))
     }
   }
 }

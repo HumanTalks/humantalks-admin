@@ -1,0 +1,12 @@
+/* fix media object height */
+img.media-object {
+  max-height: 80px;
+}
+
+/* allow multiple modals (http://www.bootply.com/86973) */
+.modal:nth-of-type(even) {
+  z-index: 1042 !important;
+}
+.modal-backdrop.in:nth-of-type(even) {
+  z-index: 1041 !important;
+}

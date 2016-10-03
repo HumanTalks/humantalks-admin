@@ -1,7 +1,89 @@
 declare const $: any;
 declare const google: any;
 
+var Utils = (function(){
+    return {
+        setSafe: setSafe
+    };
+    function setSafe(obj, path, value) {
+        if(typeof path === 'string')                    { return setSafe(obj, path.split('.').filter(function(e){ return !!e; }), value); }
+        if(!Array.isArray(path) || path.length === 0)   { return obj; }
+        if(path.length === 1){
+            obj[path[0]] = value;
+            return obj;
+        } else {
+            var newObj = obj[path[0]] || {};
+            obj[path[0]] = newObj;
+            var newPath = path.slice(1);
+            return setSafe(newObj, newPath, value);
+        }
+    }
+})();
+
 // https://select2.github.io/
+function createTalkModal($select, evt){
+    console.log('createTalkModal');
+}
+var createPersonModal = (function(){
+    var $modal = $('#create-person-modal');
+    $modal.find('[type=submit]').on('click', function(e){
+        e.preventDefault();
+        var person = readForm($modal.find('form'));
+        apiCall(person).then(function(created){
+            addToSelect($modal.data('$select'), created);
+            closeModal($modal);
+        }, function(err){
+            console.log('err', err);
+            alert('ERROR '+err.status+' '+err.statusText+' :\n'+JSON.stringify(err.responseJSON));
+        });
+    });
+
+    // TODO : should open multiple bootstrap modals (meetup -> talk -> person)
+    return function($select, evt){
+        console.log('createPersonModal');
+        $modal.data('$select', $select);
+        openModal($modal, evt.params.data.text);
+    };
+
+    function openModal(modal, text){
+        cleanForm(modal);
+        modal.find('input[name=name]').val(text);
+        modal.modal('show');
+    }
+    function closeModal(modal){
+        modal.modal('hide');
+        cleanForm(modal);
+    }
+    function cleanForm(form){
+        form.find('input').each(function(){
+            $(this).val('').change();
+        });
+    }
+    function readForm($form){
+        var person = {};
+        $form.find('input').each(function(){
+            var value = $(this).attr('type') === 'checkbox' ? $(this).prop('checked') : $(this).val();
+            if(value !== ''){
+                Utils.setSafe(person, $(this).attr('name'), value);
+            }
+        });
+        return person;
+    }
+    function apiCall(person){
+        return $.ajax({
+            type: 'POST',
+            url: '/api/persons',
+            data: JSON.stringify(person),
+            contentType: 'application/json'
+        }).then(function(res){
+            return res.data;
+        });
+    }
+    function addToSelect(select, person){
+        select.append('<option value="'+person.id+'" selected>'+person.data.name+'</option>');
+        select.trigger('change');
+    }
+})();
 (function(){
     $('.select2').each(function(){
         var $select = $(this);
@@ -14,15 +96,38 @@ declare const google: any;
     });
 
     $('.select2-multi').each(function(){
-        $(this).select2({
+        var $select = $(this);
+        var opts: any = {
             width: '100%',
             theme: 'bootstrap',
-            placeholder: $(this).attr('placeholder'),
-            allowClear: $(this).attr('placeholder') !== undefined,
+            placeholder: $select.attr('placeholder'),
+            allowClear: $select.attr('placeholder') !== undefined,
             tags: true,
             tokenSeparators: [',']
-        });
+        };
+        var onCreate: any = window[$select.attr('onCreate')];
+        if(typeof onCreate === 'function'){
+            opts.templateResult = buildTemplate($select.attr('onCreateLabel'));
+            opts.templateSelection = buildTemplate($select.attr('onCreateLabel'));
+            $select.on('select2:select', function (evt) {
+                if (evt && evt.params && evt.params.data && evt.params.data.id === 'new') {
+                    onCreate($select, evt);
+                }
+            });
+        }
+        $select.select2(opts);
     });
+
+    function buildTemplate(text){
+        return function(item){
+            if(item.element){
+                return item.text;
+            } else {
+                item.id = 'new';
+                return text;
+            }
+        };
+    }
 })();
 
 // http://www.malot.fr/bootstrap-datetimepicker/

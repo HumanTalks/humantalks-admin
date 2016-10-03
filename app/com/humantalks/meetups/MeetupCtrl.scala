@@ -2,7 +2,7 @@ package com.humantalks.meetups
 
 import com.humantalks.common.helpers.CtrlHelper
 import com.humantalks.common.models.User
-import com.humantalks.persons.PersonRepository
+import com.humantalks.persons.{ Person, PersonRepository }
 import com.humantalks.talks.{ Talk, TalkRepository }
 import com.humantalks.venues.VenueRepository
 import com.humantalks.meetups.views.html
@@ -19,6 +19,7 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
   import ctx._
   val meetupForm = Form(Meetup.fields)
   val talkForm = Form(Talk.fields)
+  val personForm = Form(Person.fields)
 
   def find = Action.async { implicit req: Request[AnyContent] =>
     for {
@@ -49,7 +50,7 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
         venueList <- venueListFut
         talkList <- talkListFut
         personList <- personListFut
-      } yield Ok(html.detail(meetup, talkList, personList, venueList, talkForm))
+      } yield Ok(html.detail(meetup, talkList, personList, venueList, talkForm, personForm))
     }
   }
 
