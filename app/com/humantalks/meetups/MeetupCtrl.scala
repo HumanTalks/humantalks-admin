@@ -44,13 +44,13 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
   def get(id: Meetup.Id) = Action.async { implicit req: Request[AnyContent] =>
     CtrlHelper.withItem(meetupRepository)(id) { meetup =>
       val venueListFut = venueRepository.findByIds(meetup.data.venue.toSeq)
-      val talkListFut = talkRepository.findByIds(meetup.data.talks)
-      val personListFut = personRepository.find()
+      val allTalkListFut = talkRepository.find()
+      val allPersonListFut = personRepository.find()
       for {
         venueList <- venueListFut
-        talkList <- talkListFut
-        personList <- personListFut
-      } yield Ok(html.detail(meetup, talkList, personList, venueList, talkForm, personForm))
+        allTalkList <- allTalkListFut
+        allPersonList <- allPersonListFut
+      } yield Ok(html.detail(meetup, allTalkList, allPersonList, venueList, talkForm, personForm))
     }
   }
 
@@ -80,6 +80,28 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
         }
       }
     )
+  }
+
+  def doAddTalkForm(id: Meetup.Id) = Action.async { implicit req: Request[AnyContent] =>
+    req.body.asFormUrlEncoded.get("talkId").headOption.flatMap(p => Talk.Id.from(p).right.toOption).map { talkId =>
+      meetupRepository.addTalk(id, talkId).map { _ =>
+        Redirect(routes.MeetupCtrl.get(id))
+      }
+    }.getOrElse {
+      Future(Redirect(routes.MeetupCtrl.get(id))) // TODO : add flashing error message
+    }
+  }
+
+  def doAddTalk(id: Meetup.Id, talkId: Talk.Id) = Action.async { implicit req: Request[AnyContent] =>
+    meetupRepository.addTalk(id, talkId).map { _ =>
+      Redirect(routes.MeetupCtrl.get(id))
+    }
+  }
+
+  def doRemoveTalk(id: Meetup.Id, talkId: Talk.Id) = Action.async { implicit req: Request[AnyContent] =>
+    meetupRepository.removeTalk(id, talkId).map { _ =>
+      Redirect(routes.MeetupCtrl.get(id))
+    }
   }
 
   def publish(id: Meetup.Id) = Action.async { implicit req: Request[AnyContent] =>

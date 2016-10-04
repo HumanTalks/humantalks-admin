@@ -3,6 +3,11 @@ img.media-object {
   max-height: 80px;
 }
 
+.btn-clear {
+  background: transparent;
+  border: transparent;
+}
+
 /* allow multiple modals (http://www.bootply.com/86973) */
 .modal:nth-of-type(even) {
   z-index: 1042 !important;

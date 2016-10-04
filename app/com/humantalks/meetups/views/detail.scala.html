@@ -5,7 +5,7 @@
 @import com.humantalks.common.views.html.partials._
 @import com.humantalks.meetups.routes
 @import global.views.html.format._
-@(meetup: Meetup, talkList: List[Talk], personList: List[Person], venueList: List[Venue], talkForm: Form[Talk.Data], personForm: Form[Person.Data])(implicit messagesApi: MessagesApi)
+@(meetup: Meetup, allTalkList: List[Talk], allPersonList: List[Person], venueList: List[Venue], talkForm: Form[Talk.Data], personForm: Form[Person.Data])(implicit messagesApi: MessagesApi)
 @main("Home") {
     @header("meetup")
 
@@ -23,19 +23,43 @@
         @if(meetup.data.talks.nonEmpty) {
             <h3>Talks</h3>
             <ol>
-            @meetup.data.talks.flatMap(id => talkList.find(_.id == id)).map { talk =>
+            @meetup.data.talks.flatMap(id => allTalkList.find(_.id == id)).map { talk =>
                 <li>
+                    @helper.form(action=routes.MeetupCtrl.doRemoveTalk(meetup.id, talk.id), 'class->"inline") { <button type="submit" class="btn btn-clear"><i class="glyphicon glyphicon-trash"></i></button> }
                     <a href="@com.humantalks.talks.routes.TalkCtrl.get(talk.id)">@talk.data.title</a>
-                    par @talk.data.speakers.flatMap(id => personList.find(_.id == id)).map { speaker => <a href="@com.humantalks.persons.routes.PersonCtrl.get(speaker.id)">@speaker.data.name</a> }
+                    par @talk.data.speakers.flatMap(id => allPersonList.find(_.id == id)).map { speaker => <a href="@com.humantalks.persons.routes.PersonCtrl.get(speaker.id)">@speaker.data.name</a> }
                 </li>
             }
             </ol>
         }
         @meetup.data.roti.map{r => <p><img src="@r"></p>}
-        <button class="btn btn-default btn-lg" data-toggle="modal" data-target="#create-talk-modal">Ajouter un talk (TODO: modal avec select2 et/ou form)</button><br>
-        <a href="@routes.MeetupCtrl.publish(meetup.id)" class="btn btn-default btn-lg">Publier</a>
+
+        @helper.form(action=routes.MeetupCtrl.doAddTalkForm(meetup.id), 'class->"form-inline") {
+            <div class="row">
+                <div class="col-md-8">
+                    <select class="form-control select2" id="talkId" name="talkId" placeholder="Sélectionner un talk">
+                        <option></option>
+                        @allTalkList.filter(t => !meetup.data.talks.contains(t.id)).map { talk =>
+                            <option value="@talk.id">@talk.data.title @talk.data.speakers.flatMap(id => allPersonList.find(_.id == id)).map(_.data.name).mkString(" (", ", ", ")")</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-default">Ajouter</button>
+                </div>
+            </div>
+        }
+
+        <br>
+        <button class="btn btn-default btn-lg" data-toggle="modal" data-target="#create-talk-modal">Créer un talk</button>
+        <a href="@routes.MeetupCtrl.publish(meetup.id)" class="btn btn-default btn-lg">Publier meetup</a>
+
+        <h3>Talks jamais planifiés</h3>
+        <ul>
+            <li>TODO</li>
+        </ul>
     </div>
 
-    @com.humantalks.talks.views.html.partials.modalForm(talkForm, personList, Some(routes.MeetupCtrl.doCreateTalk(meetup.id)))
-    @com.humantalks.persons.views.html.partials.modalForm(personForm)
+    @com.humantalks.talks.views.html.partials.createModal(talkForm, allPersonList, Some(routes.MeetupCtrl.doCreateTalk(meetup.id)))
+    @com.humantalks.persons.views.html.partials.createModal(personForm)
 }

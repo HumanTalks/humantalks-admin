@@ -21,6 +21,9 @@ case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   private val defaultSort = Json.obj("data.date" -> -1)
   val name = collection.name
 
+  /*def allIds(): Future[List[Meetup.Id]] =
+    collection.jsonCollection().flatMap(_.find(Json.obj(), Json.obj("id" -> 1)).cursor[Meetup.Id](ReadPreference.primary).collect[List]())*/
+
   def find(filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[List[Meetup]] =
     collection.find(filter, sort)
 
@@ -52,6 +55,9 @@ case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
 
   def addTalk(id: Meetup.Id, talkId: Talk.Id): Future[WriteResult] =
     collection.update(Json.obj("id" -> id), Json.obj("$addToSet" -> Json.obj("data.talks" -> talkId)))
+
+  def removeTalk(id: Meetup.Id, talkId: Talk.Id): Future[WriteResult] =
+    collection.update(Json.obj("id" -> id), Json.obj("$pull" -> Json.obj("data.talks" -> talkId)))
 
   def setPublished(id: Meetup.Id): Future[WriteResult] =
     partialUpdate(id, Json.obj("published" -> true))

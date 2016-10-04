@@ -2,66 +2,69 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /                                       com.humantalks.common.controllers.Application.index
+GET     /                                                   com.humantalks.common.controllers.Application.index
 
-GET     /venues                                 com.humantalks.venues.VenueCtrl.find
-GET     /venues/create                          com.humantalks.venues.VenueCtrl.create
-POST    /venues/create                          com.humantalks.venues.VenueCtrl.doCreate
-GET     /venues/$id<.{36}>                      com.humantalks.venues.VenueCtrl.get(id: Venue.Id)
-GET     /venues/$id<.{36}>/edit                 com.humantalks.venues.VenueCtrl.update(id: Venue.Id)
-POST    /venues/$id<.{36}>/edit                 com.humantalks.venues.VenueCtrl.doUpdate(id: Venue.Id)
+GET     /venues                                             com.humantalks.venues.VenueCtrl.find
+GET     /venues/create                                      com.humantalks.venues.VenueCtrl.create
+POST    /venues/create                                      com.humantalks.venues.VenueCtrl.doCreate
+GET     /venues/$id<.{36}>                                  com.humantalks.venues.VenueCtrl.get(id: Venue.Id)
+GET     /venues/$id<.{36}>/edit                             com.humantalks.venues.VenueCtrl.update(id: Venue.Id)
+POST    /venues/$id<.{36}>/edit                             com.humantalks.venues.VenueCtrl.doUpdate(id: Venue.Id)
 
-GET     /persons                                com.humantalks.persons.PersonCtrl.find
-GET     /persons/create                         com.humantalks.persons.PersonCtrl.create
-POST    /persons/create                         com.humantalks.persons.PersonCtrl.doCreate
-GET     /persons/$id<.{36}>                     com.humantalks.persons.PersonCtrl.get(id: Person.Id)
-GET     /persons/$id<.{36}>/edit                com.humantalks.persons.PersonCtrl.update(id: Person.Id)
-POST    /persons/$id<.{36}>/edit                com.humantalks.persons.PersonCtrl.doUpdate(id: Person.Id)
+GET     /persons                                            com.humantalks.persons.PersonCtrl.find
+GET     /persons/create                                     com.humantalks.persons.PersonCtrl.create
+POST    /persons/create                                     com.humantalks.persons.PersonCtrl.doCreate
+GET     /persons/$id<.{36}>                                 com.humantalks.persons.PersonCtrl.get(id: Person.Id)
+GET     /persons/$id<.{36}>/edit                            com.humantalks.persons.PersonCtrl.update(id: Person.Id)
+POST    /persons/$id<.{36}>/edit                            com.humantalks.persons.PersonCtrl.doUpdate(id: Person.Id)
 
-GET     /talks                                  com.humantalks.talks.TalkCtrl.find
-GET     /talks/create                           com.humantalks.talks.TalkCtrl.create
-POST    /talks/create                           com.humantalks.talks.TalkCtrl.doCreate
-GET     /talks/$id<.{36}>                       com.humantalks.talks.TalkCtrl.get(id: Talk.Id)
-GET     /talks/$id<.{36}>/edit                  com.humantalks.talks.TalkCtrl.update(id: Talk.Id)
-POST    /talks/$id<.{36}>/edit                  com.humantalks.talks.TalkCtrl.doUpdate(id: Talk.Id)
+GET     /talks                                              com.humantalks.talks.TalkCtrl.find
+GET     /talks/create                                       com.humantalks.talks.TalkCtrl.create
+POST    /talks/create                                       com.humantalks.talks.TalkCtrl.doCreate
+GET     /talks/$id<.{36}>                                   com.humantalks.talks.TalkCtrl.get(id: Talk.Id)
+GET     /talks/$id<.{36}>/edit                              com.humantalks.talks.TalkCtrl.update(id: Talk.Id)
+POST    /talks/$id<.{36}>/edit                              com.humantalks.talks.TalkCtrl.doUpdate(id: Talk.Id)
 
-GET     /meetups                                com.humantalks.meetups.MeetupCtrl.find
-GET     /meetups/create                         com.humantalks.meetups.MeetupCtrl.create
-POST    /meetups/create                         com.humantalks.meetups.MeetupCtrl.doCreate
-GET     /meetups/$id<.{36}>                     com.humantalks.meetups.MeetupCtrl.get(id: Meetup.Id)
-GET     /meetups/$id<.{36}>/edit                com.humantalks.meetups.MeetupCtrl.update(id: Meetup.Id)
-POST    /meetups/$id<.{36}>/edit                com.humantalks.meetups.MeetupCtrl.doUpdate(id: Meetup.Id)
-GET     /meetups/$id<.{36}>/publish             com.humantalks.meetups.MeetupCtrl.publish(id: Meetup.Id)
-POST    /meetups/$id<.{36}>/publish             com.humantalks.meetups.MeetupCtrl.doPublish(id: Meetup.Id)
-POST    /meetups/$id<.{36}>/talks/create        com.humantalks.meetups.MeetupCtrl.doCreateTalk(id: Meetup.Id)
+GET     /meetups                                            com.humantalks.meetups.MeetupCtrl.find
+GET     /meetups/create                                     com.humantalks.meetups.MeetupCtrl.create
+POST    /meetups/create                                     com.humantalks.meetups.MeetupCtrl.doCreate
+GET     /meetups/$id<.{36}>                                 com.humantalks.meetups.MeetupCtrl.get(id: Meetup.Id)
+GET     /meetups/$id<.{36}>/edit                            com.humantalks.meetups.MeetupCtrl.update(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/edit                            com.humantalks.meetups.MeetupCtrl.doUpdate(id: Meetup.Id)
+GET     /meetups/$id<.{36}>/publish                         com.humantalks.meetups.MeetupCtrl.publish(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/publish                         com.humantalks.meetups.MeetupCtrl.doPublish(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/talks                           com.humantalks.meetups.MeetupCtrl.doCreateTalk(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/talks/add                       com.humantalks.meetups.MeetupCtrl.doAddTalkForm(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/add        com.humantalks.meetups.MeetupCtrl.doAddTalk(id: Meetup.Id, talkId: Talk.Id)
+POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/delete     com.humantalks.meetups.MeetupCtrl.doRemoveTalk(id: Meetup.Id, talkId: Talk.Id)
 
-GET     /api/venues                             com.humantalks.venues.VenueApi.find
-POST    /api/venues                             com.humantalks.venues.VenueApi.create
-GET     /api/venues/$id<.{36}>                  com.humantalks.venues.VenueApi.get(id: Venue.Id)
-PUT     /api/venues/$id<.{36}>                  com.humantalks.venues.VenueApi.update(id: Venue.Id)
-DELETE  /api/venues/$id<.{36}>                  com.humantalks.venues.VenueApi.delete(id: Venue.Id)
+GET     /api/venues                                         com.humantalks.venues.VenueApi.find
+POST    /api/venues                                         com.humantalks.venues.VenueApi.create
+GET     /api/venues/$id<.{36}>                              com.humantalks.venues.VenueApi.get(id: Venue.Id)
+PUT     /api/venues/$id<.{36}>                              com.humantalks.venues.VenueApi.update(id: Venue.Id)
+DELETE  /api/venues/$id<.{36}>                              com.humantalks.venues.VenueApi.delete(id: Venue.Id)
 
-GET     /api/persons                            com.humantalks.persons.PersonApi.find
-POST    /api/persons                            com.humantalks.persons.PersonApi.create
-GET     /api/persons/$id<.{36}>                 com.humantalks.persons.PersonApi.get(id: Person.Id)
-PUT     /api/persons/$id<.{36}>                 com.humantalks.persons.PersonApi.update(id: Person.Id)
-DELETE  /api/persons/$id<.{36}>                 com.humantalks.persons.PersonApi.delete(id: Person.Id)
+GET     /api/persons                                        com.humantalks.persons.PersonApi.find
+POST    /api/persons                                        com.humantalks.persons.PersonApi.create
+GET     /api/persons/$id<.{36}>                             com.humantalks.persons.PersonApi.get(id: Person.Id)
+PUT     /api/persons/$id<.{36}>                             com.humantalks.persons.PersonApi.update(id: Person.Id)
+DELETE  /api/persons/$id<.{36}>                             com.humantalks.persons.PersonApi.delete(id: Person.Id)
 
-GET     /api/talks                              com.humantalks.talks.TalkApi.find
-POST    /api/talks                              com.humantalks.talks.TalkApi.create
-GET     /api/talks/$id<.{36}>                   com.humantalks.talks.TalkApi.get(id: Talk.Id)
-PUT     /api/talks/$id<.{36}>                   com.humantalks.talks.TalkApi.update(id: Talk.Id)
-DELETE  /api/talks/$id<.{36}>                   com.humantalks.talks.TalkApi.delete(id: Talk.Id)
+GET     /api/talks                                          com.humantalks.talks.TalkApi.find
+POST    /api/talks                                          com.humantalks.talks.TalkApi.create
+GET     /api/talks/$id<.{36}>                               com.humantalks.talks.TalkApi.get(id: Talk.Id)
+PUT     /api/talks/$id<.{36}>                               com.humantalks.talks.TalkApi.update(id: Talk.Id)
+DELETE  /api/talks/$id<.{36}>                               com.humantalks.talks.TalkApi.delete(id: Talk.Id)
 
-GET     /api/meetups                            com.humantalks.meetups.MeetupApi.find
-POST    /api/meetups                            com.humantalks.meetups.MeetupApi.create
-GET     /api/meetups/$id<.{36}>                 com.humantalks.meetups.MeetupApi.get(id: Meetup.Id)
-PUT     /api/meetups/$id<.{36}>                 com.humantalks.meetups.MeetupApi.update(id: Meetup.Id)
-DELETE  /api/meetups/$id<.{36}>                 com.humantalks.meetups.MeetupApi.delete(id: Meetup.Id)
+GET     /api/meetups                                        com.humantalks.meetups.MeetupApi.find
+POST    /api/meetups                                        com.humantalks.meetups.MeetupApi.create
+GET     /api/meetups/$id<.{36}>                             com.humantalks.meetups.MeetupApi.get(id: Meetup.Id)
+PUT     /api/meetups/$id<.{36}>                             com.humantalks.meetups.MeetupApi.update(id: Meetup.Id)
+DELETE  /api/meetups/$id<.{36}>                             com.humantalks.meetups.MeetupApi.delete(id: Meetup.Id)
 
-GET     /api/tools/scrapers/twitter/profil      com.humantalks.tools.scrapers.TwitterScraper.profil(account: String)
+GET     /api/tools/scrapers/twitter/profil                  com.humantalks.tools.scrapers.TwitterScraper.profil(account: String)
 
-GET     /status                                 global.controllers.Application.status
+GET     /status                                             global.controllers.Application.status
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file                           controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/*file                                       controllers.Assets.versioned(path="/public", file: Asset)
