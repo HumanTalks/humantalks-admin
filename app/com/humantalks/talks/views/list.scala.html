@@ -13,7 +13,7 @@
             <div class="media card">
                 <div class="media-body">
                     <h4 class="media-heading"><a href="@routes.TalkCtrl.get(talk.id)">@talk.data.title</a></h4>
-                    <p>@multiline(talk.data.description)</p>
+                    @talk.data.description.map{d => <p>@multiline(d)</p>}
                     <p>par @talk.data.speakers.flatMap(id => personList.find(_.id == id)).map(_.data.name).mkString(", ")</p>
                 </div>
             </div>

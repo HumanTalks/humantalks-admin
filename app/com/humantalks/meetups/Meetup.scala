@@ -58,7 +58,7 @@ object Meetup {
         venue.data.logo.map(logo => image(logo) + br + br).getOrElse("")
     def talkToMarkdown(talk: Talk, personList: List[Person]): String =
       "- " + bold(talk.data.title) + talk.data.speakers.flatMap(id => personList.find(_.id == id)).map(personToMarkdown).mkString(" par ", ", ", "") + br + br +
-        talk.data.description + br + br
+        talk.data.description.map(_ + br + br).getOrElse("")
     def personToMarkdown(person: Person): String =
       bold(person.data.name) + person.data.twitter.map(twitter => s" (" + link("@" + twitter, "https://twitter.com/" + twitter) + ")").getOrElse("")
 

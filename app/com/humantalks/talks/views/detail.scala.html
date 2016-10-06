@@ -13,7 +13,7 @@
             <a href="@routes.TalkCtrl.update(talk.id)" class="pull-right"><i class="glyphicon glyphicon-pencil"></i></a>
             @talk.data.title
         </h1>
-        <p>@multiline(talk.data.description)</p>
+        @talk.data.description.map{d => <p>@multiline(d)</p>}
         <p>par @talk.data.speakers.flatMap(id => personList.find(_.id == id)).map { speaker => <a href="@com.humantalks.persons.routes.PersonCtrl.get(speaker.id)">@speaker.data.name</a> }</p>
         @talk.data.slides.map{s => <p>Slides: @s</p>}
         @talk.data.video.map{v => <p>Vidéo: @v</p>}

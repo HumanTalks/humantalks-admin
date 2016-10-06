@@ -20,14 +20,14 @@ object Talk {
 
   case class Data(
       title: String,
-      description: String,
+      description: Option[String],
       speakers: List[Person.Id],
       slides: Option[String],
       video: Option[String]
   ) {
     def trim: Data = this.copy(
       title = this.title.trim,
-      description = this.description.trim,
+      description = this.description.map(_.trim),
       slides = this.slides.map(_.trim),
       video = this.video.map(_.trim)
     )
@@ -37,7 +37,7 @@ object Talk {
   implicit val format = Json.format[Talk]
   val fields = mapping(
     "title" -> nonEmptyText,
-    "description" -> nonEmptyText,
+    "description" -> optional(text),
     "speakers" -> list(of[Person.Id]),
     "slides" -> optional(text),
     "video" -> optional(text)
