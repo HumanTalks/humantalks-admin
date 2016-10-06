@@ -10,3 +10,6 @@
 @fieldHorizontal(meetupForm("talks"), 'label -> "Talks") { field => @inputSelectMulti2(field, talkList.map(t => (t.id.toString, t.data.title+t.data.speakers.flatMap(id => personList.find(_.id == id)).map(_.data.name).mkString(" (", ", ", ")"))), 'placeholder -> "Sélectionner les talks", 'onCreate -> "createTalkModal", 'onCreateLabel -> "Nouveau talk") }
 @fieldHorizontal(meetupForm("description"), 'label -> "Description") { field => @inputTextarea(field, 'rows -> "5", 'placeholder -> "ex: ...") }
 @fieldHorizontal(meetupForm("roti"), 'label -> "Roti") { field => @inputText(field, 'placeholder -> "ex: https://image.freepik.com/free-icon/male-user-shadow_318-34042.png") }
+
+@* @com.humantalks.talks.views.html.partials.createModal(talkForm, allPersonList, Some(routes.MeetupCtrl.doCreateTalk(meetup.id))) *@
+@* @com.humantalks.persons.views.html.partials.createModal(personForm) *@

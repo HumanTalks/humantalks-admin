@@ -21,33 +21,35 @@ var Utils = (function(){
 })();
 
 // https://select2.github.io/
-function createTalkModal($select, evt){
-    console.log('createTalkModal');
-}
-var createPersonModal = (function(){
-    var $modal = $('#create-person-modal');
+function buildSelect2CreateModal(modalSelector: string, mainInputName: string, createUrl: string, getLabel: (any) => string){
+    var $modal = $(modalSelector);
     $modal.find('[type=submit]').on('click', function(e){
-        e.preventDefault();
-        var person = readForm($modal.find('form'));
-        apiCall(person).then(function(created){
-            addToSelect($modal.data('$select'), created);
-            closeModal($modal);
-        }, function(err){
-            console.log('err', err);
-            alert('ERROR '+err.status+' '+err.statusText+' :\n'+JSON.stringify(err.responseJSON));
-        });
+        if($modal.data('$select')){
+            e.preventDefault();
+            var model = readForm($modal.find('form'));
+            apiCall(model).then(function(created){
+                addToSelect($modal.data('$select'), created);
+                closeModal($modal);
+                $modal.removeData('$select');
+            }, function(err){
+                console.log('err', err);
+                alert('ERROR '+err.status+' '+err.statusText+' :\n'+JSON.stringify(err.responseJSON));
+            });
+        }
     });
 
-    // TODO : should open multiple bootstrap modals (meetup -> talk -> person)
     return function($select, evt){
-        console.log('createPersonModal');
-        $modal.data('$select', $select);
-        openModal($modal, evt.params.data.text);
+        if($modal.length > 0){
+            $modal.data('$select', $select);
+            openModal($modal, evt.params.data.text);
+        } else {
+            alert('Unable to find modal element :(');
+        }
     };
 
     function openModal(modal, text){
         cleanForm(modal);
-        modal.find('input[name=name]').val(text);
+        modal.find('input[name='+mainInputName+']').val(text);
         modal.modal('show');
     }
     function closeModal(modal){
@@ -60,30 +62,33 @@ var createPersonModal = (function(){
         });
     }
     function readForm($form){
-        var person = {};
+        var model = {};
         $form.find('input').each(function(){
             var value = $(this).attr('type') === 'checkbox' ? $(this).prop('checked') : $(this).val();
             if(value !== ''){
-                Utils.setSafe(person, $(this).attr('name'), value);
+                Utils.setSafe(model, $(this).attr('name'), value);
             }
         });
-        return person;
+        return model;
     }
-    function apiCall(person){
+    function apiCall(model){
         return $.ajax({
             type: 'POST',
-            url: '/api/persons',
-            data: JSON.stringify(person),
+            url: createUrl,
+            data: JSON.stringify(model),
             contentType: 'application/json'
         }).then(function(res){
             return res.data;
         });
     }
-    function addToSelect(select, person){
-        select.append('<option value="'+person.id+'" selected>'+person.data.name+'</option>');
+    function addToSelect(select, model){
+        var template = '<option value="'+model.id+'" selected>'+getLabel(model)+'</option>';
+        select.append(template);
         select.trigger('change');
     }
-})();
+}
+var createTalkModal = buildSelect2CreateModal('#create-talk-modal', 'title', '/api/talks', talk => talk.data.title);
+var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', '/api/persons', person => person.data.name);
 (function(){
     $('.select2').each(function(){
         var $select = $(this);
