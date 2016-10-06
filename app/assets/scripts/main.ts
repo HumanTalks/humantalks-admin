@@ -22,28 +22,24 @@ var Utils = (function(){
 
 // https://select2.github.io/
 function buildSelect2CreateModal(modalSelector: string, mainInputName: string, createUrl: string, getLabel: (any) => string){
-    var $modal = $(modalSelector);
-    $modal.find('[type=submit]').on('click', function(e){
-        if($modal.data('$select')){
-            e.preventDefault();
-            var model = readForm($modal.find('form'));
-            apiCall(model).then(function(created){
-                addToSelect($modal.data('$select'), created);
-                closeModal($modal);
-                $modal.removeData('$select');
-            }, function(err){
-                console.log('err', err);
-                alert('ERROR '+err.status+' '+err.statusText+' :\n'+JSON.stringify(err.responseJSON));
-            });
-        }
-    });
-
     return function($select, evt){
+        var $modal = $(modalSelector);
         if($modal.length > 0){
-            $modal.data('$select', $select);
+            var $form = $modal.find('form');
             openModal($modal, evt.params.data.text);
+            $form.off('submit');
+            $form.one('submit', function(e){
+                e.preventDefault();
+                var model = readForm($form);
+                apiCall(model).then(function(created){
+                    addToSelect($select, created);
+                    closeModal($modal);
+                }, function(err){
+                    alert('ERROR '+err.status+' '+err.statusText+' :\n'+JSON.stringify(err.responseJSON));
+                });
+            });
         } else {
-            alert('Unable to find modal element :(');
+            alert('Unable to find modal element :('); // forgot to add modal in html ?
         }
     };
 
@@ -62,11 +58,12 @@ function buildSelect2CreateModal(modalSelector: string, mainInputName: string, c
         });
     }
     function readForm($form){
+        if($form.length === 0){ alert('Unable to find form element :('); } // no form in modal ? nested forms (invalid) ?
         var model = {};
-        $form.find('input').each(function(){
+        $form.find('input').add($form.find('select')).each(function(){
             var value = $(this).attr('type') === 'checkbox' ? $(this).prop('checked') : $(this).val();
             if(value !== ''){
-                Utils.setSafe(model, $(this).attr('name'), value);
+                Utils.setSafe(model, $(this).attr('name').replace('[]', ''), value);
             }
         });
         return model;

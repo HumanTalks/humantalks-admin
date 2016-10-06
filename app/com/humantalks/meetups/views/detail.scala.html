@@ -5,7 +5,7 @@
 @import com.humantalks.common.views.html.partials._
 @import com.humantalks.meetups.routes
 @import global.views.html.format._
-@(meetup: Meetup, allTalkList: List[Talk], allPersonList: List[Person], venueList: List[Venue], talkForm: Form[Talk.Data], personForm: Form[Person.Data])(implicit messagesApi: MessagesApi)
+@(meetup: Meetup, talkForm: Form[Talk.Data], personForm: Form[Person.Data], allTalks: List[Talk], allPersons: List[Person], venueList: List[Venue])(implicit messagesApi: MessagesApi)
 @main("Home") {
     @header("meetup")
 
@@ -23,11 +23,11 @@
         @if(meetup.data.talks.nonEmpty) {
             <h3>Talks</h3>
             <ol>
-            @meetup.data.talks.flatMap(id => allTalkList.find(_.id == id)).map { talk =>
+            @meetup.data.talks.flatMap(id => allTalks.find(_.id == id)).map { talk =>
                 <li>
                     @helper.form(action=routes.MeetupCtrl.doRemoveTalk(meetup.id, talk.id), 'class->"inline") { <button type="submit" class="btn btn-clear"><i class="glyphicon glyphicon-trash"></i></button> }
                     <a href="@com.humantalks.talks.routes.TalkCtrl.get(talk.id)">@talk.data.title</a>
-                    par @talk.data.speakers.flatMap(id => allPersonList.find(_.id == id)).map { speaker => <a href="@com.humantalks.persons.routes.PersonCtrl.get(speaker.id)">@speaker.data.name</a> }
+                    par @talk.data.speakers.flatMap(id => allPersons.find(_.id == id)).map { speaker => <a href="@com.humantalks.persons.routes.PersonCtrl.get(speaker.id)">@speaker.data.name</a> }
                 </li>
             }
             </ol>
@@ -39,8 +39,8 @@
                 <div class="col-md-8">
                     <select class="form-control select2" id="talkId" name="talkId" placeholder="Sélectionner un talk">
                         <option></option>
-                        @allTalkList.filter(t => !meetup.data.talks.contains(t.id)).map { talk =>
-                            <option value="@talk.id">@talk.data.title @talk.data.speakers.flatMap(id => allPersonList.find(_.id == id)).map(_.data.name).mkString(" (", ", ", ")")</option>
+                        @allTalks.filter(t => !meetup.data.talks.contains(t.id)).map { talk =>
+                            <option value="@talk.id">@talk.data.title @talk.data.speakers.flatMap(id => allPersons.find(_.id == id)).map(_.data.name).mkString(" (", ", ", ")")</option>
                         }
                     </select>
                 </div>
@@ -60,6 +60,6 @@
         </ul>
     </div>
 
-    @com.humantalks.talks.views.html.partials.createModal(talkForm, allPersonList, Some(routes.MeetupCtrl.doCreateTalk(meetup.id)))
+    @com.humantalks.talks.views.html.partials.createModal(talkForm, allPersons, Some(routes.MeetupCtrl.doCreateTalk(meetup.id)))
     @com.humantalks.persons.views.html.partials.createModal(personForm)
 }

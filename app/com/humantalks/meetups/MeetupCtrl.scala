@@ -44,13 +44,13 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
   def get(id: Meetup.Id) = Action.async { implicit req: Request[AnyContent] =>
     CtrlHelper.withItem(meetupRepository)(id) { meetup =>
       val venueListFut = venueRepository.findByIds(meetup.data.venue.toSeq)
-      val allTalkListFut = talkRepository.find()
-      val allPersonListFut = personRepository.find()
+      val allTalksFut = talkRepository.find()
+      val allPersonsFut = personRepository.find()
       for {
         venueList <- venueListFut
-        allTalkList <- allTalkListFut
-        allPersonList <- allPersonListFut
-      } yield Ok(html.detail(meetup, allTalkList, allPersonList, venueList, talkForm, personForm))
+        allTalks <- allTalksFut
+        allPersons <- allPersonsFut
+      } yield Ok(html.detail(meetup, talkForm, personForm, allTalks, allPersons, venueList))
     }
   }
 
@@ -123,12 +123,13 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
   }
 
   private def formView(status: Status, meetupForm: Form[Meetup.Data], meetupOpt: Option[Meetup]): Future[Result] = {
-    val talkListFut = talkRepository.find()
-    val venueListFut = venueRepository.find()
+    val allTalksFut = talkRepository.find()
+    val allPersonsFut = personRepository.find()
+    val allVenuesFut = venueRepository.find()
     for {
-      talkList <- talkListFut
-      personList <- personRepository.findByIds(talkList.flatMap(_.data.speakers))
-      venueList <- venueListFut
-    } yield status(html.form(meetupForm, meetupOpt, talkList, personList, venueList))
+      allTalks <- allTalksFut
+      allPersons <- allPersonsFut
+      allVenues <- allVenuesFut
+    } yield status(html.form(meetupForm, talkForm, personForm, meetupOpt, allTalks, allPersons, allVenues))
   }
 }
