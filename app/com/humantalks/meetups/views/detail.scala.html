@@ -32,7 +32,7 @@
             }
             </ol>
         }
-        @meetup.data.roti.map{r => <p><img src="@r"></p>}
+        @meetup.data.roti.map{r => <p><img src="@r" style="width: 100%;"></p>}
 
         @helper.form(action=routes.MeetupCtrl.doAddTalkForm(meetup.id), 'class->"form-inline") {
             <div class="row">

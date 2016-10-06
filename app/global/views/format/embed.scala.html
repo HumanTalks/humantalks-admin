@@ -1,0 +1,2 @@
+@(url: String)
+@global.services.EmbedSrv.embed(url).map{d => @Html(d.embedCode)}.getOrElse{<a href="@url" target="_blank">@url</a>}
