@@ -10,11 +10,6 @@
         <h1>Venue List</h1>
         @venueList.map { venue =>
             <div class="media card">
-                @venue.data.logo.map { logo =>
-                    <div class="media-left">
-                        <a href="@routes.VenueCtrl.get(venue.id)"><img class="media-object" src="@logo" alt="Logo"></a>
-                    </div>
-                }
                 <div class="media-body">
                     <h4 class="media-heading"><a href="@routes.VenueCtrl.get(venue.id)">@venue.data.name</a></h4>
                     @venue.data.location.map{loc => <p>@loc.formatted</p>}
@@ -22,6 +17,11 @@
                     @venue.data.contact.map{contact => @contact.name}
                     @venue.data.twitter.map{account => <a href="https://twitter.com/@account" target="_blank">@@@account</a>}
                 </div>
+                @venue.data.logo.map { logo =>
+                    <div class="media-right">
+                        <a href="@routes.VenueCtrl.get(venue.id)"><img class="media-object" src="@logo" alt="Logo"></a>
+                    </div>
+                }
             </div>
         }
     </div>
