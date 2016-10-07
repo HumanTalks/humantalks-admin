@@ -28,7 +28,8 @@ object Meetup {
       venue: Option[Venue.Id],
       talks: List[Talk.Id],
       description: Option[String],
-      roti: Option[String]
+      roti: Option[String],
+      meetupUrl: Option[String]
   ) {
     def trim: Data = this.copy(
       title = this.title.trim,
@@ -45,7 +46,8 @@ object Meetup {
     "venue" -> optional(of[Venue.Id]),
     "talks" -> list(of[Talk.Id]),
     "description" -> optional(text),
-    "roti" -> optional(text)
+    "roti" -> optional(text),
+    "meetupUrl" -> optional(text)
   )(Meetup.Data.apply)(Meetup.Data.unapply)
 
   def meetupDescription(meetup: Meetup, talkList: List[Talk], personList: List[Person], venueList: List[Venue]): String = {
