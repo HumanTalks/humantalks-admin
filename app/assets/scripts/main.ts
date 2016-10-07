@@ -43,30 +43,34 @@ function buildSelect2CreateModal(modalSelector: string, mainInputName: string, c
         }
     };
 
-    function openModal(modal, text){
-        cleanForm(modal);
-        modal.find('input[name='+mainInputName+']').val(text);
-        modal.modal('show');
+    function openModal($modal, text){
+        cleanForm($modal.find('form'));
+        $modal.find('input[name='+mainInputName+']').val(text);
+        $modal.modal('show');
     }
-    function closeModal(modal){
-        modal.modal('hide');
-        cleanForm(modal);
+    function closeModal($modal){
+        $modal.modal('hide');
+        cleanForm($modal.find('form'));
     }
-    function cleanForm(form){
-        form.find('input').each(function(){
+    function cleanForm($form){
+        getInputs($form).each(function(){
             $(this).val('').change();
         });
     }
     function readForm($form){
         if($form.length === 0){ alert('Unable to find form element :('); } // no form in modal ? nested forms (invalid) ?
         var model = {};
-        $form.find('input').add($form.find('select')).each(function(){
+        getInputs($form).each(function(){
             var value = $(this).attr('type') === 'checkbox' ? $(this).prop('checked') : $(this).val();
             if(value !== ''){
                 Utils.setSafe(model, $(this).attr('name').replace('[]', ''), value);
             }
         });
         return model;
+    }
+    function getInputs($form) {
+        return $form.find('[name]');
+        //return $form.find('input').add($form.find('textarea')).add($form.find('select'));
     }
     function apiCall(model){
         return $.ajax({
