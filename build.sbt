@@ -4,12 +4,20 @@ version := "1.0-SNAPSHOT"
 
 scalaVersion := "2.11.7"
 
+resolvers ++= Seq(
+  "Atlassian Releases" at "https://maven.atlassian.com/public/"
+)
+
 libraryDependencies ++= Seq(
   jdbc,
   cache,
   ws,
   filters,
   "org.reactivemongo" %% "play2-reactivemongo" % "0.11.14",
+  "com.typesafe.play" %% "play-mailer" % "5.0.0",
+  "com.mohiva" %% "play-silhouette" % "4.0.0",
+  "com.mohiva" %% "play-silhouette-password-bcrypt" % "4.0.0",
+  "com.mohiva" %% "play-silhouette-persistence" % "4.0.0",
   "org.jsoup" % "jsoup" % "1.9.2",
   "org.webjars" % "jquery" % "1.12.4",
   "org.webjars" % "bootstrap" % "3.3.7-1",
@@ -18,7 +26,8 @@ libraryDependencies ++= Seq(
   "org.webjars.npm" % "select2-bootstrap-theme" % "0.1.0-beta.9",
   "org.webjars" % "bootstrap-datetimepicker" % "2.3.8",
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
-  "com.github.simplyscala" %% "scalatest-embedmongo" % "0.2.2" % Test
+  "com.github.simplyscala" %% "scalatest-embedmongo" % "0.2.2" % Test,
+  "com.mohiva" %% "play-silhouette-testkit" % "4.0.0" % Test
 )
 
 play.sbt.routes.RoutesKeys.routesImport ++= Seq(

@@ -4,6 +4,8 @@
 
 GET     /                                                   com.humantalks.common.controllers.Application.index
 
+#GET     /register                                           com.humantalks.auth.AuthCtrl.register
+
 GET     /venues                                             com.humantalks.venues.VenueCtrl.find
 GET     /venues/create                                      com.humantalks.venues.VenueCtrl.create
 POST    /venues/create                                      com.humantalks.venues.VenueCtrl.doCreate

@@ -8,6 +8,7 @@ import com.humantalks.talks.{ TalkDbService, TalkRepository, TalkCtrl, TalkApi }
 import com.humantalks.tools.EmbedCtrl
 import com.humantalks.tools.scrapers.TwitterScraper
 import com.humantalks.venues.{ VenueDbService, VenueRepository, VenueCtrl, VenueApi }
+import com.mohiva.play.silhouette.api.SilhouetteProvider
 import global.Contexts
 import global.infrastructure.Mongo
 import play.api.cache.EhCacheComponents
@@ -55,6 +56,7 @@ class MyComponents(context: ApplicationLoader.Context)
   val router: Router = new Routes(
     httpErrorHandler,
     new com.humantalks.common.controllers.Application(ctx),
+    //new com.humantalks.auth.AuthCtrl(silhouette),
     new VenueCtrl(ctx, meetupRepository, venueDbService),
     new PersonCtrl(ctx, talkRepository, personDbService),
     new TalkCtrl(ctx, meetupRepository, personRepository, talkDbService),

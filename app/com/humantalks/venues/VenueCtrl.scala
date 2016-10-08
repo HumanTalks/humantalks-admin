@@ -2,7 +2,6 @@ package com.humantalks.venues
 
 import com.humantalks.auth.models.User
 import com.humantalks.meetups.MeetupRepository
-import com.humantalks.venues.views.html
 import global.Contexts
 import global.helpers.CtrlHelper
 import play.api.data.Form
@@ -18,7 +17,7 @@ case class VenueCtrl(ctx: Contexts, meetupRepository: MeetupRepository, venueDbS
 
   def find = Action.async { implicit req: Request[AnyContent] =>
     venueDbService.find().map { venueList =>
-      Ok(html.list(venueList))
+      Ok(views.html.list(venueList))
     }
   }
 
@@ -39,7 +38,7 @@ case class VenueCtrl(ctx: Contexts, meetupRepository: MeetupRepository, venueDbS
     CtrlHelper.withItem(venueDbService)(id) { venue =>
       for {
         meetupList <- meetupRepository.findForVenue(id)
-      } yield Ok(html.detail(venue, meetupList))
+      } yield Ok(views.html.detail(venue, meetupList))
     }
   }
 
