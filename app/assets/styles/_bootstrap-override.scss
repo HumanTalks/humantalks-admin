@@ -8,6 +8,12 @@ img.media-object {
   border: transparent;
 }
 
+.modal-body {
+  max-height: 700px;
+  overflow-y: scroll;
+  overflow-x: visible;
+}
+
 /* allow multiple modals (http://www.bootply.com/86973) */
 .modal:nth-of-type(even) {
   z-index: 1042 !important;
