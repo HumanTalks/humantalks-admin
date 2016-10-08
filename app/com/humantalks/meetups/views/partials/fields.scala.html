@@ -6,9 +6,10 @@
 @import global.views.html.form._
 @(meetupForm: Form[Meetup.Data], allTalks: List[Talk], allPersons: List[Person], allVenues: List[Venue])(implicit messagesApi: MessagesApi)
 @fieldHorizontal(meetupForm("title"), 'label -> "Titre") { field => @inputText(field, 'placeholder -> "ex: HumanTalks Paris Juillet 2016", 'autofocus -> "") }
-@fieldHorizontal(meetupForm("date"), 'label -> "Date") { field => @inputDatetime(field, 'placeholder -> "ex: 12/07/2016 19:00") }
-@fieldHorizontal(meetupForm("venue"), 'label -> "Lieu") { field => @inputSelect2(field, allVenues.map(v => (v.id.toString, v.data.name+v.data.location.map(l => " ("+l.formatted+")").getOrElse(""))), 'placeholder -> "Sélectionner un lieu") }
-@fieldHorizontal(meetupForm("talks"), 'label -> "Talks") { field => @inputSelectMulti2(field, allTalks.map(t => (t.id.toString, t.data.title+t.data.speakers.flatMap(id => allPersons.find(_.id == id)).map(_.data.name).mkString(" (", ", ", ")"))), 'placeholder -> "Sélectionner les talks", 'onCreate -> "createTalkModal", 'onCreateLabel -> "Nouveau talk") }
-@fieldHorizontal(meetupForm("description"), 'label -> "Description") { field => @inputTextarea(field, 'rows -> "5", 'placeholder -> "Ce texte sera intéré au début de la description meetup") }
-@fieldHorizontal(meetupForm("roti"), 'label -> "Roti") { field => @inputText(field, 'placeholder -> "ex: https://pbs.twimg.com/media/Ck8GeIOWUAEgKdG.jpg:large") }
 @fieldHorizontal(meetupForm("meetupUrl"), 'label -> "Url Meetup.com") { field => @inputText(field, 'placeholder -> "ex: http://www.meetup.com/fr-FR/HumanTalks-Paris/events/232412051/") }
+@fieldHorizontal(meetupForm("venue"), 'label -> "Lieu") { field => @inputSelect2(field, allVenues.map(v => (v.id.toString, v.data.name+v.data.location.map(l => " ("+l.formatted+")").getOrElse(""))), 'placeholder -> "Sélectionner un lieu") }
+@fieldHorizontal(meetupForm("date"), 'label -> "Date") { field => @inputDatetime(field, 'placeholder -> "ex: 12/07/2016 19:00") }
+@fieldHorizontal(meetupForm("description"), 'label -> "Description") { field => @inputTextarea(field, 'rows -> "5", 'placeholder -> "Ce texte sera intéré au début de la description meetup") }
+    @fieldHorizontal(meetupForm("talks"), 'label -> "Talks") { field => @inputSelectMulti2(field, allTalks.map(t => (t.id.toString, t.data.title+t.data.speakers.flatMap(id => allPersons.find(_.id == id)).map(_.data.name).mkString(" (", ", ", ")"))), 'placeholder -> "Sélectionner les talks", 'onCreate -> "createTalkModal", 'onCreateLabel -> "Nouveau talk") }
+@fieldHorizontal(meetupForm("roti"), 'label -> "Roti") { field => @inputText(field, 'placeholder -> "ex: https://pbs.twimg.com/media/Ck8GeIOWUAEgKdG.jpg:large") }
+
