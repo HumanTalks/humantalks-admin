@@ -18,7 +18,7 @@ case class TalkRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: EmbedS
   import Contexts.dbToEC
   import ctx._
   private val collection = db.getCollection(conf.Repositories.talk)
-  private val defaultSort = Json.obj("name" -> 1)
+  private val defaultSort = Json.obj("data.title" -> 1)
   val name = collection.name
 
   def find(filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[List[Talk]] =

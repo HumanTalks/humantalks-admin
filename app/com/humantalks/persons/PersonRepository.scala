@@ -16,7 +16,7 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   import Contexts.dbToEC
   import ctx._
   private val collection = db.getCollection(conf.Repositories.person)
-  private val defaultSort = Json.obj("name" -> 1)
+  private val defaultSort = Json.obj("data.name" -> 1)
   val name = collection.name
 
   def find(filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[List[Person]] =
