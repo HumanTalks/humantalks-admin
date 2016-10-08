@@ -1,6 +1,6 @@
 package com.humantalks.venues
 
-import com.humantalks.common.models.values.{ Meta, GMapPlace }
+import com.humantalks.common.models.{ GMapPlace, Meta }
 import com.humantalks.common.services.TwitterSrv
 import global.models.{ TypedId, TypedIdHelper }
 import play.api.data.Forms._

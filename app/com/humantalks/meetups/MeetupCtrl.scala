@@ -1,11 +1,11 @@
 package com.humantalks.meetups
 
-import com.humantalks.common.helpers.CtrlHelper
-import com.humantalks.common.models.User
+import com.humantalks.auth.models.User
 import com.humantalks.persons.{ Person, PersonRepository }
 import com.humantalks.talks.{ Talk, TalkRepository }
 import com.humantalks.venues.VenueRepository
 import global.Contexts
+import global.helpers.CtrlHelper
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc._

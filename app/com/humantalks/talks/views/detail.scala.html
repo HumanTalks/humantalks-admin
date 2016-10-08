@@ -14,9 +14,15 @@
             @talk.data.title
         </h1>
         @talk.data.description.map{d => <p>@multiline(d)</p>}
-        <p>par @talk.data.speakers.flatMap(id => personList.find(_.id == id)).map { speaker => <a href="@com.humantalks.persons.routes.PersonCtrl.get(speaker.id)">@speaker.data.name</a> }</p>
-        @talk.data.slides.map{s => <p><b>Slides:</b><br>@embed(s)</p>}
-        @talk.data.video.map{v => <p><b>Vidéo:</b><br>@embed(v)</p>}
+        @if(talk.data.speakers.nonEmpty){
+            <p>par @talk.data.speakers.flatMap(id => personList.find(_.id == id)).map { speaker => <a href="@com.humantalks.persons.routes.PersonCtrl.get(speaker.id)">@speaker.data.name</a> }</p>
+        }
+        @talk.data.slidesEmbedCode.map{c => <p><b>Slides:</b><br>@Html(c)</p>}.getOrElse{
+            @talk.data.slides.map{s => <p><b>Slides:</b><br>@embed(s)</p>}
+        }
+        @talk.data.videoEmbedCode.map{c => <p><b>Vidéo:</b><br>@Html(c)</p>}.getOrElse{
+            @talk.data.video.map{v => <p><b>Vidéo:</b><br>@embed(v)</p>}
+        }
         @if(meetupList.nonEmpty){
             <h3>Meetups</h3>
             <ul>

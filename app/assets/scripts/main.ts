@@ -1,12 +1,9 @@
 declare const $: any;
 declare const google: any;
 
-var Utils = (function(){
-    return {
-        setSafe: setSafe
-    };
-    function setSafe(obj, path, value) {
-        if(typeof path === 'string')                    { return setSafe(obj, path.split('.').filter(function(e){ return !!e; }), value); }
+class Utils {
+    static setSafe(obj: any, path: string | string[], value: any) {
+        if(typeof path === 'string')                    { return Utils.setSafe(obj, path.split('.').filter(function(e){ return !!e; }), value); }
         if(!Array.isArray(path) || path.length === 0)   { return obj; }
         if(path.length === 1){
             obj[path[0]] = value;
@@ -15,10 +12,10 @@ var Utils = (function(){
             var newObj = obj[path[0]] || {};
             obj[path[0]] = newObj;
             var newPath = path.slice(1);
-            return setSafe(newObj, newPath, value);
+            return Utils.setSafe(newObj, newPath, value);
         }
     }
-})();
+}
 
 // https://select2.github.io/
 function buildSelect2CreateModal(modalSelector: string, mainInputName: string, createUrl: string, getLabel: (any) => string){
@@ -152,7 +149,7 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
     $('.input-imageurl').each(function() {
         var $elt = $(this);
         var $input = $elt.find('input[type="text"]');
-        var $preview = $elt.find('img.preview');
+        var $preview = $elt.find('.preview');
         update($input, $preview); // run on page load
         $input.on('change', function(){
             update($input, $preview);
@@ -165,6 +162,34 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
             $preview.attr('src', $input.val());
             $preview.show();
         }
+    }
+})();
+
+// inputEmbed
+(function(){
+    $('.input-embed').each(function() {
+        var $elt = $(this);
+        var $input = $elt.find('input[type="text"]');
+        var $preview = $elt.find('.preview');
+        update($input, $preview); // run on page load
+        $input.on('change', function(){
+            update($input, $preview);
+        });
+    });
+    function update($input, $preview){
+        if($input.val() === ''){
+            $preview.hide();
+        } else {
+            getEmbedCode($input.val()).then(function(code){
+                $preview.html(code);
+            });
+            $preview.show();
+        }
+    }
+    function getEmbedCode(url: string) {
+        return $.get('/api/tools/embed?url='+url).then(function(res){
+            return res.data.embedCode;
+        });
     }
 })();
 
@@ -187,12 +212,14 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
             });
         }
     }
-    function getTwitterAccount(account: String){
+    function getTwitterAccount(account: string){
         return $.get('/api/tools/scrapers/twitter/profil?account='+account).then(function(res){
             return res.data;
         });
     }
 })();
+
+// TODO : emailToImageUrl using gravatar
 
 // GMapPlace picker (https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete?hl=fr)
 var GMapPlacePicker = (function(){

@@ -1,5 +1,7 @@
 package global.models
 
+import java.net.ConnectException
+
 import global.helpers.EnumerationHelper
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{ JsPath, Json }
@@ -29,13 +31,16 @@ case class ApiError(
 object ApiError {
   object Code extends Enumeration {
     type Code = Value
-    val NotFound, Validation, MongoError, MongoWriteError, Unknown = Value
+    val NotFound, Validation, NetworkError, MongoError, MongoWriteError, Unknown = Value
   }
 
+  val emtpy = ApiError(Code.Unknown, "empty")
   def notFound(): ApiError = ApiError(Code.NotFound, "Unable to find requested element")
+  def notFound(message: String): ApiError = ApiError(Code.NotFound, message)
   def from(e: Throwable): ApiError = e match {
+    case e: ConnectException => ApiError(Code.NetworkError, "Can't access network", Some(e.getMessage))
     case e: NodeSetNotReachable => ApiError(Code.MongoError, "Can't access database", Some(e.getMessage.replace("MongoError['", "").replace("']", "")))
-    case _ => ApiError(Code.Unknown, "Unexpected exception", Some(e.getMessage))
+    case _ => ApiError(Code.Unknown, "Unexpected exception: " + e.getClass.getName, Some(e.getMessage))
   }
   def from(res: WriteResult): Option[ApiError] =
     Some(res).filter(!_.ok).map { r => ApiError(Code.MongoWriteError, r.message, r.errmsg) }

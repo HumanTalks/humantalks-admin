@@ -1,9 +1,8 @@
-package com.humantalks.common.helpers
+package global.helpers
 
-import com.humantalks.common.infrastructure.Repository
-import play.api.libs.json.OWrites
-import play.api.mvc.{ AnyContent, Request, Action, Result }
+import global.infrastructure.Repository
 import play.api.mvc.Results.NotFound
+import play.api.mvc.{ Action, AnyContent, Request, Result }
 
 import scala.concurrent.{ ExecutionContext, Future }
 

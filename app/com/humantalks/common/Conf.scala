@@ -1,10 +1,10 @@
 package com.humantalks.common
 
-import com.humantalks.common.infrastructure.Repository
 import com.humantalks.meetups.Meetup
 import com.humantalks.persons.Person
 import com.humantalks.talks.Talk
 import com.humantalks.venues.Venue
+import global.infrastructure.Repository
 import play.api.Configuration
 import play.api.i18n.DefaultLangs
 

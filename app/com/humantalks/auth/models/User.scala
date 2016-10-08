@@ -1,4 +1,4 @@
-package com.humantalks.common.models
+package com.humantalks.auth.models
 
 import global.models.{ TypedId, TypedIdHelper }
 import org.joda.time.DateTime

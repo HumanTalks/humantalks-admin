@@ -1,8 +1,8 @@
-package com.humantalks.common.infrastructure
+package global.infrastructure
 
-import com.humantalks.common.models.User
+import com.humantalks.auth.models.User
 import global.models.Page
-import play.api.libs.json.{ Json, JsObject }
+import play.api.libs.json.{ JsObject, Json }
 import reactivemongo.api.commands.WriteResult
 
 import scala.concurrent.Future
@@ -15,7 +15,6 @@ trait Repository[T, Id, TData] {
   def get(id: Id): Future[Option[T]]
   def create(elt: TData, by: User.Id): Future[(WriteResult, Id)]
   def update(elt: T, data: TData, by: User.Id): Future[WriteResult]
-  def partialUpdate(id: Id, patch: JsObject): Future[WriteResult]
   def delete(id: Id): Future[WriteResult]
 }
 object Repository {

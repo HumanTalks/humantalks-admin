@@ -1,7 +1,7 @@
 package com.humantalks.venues
 
-import com.humantalks.common.helpers.ApiHelper
 import global.Contexts
+import global.helpers.ApiHelper
 import play.api.mvc.Controller
 
 case class VenueApi(ctx: Contexts, venueRepository: VenueRepository) extends Controller {

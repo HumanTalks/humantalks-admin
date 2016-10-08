@@ -1,6 +1,6 @@
 package com.humantalks.talks
 
-import com.humantalks.common.models.values.Meta
+import com.humantalks.common.models.Meta
 import com.humantalks.persons.Person
 import global.models.{ TypedId, TypedIdHelper }
 import play.api.data.Forms._
@@ -23,7 +23,9 @@ object Talk {
       description: Option[String],
       speakers: List[Person.Id],
       slides: Option[String],
-      video: Option[String]
+      slidesEmbedCode: Option[String],
+      video: Option[String],
+      videoEmbedCode: Option[String]
   ) {
     def trim: Data = this.copy(
       title = this.title.trim,
@@ -40,6 +42,8 @@ object Talk {
     "description" -> optional(text),
     "speakers" -> list(of[Person.Id]),
     "slides" -> optional(text),
-    "video" -> optional(text)
+    "slidesEmbedCode" -> ignored(Option.empty[String]),
+    "video" -> optional(text),
+    "videoEmbedCode" -> ignored(Option.empty[String])
   )(Talk.Data.apply)(Talk.Data.unapply)
 }

@@ -1,13 +1,15 @@
 package com.humantalks
 
 import com.humantalks.common.Conf
-import com.humantalks.common.infrastructure.Mongo
+import com.humantalks.common.services.EmbedSrv
 import com.humantalks.meetups.{ MeetupRepository, MeetupCtrl, MeetupApi }
 import com.humantalks.persons.{ PersonRepository, PersonCtrl, PersonApi }
 import com.humantalks.talks.{ TalkRepository, TalkCtrl, TalkApi }
+import com.humantalks.tools.EmbedCtrl
 import com.humantalks.tools.scrapers.TwitterScraper
 import com.humantalks.venues.{ VenueRepository, VenueCtrl, VenueApi }
 import global.Contexts
+import global.infrastructure.Mongo
 import play.api.cache.EhCacheComponents
 import play.api.i18n.I18nComponents
 import play.api.inject.{ NewInstanceInjector, SimpleInjector }
@@ -36,11 +38,12 @@ class MyComponents(context: ApplicationLoader.Context)
     with ReactiveMongoComponents {
   val conf = Conf(configuration)
   val ctx = Contexts(actorSystem)
+  val embedSrv = EmbedSrv(wsClient)
   val reactiveMongoApi: ReactiveMongoApi = new DefaultReactiveMongoApi(configuration, applicationLifecycle)
   val mongo = Mongo(ctx, reactiveMongoApi)
   val personRepository = PersonRepository(conf, ctx, mongo)
   val venueRepository = VenueRepository(conf, ctx, mongo)
-  val talkRepository = TalkRepository(conf, ctx, mongo)
+  val talkRepository = TalkRepository(conf, ctx, mongo, embedSrv)
   val meetupRepository = MeetupRepository(conf, ctx, mongo)
 
   implicit val messagesApiImp = messagesApi
@@ -55,6 +58,7 @@ class MyComponents(context: ApplicationLoader.Context)
     new PersonApi(ctx, personRepository),
     new TalkApi(ctx, talkRepository),
     new MeetupApi(ctx, meetupRepository),
+    new EmbedCtrl(ctx, embedSrv),
     new TwitterScraper(ctx, wsClient),
     new _root_.global.controllers.Application(ctx, mongo),
     new _root_.controllers.Assets(httpErrorHandler)

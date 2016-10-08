@@ -1,10 +1,10 @@
 package com.humantalks.venues
 
-import com.humantalks.common.helpers.CtrlHelper
-import com.humantalks.common.models.User
+import com.humantalks.auth.models.User
 import com.humantalks.meetups.MeetupRepository
 import com.humantalks.venues.views.html
 import global.Contexts
+import global.helpers.CtrlHelper
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc._

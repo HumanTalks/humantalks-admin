@@ -18,7 +18,9 @@
                         @talk.data.video.map{v => <a href="@v" target="_blank" title="vidéo"><span class="fa fa-youtube"></span></a>}
                     </h4>
                     @talk.data.description.map{d => <p>@multiline(d)</p>}
-                    <p>par @talk.data.speakers.flatMap(id => personList.find(_.id == id)).map{s => <a href="@com.humantalks.persons.routes.PersonCtrl.get(s.id)">@s.data.name</a>}</p>
+                    @if(talk.data.speakers.nonEmpty) {
+                        <p>par @talk.data.speakers.flatMap(id => personList.find(_.id == id)).map { s => <a href="@com.humantalks.persons.routes.PersonCtrl.get(s.id)">@s.data.name</a> }</p>
+                    }
                 </div>
             </div>
         }

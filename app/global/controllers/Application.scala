@@ -1,8 +1,8 @@
 package global.controllers
 
-import com.humantalks.common.helpers.ApiHelper
-import com.humantalks.common.infrastructure.Mongo
 import global.Contexts
+import global.helpers.ApiHelper
+import global.infrastructure.Mongo
 import org.joda.time.DateTime
 import play.api.i18n.{ Lang, MessagesApi }
 import play.api.libs.json.Json
@@ -13,26 +13,26 @@ case class Application(ctx: Contexts, db: Mongo)(implicit messageApi: MessagesAp
   import ctx._
 
   def status = Action.async { implicit req: Request[AnyContent] =>
-    val start = new DateTime()
-    for {
-      dbStatus <- db.pingStatus()
-    } yield {
-      ApiHelper.writeResult(Results.Ok, Json.obj(
-        "build" -> Json.obj(
-          "date" -> global.BuildInfo.builtAtString,
-          "timestamp" -> global.BuildInfo.builtAtMillis,
-          "commit" -> global.BuildInfo.gitHash,
-          "version" -> global.BuildInfo.version
-        ),
-        "checks" -> List(Json.obj(
-          "name" -> "database",
-          "test" -> "ping",
-          "status" -> dbStatus.code,
-          "message" -> dbStatus.message
-        )),
-        "metas" -> ApiHelper.metas(start)
-      ))
-    }
+    ApiHelper.resultJson({
+      for {
+        dbStatus <- db.pingStatus()
+      } yield {
+        Right(Json.obj(
+          "build" -> Json.obj(
+            "date" -> global.BuildInfo.builtAtString,
+            "timestamp" -> global.BuildInfo.builtAtMillis,
+            "commit" -> global.BuildInfo.gitHash,
+            "version" -> global.BuildInfo.version
+          ),
+          "checks" -> List(Json.obj(
+            "name" -> "database",
+            "test" -> "ping",
+            "status" -> dbStatus.code,
+            "message" -> dbStatus.message
+          ))
+        ))
+      }
+    }, Results.Ok, Results.InternalServerError)
   }
 
   def changeLang(lang: String) = Action { implicit req: Request[AnyContent] =>

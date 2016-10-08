@@ -1,6 +1,6 @@
-package com.humantalks.common.models.values
+package com.humantalks.common.models
 
-import com.humantalks.common.models.User
+import com.humantalks.auth.models.User
 import org.joda.time.DateTime
 import play.api.libs.json.Json
 

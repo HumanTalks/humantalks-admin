@@ -1,6 +1,6 @@
 package com.humantalks.persons
 
-import com.humantalks.common.models.values.Meta
+import com.humantalks.common.models.Meta
 import com.humantalks.common.services.TwitterSrv
 import global.models.{ TypedId, TypedIdHelper }
 import play.api.data.Forms._

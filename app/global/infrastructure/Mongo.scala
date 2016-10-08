@@ -1,4 +1,4 @@
-package com.humantalks.common.infrastructure
+package global.infrastructure
 
 import global.Contexts
 import global.models.{ Page, Status }

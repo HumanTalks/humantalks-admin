@@ -1,6 +1,6 @@
 package com.humantalks.meetups
 
-import com.humantalks.common.models.values.Meta
+import com.humantalks.common.models.Meta
 import com.humantalks.persons.Person
 import com.humantalks.talks.Talk
 import com.humantalks.venues.Venue

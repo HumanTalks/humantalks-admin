@@ -1,7 +1,7 @@
 package com.humantalks.persons
 
-import com.humantalks.common.helpers.ApiHelper
 import global.Contexts
+import global.helpers.ApiHelper
 import play.api.mvc._
 
 case class PersonApi(ctx: Contexts, personRepository: PersonRepository) extends Controller {

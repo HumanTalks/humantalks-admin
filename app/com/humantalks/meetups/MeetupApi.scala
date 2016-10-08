@@ -1,7 +1,7 @@
 package com.humantalks.meetups
 
-import com.humantalks.common.helpers.ApiHelper
 import global.Contexts
+import global.helpers.ApiHelper
 import play.api.mvc.Controller
 
 case class MeetupApi(ctx: Contexts, meetupRepository: MeetupRepository) extends Controller {

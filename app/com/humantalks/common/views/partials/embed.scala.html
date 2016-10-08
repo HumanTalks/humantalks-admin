@@ -1,0 +1,6 @@
+@import com.humantalks.common.services.EmbedSrv
+@(url: String)
+@EmbedSrv.embed(url) match {
+    case Right(embed) => {@Html(embed.embedCode)}
+    case Left(err) => {<a href="@url" target="_blank" embed-url="@url">@url</a>}
+}

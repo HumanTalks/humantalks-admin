@@ -1,7 +1,7 @@
 package com.humantalks.talks
 
-import com.humantalks.common.helpers.ApiHelper
 import global.Contexts
+import global.helpers.ApiHelper
 import play.api.mvc.Controller
 
 case class TalkApi(ctx: Contexts, talkRepository: TalkRepository) extends Controller {

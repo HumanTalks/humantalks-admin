@@ -1,10 +1,10 @@
 package com.humantalks.persons
 
+import com.humantalks.auth.models.User
 import com.humantalks.common.Conf
-import com.humantalks.common.infrastructure.{ Mongo, Repository }
-import com.humantalks.common.models.User
-import com.humantalks.common.models.values.Meta
+import com.humantalks.common.models.Meta
 import global.Contexts
+import global.infrastructure.{ Mongo, Repository }
 import global.models.Page
 import org.joda.time.DateTime
 import play.api.libs.json.{ JsObject, Json }
@@ -39,8 +39,8 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   def update(elt: Person, data: Person.Data, by: User.Id): Future[WriteResult] =
     collection.fullUpdate(Json.obj("id" -> elt.id), elt.copy(data = data.trim, meta = elt.meta.update(by)))
 
-  def partialUpdate(id: Person.Id, patch: JsObject): Future[WriteResult] =
-    collection.update(Json.obj("id" -> id), Json.obj("$set" -> (patch - "id")))
+  /*def partialUpdate(id: Person.Id, patch: JsObject): Future[WriteResult] =
+    collection.update(Json.obj("id" -> id), Json.obj("$set" -> (patch - "id")))*/
 
   def delete(id: Person.Id): Future[WriteResult] =
     collection.delete(Json.obj("id" -> id))

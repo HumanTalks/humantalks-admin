@@ -62,6 +62,7 @@ GET     /api/meetups/$id<.{36}>                             com.humantalks.meetu
 PUT     /api/meetups/$id<.{36}>                             com.humantalks.meetups.MeetupApi.update(id: Meetup.Id)
 DELETE  /api/meetups/$id<.{36}>                             com.humantalks.meetups.MeetupApi.delete(id: Meetup.Id)
 
+GET     /api/tools/embed                                    com.humantalks.tools.EmbedCtrl.embed(url: String)
 GET     /api/tools/scrapers/twitter/profil                  com.humantalks.tools.scrapers.TwitterScraper.profil(account: String)
 
 GET     /status                                             global.controllers.Application.status

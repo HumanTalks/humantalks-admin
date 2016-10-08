@@ -43,7 +43,7 @@ lazy val root =
         "-Yno-adapted-args", // Do not adapt an argument list (either by inserting () or creating a tuple) to match the receiver.
         "-Ywarn-dead-code", // Warn when dead code is identified. (N.B. doesn't work well with the ??? hole)
         "-Ywarn-numeric-widen", // Warn when numerics are widened.
-        //"-Ywarn-value-discard", // Warn when non-Unit expression results are unused.
+        "-Ywarn-value-discard", // Warn when non-Unit expression results are unused.
         "-Xfuture", // Turn on future language features.
         "-Ywarn-unused", // Warn when local and private vals, vars, defs, and types are are unused.
         //"-Ywarn-unused-import", // Warn when imports are unused.

@@ -1,4 +1,4 @@
-package com.humantalks.common.models.values
+package com.humantalks.common.models
 
 import play.api.data.Forms._
 import play.api.libs.json.Json
