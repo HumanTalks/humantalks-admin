@@ -7,7 +7,10 @@
     @header("venue")
 
     <div class="container">
-        <h1>Venue List</h1>
+        <h1>
+            <a href="@routes.VenueCtrl.create" class="pull-right"><i class="fa fa-plus"></i></a>
+            Liste des lieux
+        </h1>
         @venueList.map { venue =>
             <div class="media card">
                 <div class="media-body">

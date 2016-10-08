@@ -8,7 +8,10 @@
     @header("talk")
 
     <div class="container">
-        <h1>Talk List</h1>
+        <h1>
+            <a href="@routes.TalkCtrl.create" class="pull-right"><i class="fa fa-plus"></i></a>
+            Liste des talks
+        </h1>
         @talkList.map { talk =>
             <div class="media card">
                 <div class="media-body">
