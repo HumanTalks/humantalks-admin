@@ -5,11 +5,9 @@ import com.humantalks.common.models.User
 import com.humantalks.persons.{ Person, PersonRepository }
 import com.humantalks.talks.{ Talk, TalkRepository }
 import com.humantalks.venues.VenueRepository
-import com.humantalks.meetups.views.html
 import global.Contexts
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.libs.json.Json
 import play.api.mvc._
 
 import scala.concurrent.Future
@@ -25,7 +23,7 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
     for {
       meetupList <- meetupRepository.find()
       venueList <- venueRepository.findByIds(meetupList.flatMap(_.data.venue))
-    } yield Ok(html.list(meetupList, venueList))
+    } yield Ok(views.html.list(meetupList, venueList))
   }
 
   def create = Action.async { implicit req: Request[AnyContent] =>
@@ -50,7 +48,7 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
         venueList <- venueListFut
         allTalks <- allTalksFut
         allPersons <- allPersonsFut
-      } yield Ok(html.detail(meetup, talkForm, personForm, allTalks, allPersons, venueList))
+      } yield Ok(views.html.detail(meetup, talkForm, personForm, allTalks, allPersons, venueList))
     }
   }
 
@@ -112,7 +110,7 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
         venueList <- venueListFut
         talkList <- talkListFut
         personList <- personRepository.findByIds(talkList.flatMap(_.data.speakers))
-      } yield Ok(html.publish(meetup, talkList, personList, venueList))
+      } yield Ok(views.html.publish(meetup, talkList, personList, venueList))
     }
   }
 
@@ -130,6 +128,6 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
       allTalks <- allTalksFut
       allPersons <- allPersonsFut
       allVenues <- allVenuesFut
-    } yield status(html.form(meetupForm, talkForm, personForm, meetupOpt, allTalks, allPersons, allVenues))
+    } yield status(views.html.form(meetupForm, talkForm, personForm, meetupOpt, allTalks, allPersons, allVenues))
   }
 }

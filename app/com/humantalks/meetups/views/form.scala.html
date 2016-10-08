@@ -5,7 +5,7 @@
 @import com.humantalks.common.views.html.partials._
 @import com.humantalks.meetups.routes
 @(meetupForm: Form[Meetup.Data], talkForm: Form[Talk.Data], personForm: Form[Person.Data], meetupOpt: Option[Meetup], allTalks: List[Talk], allPersons: List[Person], allVenues: List[Venue])(implicit messagesApi: MessagesApi)
-@main("Home") {
+@main("Nouveau meetup") {
     @header("meetup")
 
     <div class="container" role="main">

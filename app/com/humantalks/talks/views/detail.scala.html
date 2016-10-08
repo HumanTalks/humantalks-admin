@@ -5,7 +5,7 @@
 @import com.humantalks.talks.routes
 @import global.views.html.format._
 @(talk: Talk, personList: List[Person], meetupList: List[Meetup])
-@main("Home") {
+@main(talk.data.title, talk.data.description.getOrElse("")) {
     @header("talk")
 
     <div class="container">

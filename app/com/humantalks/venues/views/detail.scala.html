@@ -4,7 +4,7 @@
 @import com.humantalks.venues.routes
 @import global.views.html.format._
 @(venue: Venue, meetupList: List[Meetup])
-@main("Home") {
+@main(venue.data.name) {
     @header("venue")
 
     <div class="container">

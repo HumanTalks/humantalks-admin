@@ -4,7 +4,6 @@ import com.humantalks.common.helpers.CtrlHelper
 import com.humantalks.common.models.User
 import com.humantalks.meetups.MeetupRepository
 import com.humantalks.persons.{ Person, PersonRepository }
-import com.humantalks.talks.views.html
 import global.Contexts
 import play.api.data.Form
 import play.api.i18n.MessagesApi
@@ -22,7 +21,7 @@ case class TalkCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRepos
     for {
       talkList <- talkRepository.find()
       personList <- personRepository.findByIds(talkList.flatMap(_.data.speakers))
-    } yield Ok(html.list(talkList, personList))
+    } yield Ok(views.html.list(talkList, personList))
   }
 
   def create = Action.async { implicit req: Request[AnyContent] =>
@@ -43,7 +42,7 @@ case class TalkCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRepos
       for {
         personList <- personRepository.findByIds(talk.data.speakers)
         meetupList <- meetupRepository.findForTalk(id)
-      } yield Ok(html.detail(talk, personList, meetupList))
+      } yield Ok(views.html.detail(talk, personList, meetupList))
     }
   }
 
@@ -66,7 +65,7 @@ case class TalkCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRepos
 
   private def formView(status: Status, talkForm: Form[Talk.Data], talkOpt: Option[Talk]): Future[Result] = {
     personRepository.find().map { personList =>
-      status(html.form(talkForm, talkOpt, personList, personForm))
+      status(views.html.form(talkForm, talkOpt, personList, personForm))
     }
   }
 }

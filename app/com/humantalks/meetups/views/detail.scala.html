@@ -6,7 +6,7 @@
 @import com.humantalks.meetups.routes
 @import global.views.html.format._
 @(meetup: Meetup, talkForm: Form[Talk.Data], personForm: Form[Person.Data], allTalks: List[Talk], allPersons: List[Person], venueList: List[Venue])(implicit messagesApi: MessagesApi)
-@main("Home") {
+@main(meetup.data.title) {
     @header("meetup")
 
     <div class="container">

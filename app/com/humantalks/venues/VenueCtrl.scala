@@ -22,13 +22,13 @@ case class VenueCtrl(ctx: Contexts, meetupRepository: MeetupRepository, venueRep
     }
   }
 
-  def create = Action { implicit req: Request[AnyContent] =>
-    Ok(html.form(venueForm, None))
+  def create = Action.async { implicit req: Request[AnyContent] =>
+    formView(Ok, venueForm, None)
   }
 
   def doCreate() = Action.async { implicit req: Request[AnyContent] =>
     venueForm.bindFromRequest.fold(
-      formWithErrors => Future(BadRequest(html.form(formWithErrors, None))),
+      formWithErrors => formView(BadRequest, formWithErrors, None),
       venueData => venueRepository.create(venueData, User.fake).map {
         case (_, id) => Redirect(routes.VenueCtrl.get(id))
       }
@@ -45,18 +45,22 @@ case class VenueCtrl(ctx: Contexts, meetupRepository: MeetupRepository, venueRep
 
   def update(id: Venue.Id) = Action.async { implicit req: Request[AnyContent] =>
     CtrlHelper.withItem(venueRepository)(id) { venue =>
-      Future(Ok(html.form(venueForm.fill(venue.data), Some(venue))))
+      formView(Ok, venueForm.fill(venue.data), Some(venue))
     }
   }
 
   def doUpdate(id: Venue.Id) = Action.async { implicit req: Request[AnyContent] =>
     venueForm.bindFromRequest.fold(
-      formWithErrors => CtrlHelper.withItem(venueRepository)(id) { venue => Future(BadRequest(html.form(formWithErrors, Some(venue)))) },
+      formWithErrors => CtrlHelper.withItem(venueRepository)(id) { venue => formView(BadRequest, formWithErrors, Some(venue)) },
       venueData => CtrlHelper.withItem(venueRepository)(id) { venue =>
         venueRepository.update(venue, venueData, User.fake).map {
           case _ => Redirect(routes.VenueCtrl.get(id))
         }
       }
     )
+  }
+
+  private def formView(status: Status, venueForm: Form[Venue.Data], venueOpt: Option[Venue]): Future[Result] = {
+    Future(status(views.html.form(venueForm, venueOpt)))
   }
 }
