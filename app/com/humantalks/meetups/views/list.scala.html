@@ -14,14 +14,14 @@
                 <div class="media-body">
                     <h4 class="media-heading">
                         <a href="@routes.MeetupCtrl.get(meetup.id)">@meetup.data.title</a>
-                        @meetup.data.meetupUrl.map{url => <a href="@url" target="_blank"><i class="glyphicon glyphicon-share"></i></a>}
+                        @meetup.data.meetupUrl.map{url => <a href="@url" target="_blank"><i class="fa fa-external-link"></i></a>}
                     </h4>
                     <p>
                         @if(meetup.published){ <span class="label label-success">Publié</span> } else { <span class="label label-danger">Brouillon</span> }
                         @meetup.data.venue.flatMap(id => venueList.find(_.id == id)).map{v => chez <a href="@com.humantalks.venues.routes.VenueCtrl.get(v.id)">@v.data.name</a>}
                         le @date(meetup.data.date.toLocalDate),
                         @meetup.data.talks.length talks planifiés
-                        @meetup.data.roti.map{r => <i class="glyphicon glyphicon-picture" title="ROTI added"></i>}
+                        @meetup.data.roti.map{r => <i class="fa fa-picture-o" title="ROTI added"></i>}
                     </p>
                 </div>
             </div>

@@ -14,8 +14,8 @@
                 <div class="media-body">
                     <h4 class="media-heading">
                         <a href="@routes.TalkCtrl.get(talk.id)">@talk.data.title</a>
-                        @talk.data.slides.map{s => <a href="@s" target="_blank" title="slides"><span class="glyphicon glyphicon-picture"></span></a>}
-                        @talk.data.video.map{v => <a href="@v" target="_blank" title="vidéo"><span class="glyphicon glyphicon-facetime-video"></span></a>}
+                        @talk.data.slides.map{s => <a href="@s" target="_blank" title="slides"><span class="fa fa-slideshare"></span></a>}
+                        @talk.data.video.map{v => <a href="@v" target="_blank" title="vidéo"><span class="fa fa-youtube"></span></a>}
                     </h4>
                     @talk.data.description.map{d => <p>@multiline(d)</p>}
                     <p>par @talk.data.speakers.flatMap(id => personList.find(_.id == id)).map{s => <a href="@com.humantalks.persons.routes.PersonCtrl.get(s.id)">@s.data.name</a>}</p>

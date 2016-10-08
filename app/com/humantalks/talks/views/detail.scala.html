@@ -10,7 +10,7 @@
 
     <div class="container">
         <h1>
-            <a href="@routes.TalkCtrl.update(talk.id)" class="pull-right"><i class="glyphicon glyphicon-pencil"></i></a>
+            <a href="@routes.TalkCtrl.update(talk.id)" class="pull-right"><i class="fa fa-pencil-square-o"></i></a>
             @talk.data.title
         </h1>
         @talk.data.description.map{d => <p>@multiline(d)</p>}

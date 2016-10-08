@@ -9,7 +9,7 @@
 
     <div class="container">
         <h1>
-            <a href="@routes.VenueCtrl.update(venue.id)" class="pull-right"><i class="glyphicon glyphicon-pencil"></i></a>
+            <a href="@routes.VenueCtrl.update(venue.id)" class="pull-right"><i class="fa fa-pencil-square-o"></i></a>
             @venue.data.name
         </h1>
         @venue.data.location.map{loc => <p>@loc.formatted</p>}

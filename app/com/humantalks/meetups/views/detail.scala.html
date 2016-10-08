@@ -11,9 +11,9 @@
 
     <div class="container">
         <h1>
-            <a href="@routes.MeetupCtrl.update(meetup.id)" class="pull-right"><i class="glyphicon glyphicon-pencil"></i></a>
+            <a href="@routes.MeetupCtrl.update(meetup.id)" class="pull-right"><i class="fa fa-pencil-square-o"></i></a>
             @meetup.data.title
-            @meetup.data.meetupUrl.map{url => <a href="@url" target="_blank"><i class="glyphicon glyphicon-share"></i></a>}
+            @meetup.data.meetupUrl.map{url => <a href="@url" target="_blank"><i class="fa fa-external-link"></i></a>}
         </h1>
         <p>
             @if(meetup.published){ <span class="label label-success">Publié</span> } else { <span class="label label-danger">Brouillon</span> }
@@ -26,11 +26,11 @@
             <ol>
             @meetup.data.talks.flatMap(id => allTalks.find(_.id == id)).map { talk =>
                 <li>
-                    @helper.form(action=routes.MeetupCtrl.doRemoveTalk(meetup.id, talk.id), 'class->"inline") { <button type="submit" class="btn btn-clear"><i class="glyphicon glyphicon-trash"></i></button> }
+                    @helper.form(action=routes.MeetupCtrl.doRemoveTalk(meetup.id, talk.id), 'class->"inline") { <button type="submit" class="btn btn-clear"><i class="fa fa-trash"></i></button> }
                     <a href="@com.humantalks.talks.routes.TalkCtrl.get(talk.id)">@talk.data.title</a>
                     par @talk.data.speakers.flatMap(id => allPersons.find(_.id == id)).map { speaker => <a href="@com.humantalks.persons.routes.PersonCtrl.get(speaker.id)">@speaker.data.name</a> }
-                    @talk.data.slides.map{s => <a href="@s" target="_blank" title="slides"><span class="glyphicon glyphicon-picture"></span></a>}
-                    @talk.data.video.map{v => <a href="@v" target="_blank" title="vidéo"><span class="glyphicon glyphicon-facetime-video"></span></a>}
+                    @talk.data.slides.map{s => <a href="@s" target="_blank" title="slides"><span class="fa fa-slideshare"></span></a>}
+                    @talk.data.video.map{v => <a href="@v" target="_blank" title="vidéo"><span class="fa fa-youtube"></span></a>}
                 </li>
             }
             </ol>
