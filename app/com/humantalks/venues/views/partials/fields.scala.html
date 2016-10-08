@@ -1,7 +1,7 @@
 @import com.humantalks.venues.Venue
 @import global.views.html.form._
 @(venueForm: Form[Venue.Data])(implicit messagesApi: MessagesApi)
-@fieldHorizontal(venueForm("name"), 'label -> "Nom") { field => @inputText(field, 'placeholder -> "ex: Google") }
+@fieldHorizontal(venueForm("name"), 'label -> "Nom") { field => @inputText(field, 'placeholder -> "ex: Google", 'autofocus -> "") }
 @fieldHorizontal(venueForm("location"), 'label -> "Adresse") { field => @inputGMapPlace(field, 'placeholder -> "ex: CPE Lyon, Boulevard du 11 Novembre 1918, Villeurbanne, France") }
 @fieldHorizontal(venueForm("capacity"), 'label -> "Taille de la salle") { field => @inputNumber(field, 'placeholder -> "ex: 80") }
 @fieldHorizontal(venueForm("twitter"), 'label -> "Compte twitter") { field => @inputText(field, 'twitterToImageUrl -> "logo", 'placeholder -> "ex: @google") }

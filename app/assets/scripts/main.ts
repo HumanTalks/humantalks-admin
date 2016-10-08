@@ -17,6 +17,13 @@ class Utils {
     }
 }
 
+// autofocus when a modal opens
+(function(){
+    $('.modal').on('shown.bs.modal', function(e){
+        $(this).find('input[autofocus]').focus();
+    });
+})();
+
 // https://select2.github.io/
 function buildSelect2CreateModal(modalSelector: string, mainInputName: string, createUrl: string, getLabel: (any) => string){
     return function($select, evt){
