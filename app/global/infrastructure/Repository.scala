@@ -1,6 +1,6 @@
 package global.infrastructure
 
-import com.humantalks.auth.models.User
+import com.humantalks.auth.silhouette.User
 import global.models.Page
 import play.api.libs.json.{ JsObject, Json }
 import reactivemongo.api.commands.WriteResult

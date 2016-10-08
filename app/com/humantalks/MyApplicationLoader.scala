@@ -1,5 +1,6 @@
 package com.humantalks
 
+import com.humantalks.auth.silhouette.{ UserService, UserRepository, AuthTokenRepository }
 import com.humantalks.common.Conf
 import com.humantalks.common.services.EmbedSrv
 import com.humantalks.meetups.{ MeetupDbService, MeetupRepository, MeetupCtrl, MeetupApi }
@@ -8,7 +9,6 @@ import com.humantalks.talks.{ TalkDbService, TalkRepository, TalkCtrl, TalkApi }
 import com.humantalks.tools.EmbedCtrl
 import com.humantalks.tools.scrapers.TwitterScraper
 import com.humantalks.venues.{ VenueDbService, VenueRepository, VenueCtrl, VenueApi }
-import com.mohiva.play.silhouette.api.SilhouetteProvider
 import global.Contexts
 import global.infrastructure.Mongo
 import play.api.cache.EhCacheComponents
@@ -42,10 +42,17 @@ class MyComponents(context: ApplicationLoader.Context)
   val embedSrv = EmbedSrv(wsClient)
   val reactiveMongoApi: ReactiveMongoApi = new DefaultReactiveMongoApi(configuration, applicationLifecycle)
   val mongo = Mongo(ctx, reactiveMongoApi)
+  val userRepository = UserRepository(conf, ctx, mongo)
+  val authTokenRepository = AuthTokenRepository(conf, ctx, mongo)
   val venueRepository = VenueRepository(conf, ctx, mongo)
   val personRepository = PersonRepository(conf, ctx, mongo)
   val talkRepository = TalkRepository(conf, ctx, mongo, embedSrv)
   val meetupRepository = MeetupRepository(conf, ctx, mongo)
+
+  val userService = UserService(userRepository)
+  //val authTokenService = AuthTokenRepository(authTokenService, clock)
+  //val authEnv =
+  //val silhouette = new SilhouetteProvider()
 
   val venueDbService = VenueDbService(meetupRepository, venueRepository)
   val personDbService = PersonDbService(personRepository, talkRepository)

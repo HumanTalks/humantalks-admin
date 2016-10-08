@@ -1,6 +1,6 @@
 package com.humantalks.meetups
 
-import com.humantalks.auth.models.User
+import com.humantalks.auth.silhouette.User
 import com.humantalks.persons.{ Person, PersonRepository }
 import com.humantalks.talks.{ Talk, TalkRepository }
 import com.humantalks.venues.VenueRepository

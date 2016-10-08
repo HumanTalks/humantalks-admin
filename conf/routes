@@ -5,6 +5,11 @@
 GET     /                                                   com.humantalks.common.controllers.Application.index
 
 #GET     /register                                           com.humantalks.auth.AuthCtrl.register
+#POST    /register                                           com.humantalks.auth.AuthCtrl.doRegister
+#GET     /login                                              com.humantalks.auth.AuthCtrl.login
+#POST    /login                                              com.humantalks.auth.AuthCtrl.doLogin
+#POST    /activationEmail                                    com.humantalks.auth.AuthCtrl.activationEmail(email: String)
+#POST    /activateAccount                                    com.humantalks.auth.AuthCtrl.activateAccount(id: AuthToken.Id)
 
 GET     /venues                                             com.humantalks.venues.VenueCtrl.find
 GET     /venues/create                                      com.humantalks.venues.VenueCtrl.create

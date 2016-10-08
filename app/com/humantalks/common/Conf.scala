@@ -1,5 +1,6 @@
 package com.humantalks.common
 
+import com.humantalks.auth.silhouette.{ AuthToken, User }
 import com.humantalks.meetups.Meetup
 import com.humantalks.persons.Person
 import com.humantalks.talks.Talk
@@ -13,6 +14,8 @@ case class Conf(configuration: Configuration) {
     val langs = new DefaultLangs(configuration).availables
   }
   object Repositories {
+    val user = Repository.Collection[User]("User")
+    val authToken = Repository.Collection[AuthToken]("AuthToken")
     val person = Repository.Collection[Person]("Person")
     val venue = Repository.Collection[Venue]("Venue")
     val talk = Repository.Collection[Talk]("Talk")

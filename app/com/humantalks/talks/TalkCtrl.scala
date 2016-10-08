@@ -1,6 +1,6 @@
 package com.humantalks.talks
 
-import com.humantalks.auth.models.User
+import com.humantalks.auth.silhouette.User
 import com.humantalks.meetups.MeetupRepository
 import com.humantalks.persons.{ Person, PersonRepository }
 import global.Contexts

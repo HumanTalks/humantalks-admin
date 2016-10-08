@@ -1,6 +1,6 @@
 package global.helpers
 
-import com.humantalks.auth.models.User
+import com.humantalks.auth.silhouette.User
 import global.infrastructure.Repository
 import global.models.ApiError
 import org.joda.time.DateTime

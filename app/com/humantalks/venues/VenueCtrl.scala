@@ -1,6 +1,6 @@
 package com.humantalks.venues
 
-import com.humantalks.auth.models.User
+import com.humantalks.auth.silhouette.User
 import com.humantalks.meetups.MeetupRepository
 import global.Contexts
 import global.helpers.CtrlHelper

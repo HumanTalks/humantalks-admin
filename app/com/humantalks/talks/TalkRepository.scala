@@ -1,6 +1,6 @@
 package com.humantalks.talks
 
-import com.humantalks.auth.models.User
+import com.humantalks.auth.silhouette.User
 import com.humantalks.common.Conf
 import com.humantalks.common.models.Meta
 import com.humantalks.common.services.EmbedSrv

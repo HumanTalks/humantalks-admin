@@ -1,6 +1,6 @@
 package com.humantalks.persons
 
-import com.humantalks.auth.models.User
+import com.humantalks.auth.silhouette.User
 import com.humantalks.talks.TalkRepository
 import global.Contexts
 import global.helpers.CtrlHelper
