@@ -194,7 +194,7 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
         }
     }
     function getEmbedCode(url: string) {
-        return $.get('/api/tools/embed?url='+url).then(function(res){
+        return $.get('/api/tools/embed?url='+encodeURIComponent(url)).then(function(res){
             return res.data.embedCode;
         });
     }
