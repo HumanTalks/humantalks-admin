@@ -1,7 +1,5 @@
 package com.humantalks.auth.silhouette
 
-import java.util.UUID
-
 import com.humantalks.auth.silhouette.forms.Register
 import com.mohiva.play.silhouette.api.{ Identity, LoginInfo }
 import com.mohiva.play.silhouette.impl.providers.CommonSocialProfile
@@ -39,7 +37,6 @@ case class User(
     )
 }
 object User {
-  // TODO : replace UUID with User.Id
   val fake = User.Id("57b2edc0-3d2f-4cb3-94d0-b60c028738a4")
   case class Id(value: String) extends TypedId(value)
   object Id extends TypedIdHelper[Id] {
