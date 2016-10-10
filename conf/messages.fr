@@ -1,8 +1,8 @@
 constraint.email=Email
-constraint.required=Required
-error.date=Valid date required
-error.email = Valid email required
-error.required = This field is required
+constraint.required=Obligatoire
+error.date=Date invalide
+error.email=Email invalide
+error.required=Ce champ est obligatoire
 
 invalid.credentials = Invalid credentials!
 access.denied = Access denied!

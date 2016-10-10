@@ -1,5 +1,5 @@
 @import com.humantalks.auth.silhouette.User
-@(user: User, url: String)(implicit messages: Messages)
-@messages("email.already.signed.up.hello", user.name.getOrElse("user"))
+@(user: User, url: String)(implicit messagesApi: MessagesApi)
+@messagesApi("email.already.signed.up.hello", user.name.getOrElse("user"))
 
-@messages("email.already.signed.up.txt.text", url)
+@messagesApi("email.already.signed.up.txt.text", url)

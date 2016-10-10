@@ -1,6 +1,6 @@
 package com.humantalks.venues
 
-import com.humantalks.auth.models.User
+import com.humantalks.auth.silhouette.User
 import com.humantalks.meetups.{ MeetupRepository, Meetup }
 import global.infrastructure.DbService
 import play.api.libs.json.{ Json, JsObject }

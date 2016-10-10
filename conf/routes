@@ -4,12 +4,15 @@
 
 GET     /                                                   com.humantalks.common.controllers.Application.index
 
-#GET     /register                                           com.humantalks.auth.AuthCtrl.register
-#POST    /register                                           com.humantalks.auth.AuthCtrl.doRegister
-#GET     /login                                              com.humantalks.auth.AuthCtrl.login
-#POST    /login                                              com.humantalks.auth.AuthCtrl.doLogin
-#POST    /activationEmail                                    com.humantalks.auth.AuthCtrl.activationEmail(email: String)
-#POST    /activateAccount                                    com.humantalks.auth.AuthCtrl.activateAccount(id: AuthToken.Id)
+GET     /register                                           com.humantalks.auth.AuthCtrl.register
+POST    /register                                           com.humantalks.auth.AuthCtrl.doRegister
+GET     /login                                              com.humantalks.auth.AuthCtrl.login
+POST    /login                                              com.humantalks.auth.AuthCtrl.doLogin
+POST    /activationEmail                                    com.humantalks.auth.AuthCtrl.activationEmail(email: String)
+GET     /activateAccount/:id                                com.humantalks.auth.AuthCtrl.activateAccount(id: AuthToken.Id)
+GET     /debug                                              com.humantalks.auth.AuthCtrl.debug
+GET     /debugRemoveUser/:id                                com.humantalks.auth.AuthCtrl.debugRemoveUser(id: User.Id)
+GET     /debugRemoveToken/:id                               com.humantalks.auth.AuthCtrl.debugRemoveToken(id: AuthToken.Id)
 
 GET     /venues                                             com.humantalks.venues.VenueCtrl.find
 GET     /venues/create                                      com.humantalks.venues.VenueCtrl.create

@@ -1,5 +1,5 @@
 @import com.humantalks.auth.silhouette.User
-@(user: User, url: String)(implicit messages: Messages)
-@messages("email.activate.account.hello", user.name.getOrElse("user"))
+@(user: User, url: String)(implicit messagesApi: MessagesApi)
+@messagesApi("email.activate.account.hello", user.name.getOrElse("user"))
 
-@messages("email.activate.account.txt.text", url)
+@messagesApi("email.activate.account.txt.text", url)

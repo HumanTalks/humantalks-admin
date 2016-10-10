@@ -5,6 +5,7 @@ version := "1.0-SNAPSHOT"
 scalaVersion := "2.11.7"
 
 resolvers ++= Seq(
+  Resolver.jcenterRepo,
   "Atlassian Releases" at "https://maven.atlassian.com/public/"
 )
 
@@ -13,6 +14,7 @@ libraryDependencies ++= Seq(
   cache,
   ws,
   filters,
+  "com.iheart" %% "ficus" % "1.2.7",
   "org.reactivemongo" %% "play2-reactivemongo" % "0.11.14",
   "com.typesafe.play" %% "play-mailer" % "5.0.0",
   "com.mohiva" %% "play-silhouette" % "4.0.0",

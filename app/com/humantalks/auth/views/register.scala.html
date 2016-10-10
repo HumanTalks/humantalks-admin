@@ -1,12 +1,12 @@
 @import com.humantalks.auth.silhouette.forms.Register
 @import com.humantalks.common.views.html.partials._
 @import global.views.html.form._
+@import com.humantalks.auth.routes
 @(registerForm: Form[Register])(implicit request: RequestHeader, messagesApi: MessagesApi)
 @main(messagesApi("sign.up.title")) {
     <fieldset class="col-md-6 col-md-offset-3">
         <legend>@messagesApi("sign.up.account")</legend>
-        @* @helper.form(action = routes.AuthCtrl.doRegister()) { *@
-            @helper.CSRF.formField
+        @helper.form(action = routes.AuthCtrl.doRegister()) {
             @fieldHorizontal(registerForm("firstName"), 'label -> messagesApi("first.name")) { field => @inputText(field, 'placeholder -> "ex: John") }
             @fieldHorizontal(registerForm("lastName"), 'label -> messagesApi("last.name")) { field => @inputText(field, 'placeholder -> "ex: Doe") }
             @fieldHorizontal(registerForm("email"), 'label -> "Email") { field => @inputEmail(field, 'placeholder -> "ex: john@doe.com") }
@@ -16,11 +16,9 @@
                     <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">@messagesApi("sign.up")</button>
                 </div>
             </div>
-            @*
             <div class="sign-in-now">
                 <p>@messagesApi("already.a.member") <a href="@routes.AuthCtrl.login">@messagesApi("sign.in.now")</a></p>
             </div>
-            *@
-        @* } *@
+        }
     </fieldset>
 }

@@ -1,9 +1,9 @@
 @import com.humantalks.auth.silhouette.User
-@(user: User, url: String)(implicit messages: Messages)
+@(user: User, url: String)(implicit messagesApi: MessagesApi)
 
 <html>
     <body>
-        <p>@messages("email.sign.up.hello", user.name.getOrElse("user"))</p>
-        <p>@Html(messages("email.sign.up.html.text", url))</p>
+        <p>@messagesApi("email.sign.up.hello", user.name.getOrElse("user"))</p>
+        <p>@Html(messagesApi("email.sign.up.html.text", url))</p>
     </body>
 </html>
