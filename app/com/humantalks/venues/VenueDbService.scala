@@ -1,7 +1,7 @@
 package com.humantalks.venues
 
 import com.humantalks.auth.silhouette.User
-import com.humantalks.meetups.{ MeetupRepository, Meetup }
+import com.humantalks.meetups.{ Meetup, MeetupRepository }
 import global.infrastructure.DbService
 import play.api.libs.json.{ Json, JsObject }
 import reactivemongo.api.commands.WriteResult
