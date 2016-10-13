@@ -16,7 +16,7 @@ case class VenueRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposit
   import Contexts.dbToEC
   import ctx._
   private val collection = db.getCollection(conf.Repositories.venue)
-  private val defaultSort = Json.obj("data.name" -> 1)
+  val defaultSort = Json.obj("data.name" -> 1)
   val name = collection.name
 
   def find(filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[List[Venue]] =

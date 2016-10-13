@@ -10,13 +10,13 @@ import play.api.mvc._
 
 import scala.concurrent.Future
 
-case class PersonCtrl(ctx: Contexts, talkRepository: TalkRepository, personRepository: PersonRepository)(implicit messageApi: MessagesApi) extends Controller {
+case class PersonCtrl(ctx: Contexts, talkRepository: TalkRepository, personDbService: PersonDbService)(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.ctrlToEC
   import ctx._
   val personForm = Form(Person.fields)
 
   def find = Action.async { implicit req: Request[AnyContent] =>
-    personRepository.find().map { personList =>
+    personDbService.find().map { personList =>
       Ok(views.html.list(personList))
     }
   }
@@ -28,14 +28,14 @@ case class PersonCtrl(ctx: Contexts, talkRepository: TalkRepository, personRepos
   def doCreate() = Action.async { implicit req: Request[AnyContent] =>
     personForm.bindFromRequest.fold(
       formWithErrors => formView(BadRequest, formWithErrors, None),
-      personData => personRepository.create(personData, User.fake).map {
+      personData => personDbService.create(personData, User.fake).map {
         case (_, id) => Redirect(routes.PersonCtrl.get(id))
       }
     )
   }
 
   def get(id: Person.Id) = Action.async { implicit req: Request[AnyContent] =>
-    CtrlHelper.withItem(personRepository)(id) { person =>
+    CtrlHelper.withItem(personDbService)(id) { person =>
       for {
         talkList <- talkRepository.findFor(id)
       } yield Ok(views.html.detail(person, talkList))
@@ -43,16 +43,16 @@ case class PersonCtrl(ctx: Contexts, talkRepository: TalkRepository, personRepos
   }
 
   def update(id: Person.Id) = Action.async { implicit req: Request[AnyContent] =>
-    CtrlHelper.withItem(personRepository)(id) { person =>
+    CtrlHelper.withItem(personDbService)(id) { person =>
       formView(Ok, personForm.fill(person.data), Some(person))
     }
   }
 
   def doUpdate(id: Person.Id) = Action.async { implicit req: Request[AnyContent] =>
     personForm.bindFromRequest.fold(
-      formWithErrors => CtrlHelper.withItem(personRepository)(id) { person => formView(BadRequest, formWithErrors, Some(person)) },
-      personData => CtrlHelper.withItem(personRepository)(id) { person =>
-        personRepository.update(person, personData, User.fake).map {
+      formWithErrors => CtrlHelper.withItem(personDbService)(id) { person => formView(BadRequest, formWithErrors, Some(person)) },
+      personData => CtrlHelper.withItem(personDbService)(id) { person =>
+        personDbService.update(person, personData, User.fake).map {
           case _ => Redirect(routes.PersonCtrl.get(id))
         }
       }

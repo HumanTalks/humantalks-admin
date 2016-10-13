@@ -12,7 +12,7 @@ import play.api.mvc._
 
 import scala.concurrent.Future
 
-case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRepository: TalkRepository, personRepository: PersonRepository, venueRepository: VenueRepository)(implicit messageApi: MessagesApi) extends Controller {
+case class MeetupCtrl(ctx: Contexts, talkRepository: TalkRepository, personRepository: PersonRepository, venueRepository: VenueRepository, meetupDbService: MeetupDbService)(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.ctrlToEC
   import ctx._
   val meetupForm = Form(Meetup.fields)
@@ -21,7 +21,7 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
 
   def find = Action.async { implicit req: Request[AnyContent] =>
     for {
-      meetupList <- meetupRepository.find()
+      meetupList <- meetupDbService.find()
       venueList <- venueRepository.findByIds(meetupList.flatMap(_.data.venue))
     } yield Ok(views.html.list(meetupList, venueList))
   }
@@ -33,14 +33,14 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
   def doCreate() = Action.async { implicit req: Request[AnyContent] =>
     meetupForm.bindFromRequest.fold(
       formWithErrors => formView(BadRequest, formWithErrors, None),
-      meetupData => meetupRepository.create(meetupData, User.fake).map {
+      meetupData => meetupDbService.create(meetupData, User.fake).map {
         case (_, id) => Redirect(routes.MeetupCtrl.get(id))
       }
     )
   }
 
   def get(id: Meetup.Id) = Action.async { implicit req: Request[AnyContent] =>
-    CtrlHelper.withItem(meetupRepository)(id) { meetup =>
+    CtrlHelper.withItem(meetupDbService)(id) { meetup =>
       val venueListFut = venueRepository.findByIds(meetup.data.venue.toSeq)
       val allTalksFut = talkRepository.find()
       val allPersonsFut = personRepository.find()
@@ -53,16 +53,16 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
   }
 
   def update(id: Meetup.Id) = Action.async { implicit req: Request[AnyContent] =>
-    CtrlHelper.withItem(meetupRepository)(id) { meetup =>
+    CtrlHelper.withItem(meetupDbService)(id) { meetup =>
       formView(Ok, meetupForm.fill(meetup.data), Some(meetup))
     }
   }
 
   def doUpdate(id: Meetup.Id) = Action.async { implicit req: Request[AnyContent] =>
     meetupForm.bindFromRequest.fold(
-      formWithErrors => CtrlHelper.withItem(meetupRepository)(id) { meetup => formView(BadRequest, formWithErrors, Some(meetup)) },
-      meetupData => CtrlHelper.withItem(meetupRepository)(id) { meetup =>
-        meetupRepository.update(meetup, meetupData, User.fake).map {
+      formWithErrors => CtrlHelper.withItem(meetupDbService)(id) { meetup => formView(BadRequest, formWithErrors, Some(meetup)) },
+      meetupData => CtrlHelper.withItem(meetupDbService)(id) { meetup =>
+        meetupDbService.update(meetup, meetupData, User.fake).map {
           case _ => Redirect(routes.MeetupCtrl.get(id))
         }
       }
@@ -73,7 +73,7 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
     talkForm.bindFromRequest.fold(
       formWithErrors => Future(Redirect(routes.MeetupCtrl.get(id))), // TODO : add flashing message to show errors
       talkData => talkRepository.create(talkData, User.fake).flatMap {
-        case (_, talkId) => meetupRepository.addTalk(id, talkId).map { _ =>
+        case (_, talkId) => meetupDbService.addTalk(id, talkId).map { _ =>
           Redirect(routes.MeetupCtrl.get(id))
         }
       }
@@ -82,7 +82,7 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
 
   def doAddTalkForm(id: Meetup.Id) = Action.async { implicit req: Request[AnyContent] =>
     req.body.asFormUrlEncoded.get("talkId").headOption.flatMap(p => Talk.Id.from(p).right.toOption).map { talkId =>
-      meetupRepository.addTalk(id, talkId).map { _ =>
+      meetupDbService.addTalk(id, talkId).map { _ =>
         Redirect(routes.MeetupCtrl.get(id))
       }
     }.getOrElse {
@@ -91,19 +91,19 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
   }
 
   def doAddTalk(id: Meetup.Id, talkId: Talk.Id) = Action.async { implicit req: Request[AnyContent] =>
-    meetupRepository.addTalk(id, talkId).map { _ =>
+    meetupDbService.addTalk(id, talkId).map { _ =>
       Redirect(routes.MeetupCtrl.get(id))
     }
   }
 
   def doRemoveTalk(id: Meetup.Id, talkId: Talk.Id) = Action.async { implicit req: Request[AnyContent] =>
-    meetupRepository.removeTalk(id, talkId).map { _ =>
+    meetupDbService.removeTalk(id, talkId).map { _ =>
       Redirect(routes.MeetupCtrl.get(id))
     }
   }
 
   def publish(id: Meetup.Id) = Action.async { implicit req: Request[AnyContent] =>
-    CtrlHelper.withItem(meetupRepository)(id) { meetup =>
+    CtrlHelper.withItem(meetupDbService)(id) { meetup =>
       val venueListFut = venueRepository.findByIds(meetup.data.venue.toSeq)
       val talkListFut = talkRepository.findByIds(meetup.data.talks)
       for {
@@ -115,7 +115,7 @@ case class MeetupCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRep
   }
 
   def doPublish(id: Meetup.Id) = Action.async { implicit req: Request[AnyContent] =>
-    meetupRepository.setPublished(id).map { _ =>
+    meetupDbService.setPublished(id).map { _ =>
       Redirect(routes.MeetupCtrl.get(id))
     }
   }

@@ -1,6 +1,6 @@
 package global.helpers
 
-import global.infrastructure.Repository
+import global.infrastructure.{ DbService, Repository }
 import play.api.mvc.Results.NotFound
 import play.api.mvc.{ Action, AnyContent, Request, Result }
 
@@ -8,18 +8,19 @@ import scala.concurrent.{ ExecutionContext, Future }
 
 object CtrlHelper {
 
-  def findAction[T, Id, TData](repo: Repository[T, Id, TData])(html: List[T] => Future[Result])(implicit ec: ExecutionContext) = Action.async { implicit req: Request[AnyContent] =>
-    repo.find().flatMap { list =>
+  def findAction[T, Id](srv: DbService[T, Id])(html: List[T] => Future[Result])(implicit ec: ExecutionContext) = Action.async { implicit req: Request[AnyContent] =>
+    srv.find().flatMap { list =>
       html(list)
     }
   }
 
-  def withItem[T, Id, TData](repo: Repository[T, Id, TData])(id: Id)(block: T => Future[Result])(implicit ec: ExecutionContext): Future[Result] = {
-    repo.get(id).flatMap { itemOpt =>
+  // Service[T, Id]  to  {name: String, get: Id => Future[Option[T]]}
+  def withItem[T, Id](srv: DbService[T, Id])(id: Id)(block: T => Future[Result])(implicit ec: ExecutionContext): Future[Result] = {
+    srv.get(id).flatMap { itemOpt =>
       itemOpt.map { item =>
         block(item)
       }.getOrElse {
-        Future(notFound(repo.name, id))
+        Future(notFound(srv.name, id))
       }
     }
   }

@@ -11,7 +11,7 @@ import play.api.mvc._
 
 import scala.concurrent.Future
 
-case class TalkCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRepository: TalkRepository, personRepository: PersonRepository)(implicit messageApi: MessagesApi) extends Controller {
+case class TalkCtrl(ctx: Contexts, meetupRepository: MeetupRepository, personRepository: PersonRepository, talkDbService: TalkDbService)(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.ctrlToEC
   import ctx._
   val talkForm = Form(Talk.fields)
@@ -19,7 +19,7 @@ case class TalkCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRepos
 
   def find = Action.async { implicit req: Request[AnyContent] =>
     for {
-      talkList <- talkRepository.find()
+      talkList <- talkDbService.find()
       personList <- personRepository.findByIds(talkList.flatMap(_.data.speakers))
     } yield Ok(views.html.list(talkList, personList))
   }
@@ -31,14 +31,14 @@ case class TalkCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRepos
   def doCreate() = Action.async { implicit req: Request[AnyContent] =>
     talkForm.bindFromRequest.fold(
       formWithErrors => formView(BadRequest, formWithErrors, None),
-      talkData => talkRepository.create(talkData, User.fake).map {
+      talkData => talkDbService.create(talkData, User.fake).map {
         case (_, id) => Redirect(routes.TalkCtrl.get(id))
       }
     )
   }
 
   def get(id: Talk.Id) = Action.async { implicit req: Request[AnyContent] =>
-    CtrlHelper.withItem(talkRepository)(id) { talk =>
+    CtrlHelper.withItem(talkDbService)(id) { talk =>
       for {
         personList <- personRepository.findByIds(talk.data.speakers)
         meetupList <- meetupRepository.findForTalk(id)
@@ -47,16 +47,16 @@ case class TalkCtrl(ctx: Contexts, meetupRepository: MeetupRepository, talkRepos
   }
 
   def update(id: Talk.Id) = Action.async { implicit req: Request[AnyContent] =>
-    CtrlHelper.withItem(talkRepository)(id) { talk =>
+    CtrlHelper.withItem(talkDbService)(id) { talk =>
       formView(Ok, talkForm.fill(talk.data), Some(talk))
     }
   }
 
   def doUpdate(id: Talk.Id) = Action.async { implicit req: Request[AnyContent] =>
     talkForm.bindFromRequest.fold(
-      formWithErrors => CtrlHelper.withItem(talkRepository)(id) { talk => formView(BadRequest, formWithErrors, Some(talk)) },
-      talkData => CtrlHelper.withItem(talkRepository)(id) { talk =>
-        talkRepository.update(talk, talkData, User.fake).map {
+      formWithErrors => CtrlHelper.withItem(talkDbService)(id) { talk => formView(BadRequest, formWithErrors, Some(talk)) },
+      talkData => CtrlHelper.withItem(talkDbService)(id) { talk =>
+        talkDbService.update(talk, talkData, User.fake).map {
           case _ => Redirect(routes.TalkCtrl.get(id))
         }
       }

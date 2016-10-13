@@ -18,7 +18,7 @@ case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   import Contexts.dbToEC
   import ctx._
   private val collection = db.getCollection(conf.Repositories.meetup)
-  private val defaultSort = Json.obj("data.date" -> -1)
+  val defaultSort = Json.obj("data.date" -> -1)
   val name = collection.name
 
   /*def allIds(): Future[List[Meetup.Id]] =
