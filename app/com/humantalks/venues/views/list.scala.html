@@ -17,7 +17,6 @@
                     <h4 class="media-heading"><a href="@routes.VenueCtrl.get(venue.id)">@venue.data.name</a></h4>
                     @venue.data.location.map{loc => <p>@loc.formatted</p>}
                     @venue.data.comment.map{c => <p>@multiline(c)</p>}
-                    @venue.data.contact.map{contact => @contact.name}
                     @venue.data.twitter.map{account => <a href="https://twitter.com/@account" target="_blank">@@@account</a>}
                 </div>
                 @venue.data.logo.map { logo =>

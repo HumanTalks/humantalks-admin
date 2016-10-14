@@ -65,7 +65,7 @@ class MyComponents(context: ApplicationLoader.Context)
     httpErrorHandler,
     new com.humantalks.common.controllers.Application(ctx),
     new com.humantalks.auth.AuthCtrl(configuration, ctx, userRepository, credentialsRepository, authTokenRepository, silhouette, passwordHasherRegistry, avatarService, authInfoRepository, credentialsProvider, socialProviderRegistry, mailerClient),
-    new VenueCtrl(ctx, meetupRepository, venueDbService),
+    new VenueCtrl(ctx, meetupRepository, personDbService, venueDbService),
     new PersonCtrl(ctx, talkRepository, personDbService),
     new TalkCtrl(ctx, meetupRepository, personRepository, talkDbService),
     new MeetupCtrl(ctx, talkRepository, personRepository, venueRepository, meetupDbService),

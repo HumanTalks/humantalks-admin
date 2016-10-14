@@ -2,6 +2,7 @@ package com.humantalks.venues
 
 import com.humantalks.auth.silhouette.User
 import com.humantalks.meetups.MeetupRepository
+import com.humantalks.persons.PersonDbService
 import global.Contexts
 import global.helpers.CtrlHelper
 import play.api.data.Form
@@ -10,7 +11,7 @@ import play.api.mvc._
 
 import scala.concurrent.Future
 
-case class VenueCtrl(ctx: Contexts, meetupRepository: MeetupRepository, venueDbService: VenueDbService)(implicit messageApi: MessagesApi) extends Controller {
+case class VenueCtrl(ctx: Contexts, meetupRepository: MeetupRepository, personDbService: PersonDbService, venueDbService: VenueDbService)(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.ctrlToEC
   import ctx._
   val venueForm = Form(Venue.fields)
@@ -69,6 +70,8 @@ case class VenueCtrl(ctx: Contexts, meetupRepository: MeetupRepository, venueDbS
   }
 
   private def formView(status: Status, venueForm: Form[Venue.Data], venueOpt: Option[Venue]): Future[Result] = {
-    Future(status(views.html.form(venueForm, venueOpt)))
+    personDbService.find().map { personList =>
+      status(views.html.form(venueForm, venueOpt, personList))
+    }
   }
 }
