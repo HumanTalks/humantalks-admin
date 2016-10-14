@@ -22,6 +22,7 @@ object Person {
       name: String,
       twitter: Option[String],
       email: Option[String], // to match existing person when submiting a new talk
+      phone: Option[String],
       avatar: Option[String],
       description: Option[String]
   ) {
@@ -29,6 +30,7 @@ object Person {
       name = this.name.trim,
       twitter = this.twitter.map(TwitterSrv.toAccount),
       email = this.email.map(_.trim),
+      phone = this.phone.map(_.trim),
       avatar = this.avatar.map(_.trim),
       description = this.description.map(_.trim)
     )
@@ -40,6 +42,7 @@ object Person {
     "name" -> nonEmptyText,
     "twitter" -> optional(text),
     "email" -> optional(email),
+    "phone" -> optional(text),
     "avatar" -> optional(text),
     "description" -> optional(text)
   )(Person.Data.apply)(Person.Data.unapply)
