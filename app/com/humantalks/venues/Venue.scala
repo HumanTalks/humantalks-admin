@@ -36,15 +36,8 @@ object Venue {
     )
   }
 
-  implicit val formatContact = Json.format[Venue.Contact]
   implicit val formatData = Json.format[Venue.Data]
   implicit val format = Json.format[Venue]
-  val fieldsContact = mapping(
-    "name" -> text.verifying("error.required", value => value.length > 0),
-    "email" -> optional(email),
-    "phone" -> optional(text),
-    "comment" -> optional(text)
-  )(Venue.Contact.apply)(Venue.Contact.unapply)
   val fields = mapping(
     "name" -> nonEmptyText,
     "location" -> optional(GMapPlace.fields),

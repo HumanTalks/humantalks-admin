@@ -1,7 +1,9 @@
 @import com.humantalks.venues.Venue
 @import com.humantalks.common.views.html.partials._
 @import com.humantalks.venues.routes
-@(venueForm: Form[Venue.Data], venueOpt: Option[Venue])(implicit messagesApi: MessagesApi)
+@import com.humantalks.persons.Person
+
+@(venueForm: Form[Venue.Data], venueOpt: Option[Venue], personList: List[Person])(implicit messagesApi: MessagesApi)
 @main("Nouveau lieu") {
     @header("venue")
 
@@ -13,7 +15,7 @@
         <div class="row">
             <div class="col-md-12">
             @helper.form(action=venueOpt.map(p => routes.VenueCtrl.doUpdate(p.id)).getOrElse(routes.VenueCtrl.doCreate()), 'class->"form-horizontal venue-form") {
-                @partials.fields(venueForm)
+                @partials.fields(venueForm, personList)
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
                         @venueOpt.map{p => <a href="@routes.VenueCtrl.get(p.id)" class="btn btn-default btn-lg">Annuler</a>}
