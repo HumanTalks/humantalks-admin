@@ -16,12 +16,12 @@ case class PersonDbService(personRepository: PersonRepository, talkRepository: T
   def create(elt: Person.Data, by: User.Id): Future[(WriteResult, Person.Id)] = personRepository.create(elt, by)
   def update(elt: Person, data: Person.Data, by: User.Id): Future[WriteResult] = personRepository.update(elt, data, by)
 
-  def delete(id: Person.Id)(implicit ec: ExecutionContext): Future[Either[List[Talk.Id], WriteResult]] = {
+  def delete(id: Person.Id)(implicit ec: ExecutionContext): Future[Either[List[Talk], WriteResult]] = {
     talkRepository.findFor(id).flatMap { talks =>
       if (talks.isEmpty) {
         personRepository.delete(id).map(r => Right(r))
       } else {
-        Future(Left(talks.map(_.id)))
+        Future(Left(talks))
       }
     }
   }

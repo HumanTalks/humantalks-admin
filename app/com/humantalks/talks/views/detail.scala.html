@@ -10,7 +10,10 @@
 
     <div class="container">
         <h1>
-            <a href="@routes.TalkCtrl.update(talk.id)" class="pull-right"><i class="fa fa-pencil-square-o"></i></a>
+            @helper.form(action=routes.TalkCtrl.doDelete(talk.id), 'class->"pull-right") {
+                <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i></button>
+            }
+            <a href="@routes.TalkCtrl.update(talk.id)" class="btn btn-default pull-right"><i class="fa fa-pencil-square-o"></i></a>
             @talk.data.title
         </h1>
         @talk.data.description.map{d => <p>@multiline(d)</p>}

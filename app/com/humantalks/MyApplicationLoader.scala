@@ -46,9 +46,9 @@ class MyComponents(context: ApplicationLoader.Context)
   val talkRepository = TalkRepository(conf, ctx, mongo, embedSrv)
   val meetupRepository = MeetupRepository(conf, ctx, mongo)
 
-  val venueDbService = VenueDbService(venueRepository)
+  val venueDbService = VenueDbService(meetupRepository, venueRepository)
   val personDbService = PersonDbService(personRepository, talkRepository)
-  val talkDbService = TalkDbService(talkRepository)
+  val talkDbService = TalkDbService(meetupRepository, talkRepository)
   val meetupDbService = MeetupDbService(meetupRepository)
 
   implicit val messagesApiImp = messagesApi

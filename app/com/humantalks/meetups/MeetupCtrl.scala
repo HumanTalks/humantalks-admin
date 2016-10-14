@@ -120,6 +120,15 @@ case class MeetupCtrl(ctx: Contexts, talkRepository: TalkRepository, personRepos
     }
   }
 
+  def doDelete(id: Meetup.Id) = Action.async { implicit req: Request[AnyContent] =>
+    meetupDbService.delete(id).map {
+      _ match {
+        case Left(nothing) => Redirect(routes.MeetupCtrl.get(id))
+        case Right(res) => Redirect(routes.MeetupCtrl.find())
+      }
+    }
+  }
+
   private def formView(status: Status, meetupForm: Form[Meetup.Data], meetupOpt: Option[Meetup]): Future[Result] = {
     val allTalksFut = talkRepository.find()
     val allPersonsFut = personRepository.find()

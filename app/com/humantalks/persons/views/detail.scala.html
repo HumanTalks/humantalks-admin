@@ -9,7 +9,10 @@
 
     <div class="container">
         <h1>
-            <a href="@routes.PersonCtrl.update(person.id)" class="pull-right"><i class="fa fa-pencil-square-o"></i></a>
+            @helper.form(action=routes.PersonCtrl.doDelete(person.id), 'class->"pull-right") {
+                <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i></button>
+            }
+            <a href="@routes.PersonCtrl.update(person.id)" class="btn btn-default pull-right"><i class="fa fa-pencil-square-o"></i></a>
             @person.data.name
         </h1>
         @person.data.description.map{d => <p>@multiline(d)</p>}

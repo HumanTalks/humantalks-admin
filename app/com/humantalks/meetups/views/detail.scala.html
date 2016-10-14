@@ -11,7 +11,10 @@
 
     <div class="container">
         <h1>
-            <a href="@routes.MeetupCtrl.update(meetup.id)" class="pull-right"><i class="fa fa-pencil-square-o"></i></a>
+            @helper.form(action=routes.MeetupCtrl.doDelete(meetup.id), 'class->"pull-right") {
+                <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i></button>
+            }
+            <a href="@routes.MeetupCtrl.update(meetup.id)" class="btn btn-default pull-right"><i class="fa fa-pencil-square-o"></i></a>
             @meetup.data.title
             @meetup.data.meetupUrl.map{url => <a href="@url" target="_blank"><i class="fa fa-external-link"></i></a>}
         </h1>

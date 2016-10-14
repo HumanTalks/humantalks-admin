@@ -59,6 +59,15 @@ case class PersonCtrl(ctx: Contexts, talkRepository: TalkRepository, personDbSer
     )
   }
 
+  def doDelete(id: Person.Id) = Action.async { implicit req: Request[AnyContent] =>
+    personDbService.delete(id).map {
+      _ match {
+        case Left(talks) => Redirect(routes.PersonCtrl.get(id))
+        case Right(res) => Redirect(routes.PersonCtrl.find())
+      }
+    }
+  }
+
   private def formView(status: Status, personForm: Form[Person.Data], personOpt: Option[Person]): Future[Result] = {
     Future(status(views.html.form(personForm, personOpt)))
   }

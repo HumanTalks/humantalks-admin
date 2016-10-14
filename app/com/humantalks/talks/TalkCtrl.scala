@@ -63,6 +63,15 @@ case class TalkCtrl(ctx: Contexts, meetupRepository: MeetupRepository, personRep
     )
   }
 
+  def doDelete(id: Talk.Id) = Action.async { implicit req: Request[AnyContent] =>
+    talkDbService.delete(id).map {
+      _ match {
+        case Left(meetups) => Redirect(routes.TalkCtrl.get(id))
+        case Right(res) => Redirect(routes.TalkCtrl.find())
+      }
+    }
+  }
+
   private def formView(status: Status, talkForm: Form[Talk.Data], talkOpt: Option[Talk]): Future[Result] = {
     personRepository.find().map { personList =>
       status(views.html.form(talkForm, talkOpt, personList, personForm))

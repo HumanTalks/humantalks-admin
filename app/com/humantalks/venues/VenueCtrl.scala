@@ -60,6 +60,15 @@ case class VenueCtrl(ctx: Contexts, meetupRepository: MeetupRepository, venueDbS
     )
   }
 
+  def doDelete(id: Venue.Id) = Action.async { implicit req: Request[AnyContent] =>
+    venueDbService.delete(id).map {
+      _ match {
+        case Left(meetups) => Redirect(routes.VenueCtrl.get(id))
+        case Right(res) => Redirect(routes.VenueCtrl.find())
+      }
+    }
+  }
+
   private def formView(status: Status, venueForm: Form[Venue.Data], venueOpt: Option[Venue]): Future[Result] = {
     Future(status(views.html.form(venueForm, venueOpt)))
   }

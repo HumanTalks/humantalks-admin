@@ -10,6 +10,7 @@ POST    /venues/create                                      com.humantalks.venue
 GET     /venues/$id<.{36}>                                  com.humantalks.venues.VenueCtrl.get(id: Venue.Id)
 GET     /venues/$id<.{36}>/edit                             com.humantalks.venues.VenueCtrl.update(id: Venue.Id)
 POST    /venues/$id<.{36}>/edit                             com.humantalks.venues.VenueCtrl.doUpdate(id: Venue.Id)
+POST    /venues/$id<.{36}>/delete                           com.humantalks.venues.VenueCtrl.doDelete(id: Venue.Id)
 
 GET     /persons                                            com.humantalks.persons.PersonCtrl.find
 GET     /persons/create                                     com.humantalks.persons.PersonCtrl.create
@@ -17,6 +18,7 @@ POST    /persons/create                                     com.humantalks.perso
 GET     /persons/$id<.{36}>                                 com.humantalks.persons.PersonCtrl.get(id: Person.Id)
 GET     /persons/$id<.{36}>/edit                            com.humantalks.persons.PersonCtrl.update(id: Person.Id)
 POST    /persons/$id<.{36}>/edit                            com.humantalks.persons.PersonCtrl.doUpdate(id: Person.Id)
+POST    /persons/$id<.{36}>/delete                          com.humantalks.persons.PersonCtrl.doDelete(id: Person.Id)
 
 GET     /talks                                              com.humantalks.talks.TalkCtrl.find
 GET     /talks/create                                       com.humantalks.talks.TalkCtrl.create
@@ -24,6 +26,7 @@ POST    /talks/create                                       com.humantalks.talks
 GET     /talks/$id<.{36}>                                   com.humantalks.talks.TalkCtrl.get(id: Talk.Id)
 GET     /talks/$id<.{36}>/edit                              com.humantalks.talks.TalkCtrl.update(id: Talk.Id)
 POST    /talks/$id<.{36}>/edit                              com.humantalks.talks.TalkCtrl.doUpdate(id: Talk.Id)
+POST    /talks/$id<.{36}>/delete                            com.humantalks.talks.TalkCtrl.doDelete(id: Talk.Id)
 
 GET     /meetups                                            com.humantalks.meetups.MeetupCtrl.find
 GET     /meetups/create                                     com.humantalks.meetups.MeetupCtrl.create
@@ -33,6 +36,7 @@ GET     /meetups/$id<.{36}>/edit                            com.humantalks.meetu
 POST    /meetups/$id<.{36}>/edit                            com.humantalks.meetups.MeetupCtrl.doUpdate(id: Meetup.Id)
 GET     /meetups/$id<.{36}>/publish                         com.humantalks.meetups.MeetupCtrl.publish(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/publish                         com.humantalks.meetups.MeetupCtrl.doPublish(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/delete                          com.humantalks.meetups.MeetupCtrl.doDelete(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/talks                           com.humantalks.meetups.MeetupCtrl.doCreateTalk(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/talks/add                       com.humantalks.meetups.MeetupCtrl.doAddTalkForm(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/add        com.humantalks.meetups.MeetupCtrl.doAddTalk(id: Meetup.Id, talkId: Talk.Id)
