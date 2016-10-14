@@ -5,6 +5,7 @@ import com.humantalks.common.services.TwitterSrv
 import global.models.{ TypedId, TypedIdHelper }
 import play.api.data.Forms._
 import play.api.libs.json.Json
+import com.humantalks.persons.Person
 
 case class Venue(
   id: Venue.Id,
@@ -20,32 +21,17 @@ object Venue {
 
   case class Data(
       name: String, // nom de la société / salle
-      contact: Option[Venue.Contact],
       location: Option[GMapPlace],
       capacity: Option[Int], // nombre de place
       twitter: Option[String],
       logo: Option[String],
+      contacts: List[Person.Id],
       comment: Option[String] // information supplémentaires
   ) {
     def trim: Data = this.copy(
       name = this.name.trim,
-      contact = this.contact.map(_.trim),
       twitter = this.twitter.map(TwitterSrv.toAccount),
       logo = this.logo.map(_.trim),
-      comment = this.comment.map(_.trim)
-    )
-  }
-
-  case class Contact(
-      name: String,
-      email: Option[String],
-      phone: Option[String],
-      comment: Option[String]
-  ) {
-    def trim: Contact = this.copy(
-      name = this.name.trim,
-      email = this.email.map(_.trim),
-      phone = this.phone.map(_.trim),
       comment = this.comment.map(_.trim)
     )
   }
@@ -61,11 +47,11 @@ object Venue {
   )(Venue.Contact.apply)(Venue.Contact.unapply)
   val fields = mapping(
     "name" -> nonEmptyText,
-    "contact" -> optional(Venue.fieldsContact),
     "location" -> optional(GMapPlace.fields),
     "capacity" -> optional(number),
     "twitter" -> optional(text),
     "logo" -> optional(text),
+    "contacts" -> list(of[Person.Id]),
     "comment" -> optional(text)
   )(Venue.Data.apply)(Venue.Data.unapply)
 }
