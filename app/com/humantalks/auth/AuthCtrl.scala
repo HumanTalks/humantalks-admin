@@ -143,7 +143,7 @@ case class AuthCtrl(
   def activationEmail(email: String) = silhouette.UnsecuredAction.async { implicit req: Request[AnyContent] =>
     val decodedEmail = URLDecoder.decode(email, "UTF-8")
     val loginInfo = LoginInfo(CredentialsProvider.ID, decodedEmail)
-    val result = Redirect(routes.AuthCtrl.login()).flashing("info" -> s"We sent another activation email to you at $decodedEmail. It might take a few minutes for it to arrive; be sure to check your spam folder.")
+    val result = Redirect(routes.AuthCtrl.login()).flashing("info" -> s"We sent another activation email to you at <b>$decodedEmail</b>. It might take a few minutes for it to arrive; be sure to check your spam folder.")
 
     userRepository.retrieve(loginInfo).flatMap {
       case Some(user) if !user.activated =>
@@ -168,15 +168,15 @@ case class AuthCtrl(
       case Some(authToken) => userRepository.get(authToken.userId).flatMap {
         case Some(user) if user.loginInfo.providerID == CredentialsProvider.ID =>
           userRepository.update(user.copy(activated = true)).map { _ =>
-            Redirect(routes.AuthCtrl.login()).flashing("success" -> "Your account is now activated! Please sign in to use your new account.")
+            Redirect(routes.AuthCtrl.login()).flashing("success" -> "Your account is now activated! Please login to use your new account.")
           }
-        case _ => Future(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please sign in to send the activation email again."))
+        case _ => Future(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please login to send the activation email again."))
       }
-      case None => Future(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please sign in to send the activation email again."))
+      case None => Future(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please login to send the activation email again."))
     }
   }
 
-  def debug = Action.async { implicit req: Request[AnyContent] =>
+  def debug = silhouette.UserAwareAction.async { implicit req: Request[AnyContent] =>
     for {
       users <- userRepository.find()
       authTokens <- authTokenRepository.find()

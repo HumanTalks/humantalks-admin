@@ -3,9 +3,11 @@
 @import com.mohiva.play.silhouette.impl.providers.oauth2.ClefProvider
 @import com.humantalks.exposed.views.html.partials._
 @import global.views.html.form._
+@import global.views.html.format._
 @import com.humantalks.auth.routes.AuthCtrl
 @(loginForm: Form[Login], socialProviders: SocialProviderRegistry)(implicit request: RequestHeader, messagesApi: MessagesApi)
 @main("Login") {
+    @flash()
     <fieldset class="col-md-6 col-md-offset-3">
         <legend>Sign in with your credentials</legend>
         @helper.form(action = AuthCtrl.doLogin()) {

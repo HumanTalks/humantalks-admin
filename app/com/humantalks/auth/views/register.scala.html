@@ -1,12 +1,14 @@
 @import com.humantalks.auth.forms.Register
 @import com.humantalks.internal.views.html.partials._
 @import global.views.html.form._
-@import com.humantalks.auth.routes
+@import global.views.html.format._
+@import com.humantalks.auth.routes.AuthCtrl
 @(registerForm: Form[Register])(implicit request: RequestHeader, messagesApi: MessagesApi)
 @main("Register") {
+    @flash()
     <fieldset class="col-md-6 col-md-offset-3">
         <legend>Register for a new account</legend>
-        @helper.form(action = routes.AuthCtrl.doRegister()) {
+        @helper.form(action = AuthCtrl.doRegister()) {
             @fieldHorizontal(registerForm("firstName"), 'label -> "First name") { field => @inputText(field, 'placeholder -> "ex: John") }
             @fieldHorizontal(registerForm("lastName"), 'label -> "Last name") { field => @inputText(field, 'placeholder -> "ex: Doe") }
             @fieldHorizontal(registerForm("email"), 'label -> "Email") { field => @inputEmail(field, 'placeholder -> "ex: john@doe.com") }
@@ -17,7 +19,7 @@
                 </div>
             </div>
             <div class="sign-in-now">
-                <p>Already a member? <a href="@routes.AuthCtrl.login">Login now</a></p>
+                <p>Already a member? <a href="@AuthCtrl.login">Login now</a></p>
             </div>
         }
     </fieldset>

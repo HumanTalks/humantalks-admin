@@ -1,0 +1,15 @@
+@()(implicit request: RequestHeader)
+@toClass(key: String) = @{
+    key match {
+        case "error" | "danger" => "alert-danger"
+        case "warning" => "alert-warning"
+        case "success" => "alert-success"
+        case _ => "alert-info"
+    }
+}
+@request.flash.data.map { case (key, value) =>
+    <div class="alert @toClass(key) alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        @Html(value)
+    </div>
+}

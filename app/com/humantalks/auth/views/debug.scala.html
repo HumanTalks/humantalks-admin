@@ -2,7 +2,7 @@
 @import com.humantalks.auth.routes.AuthCtrl
 @import com.humantalks.exposed.views.html.partials._
 @import global.views.html.format._
-@(users: List[User], credentials: List[Credentials], authTokens: List[AuthToken])
+@(users: List[User], credentials: List[Credentials], authTokens: List[AuthToken])(implicit request: RequestHeader)
 @main("Debug users") {
     <div class="container">
         <h1>Users</h1>
