@@ -1,11 +1,10 @@
 package global.helpers
 
-import com.humantalks.auth.entities.User
-import global.infrastructure.Repository
+import global.infrastructure.DbService
 import global.values.ApiError
+import global.values.ApiError.Code
 import org.joda.time.DateTime
 import play.api.libs.json._
-import play.api.mvc.BodyParsers.parse
 import play.api.mvc.Results._
 import play.api.mvc._
 import reactivemongo.api.commands.WriteResult
@@ -14,62 +13,22 @@ import scala.concurrent.{ ExecutionContext, Future }
 
 object ApiHelper {
 
-  /* Play actions */
-
-  def findAction[T, Id, TData](repo: Repository[T, Id, TData])(implicit ec: ExecutionContext, w: OWrites[T]) = Action.async { implicit req: Request[AnyContent] =>
-    find() {
-      repo.find()
-    }
-  }
-
-  def getAction[T, Id, TData](repo: Repository[T, Id, TData])(id: Id)(implicit ec: ExecutionContext, w: OWrites[T]) = Action.async { implicit req: Request[AnyContent] =>
-    get() {
-      repo.get(id)
-    }
-  }
-
-  def createAction[T, Id, TData](repo: Repository[T, Id, TData])(implicit ec: ExecutionContext, rd: Reads[TData], wd: OWrites[TData], w: OWrites[T]) = Action.async(parse.json) { implicit req: Request[JsValue] =>
-    create()(
-      req.body.validate[TData],
-      (data: TData) => repo.create(data, User.fake),
-      repo.get
-    )
-  }
-
-  def updateAction[T, Id, TData](repo: Repository[T, Id, TData])(id: Id)(implicit ec: ExecutionContext, r: Reads[TData], w: OWrites[T]) = Action.async(parse.json) { implicit req: Request[JsValue] =>
-    update(id)(
-      req.body.validate[TData],
-      (elt: T, data: TData) => repo.update(elt, data, User.fake),
-      repo.get
-    )
-  }
-
-  def deleteAction[T, Id, TData](repo: Repository[T, Id, TData])(id: Id)(implicit ec: ExecutionContext) = Action.async { implicit req: Request[AnyContent] =>
-    delete() {
-      repo.delete(id)
-    }
-  }
-
   /* Endpoint helpers */
 
-  def find[T]()(find: => Future[List[T]])(implicit ec: ExecutionContext, w: OWrites[T], req: RequestHeader): Future[Result] = {
-    resultList(toEitherList(find), Ok, NotFound)
+  def find[T, Id, Data, User](srv: DbService[T, Id, Data, User])(implicit ec: ExecutionContext, w: OWrites[T], req: RequestHeader): Future[Result] = {
+    resultList(toEitherList(srv.find()), Ok, NotFound)
   }
 
-  def get[T]()(get: => Future[Option[T]])(implicit ec: ExecutionContext, w: OWrites[T], req: RequestHeader) = {
-    result(toEither(get), Ok, NotFound)
+  def get[T, Id, Data, User](srv: DbService[T, Id, Data, User], id: Id)(implicit ec: ExecutionContext, w: OWrites[T], req: RequestHeader) = {
+    result(toEither(srv.get(id)), Ok, NotFound)
   }
 
-  def create[T, Id, TData]()(
-    validation: JsResult[TData],
-    create: TData => Future[(WriteResult, Id)],
-    get: Id => Future[Option[T]]
-  )(implicit ec: ExecutionContext, w: OWrites[T], req: RequestHeader): Future[Result] = {
+  def create[T, Id, Data, User](srv: DbService[T, Id, Data, User], user: User, json: JsValue)(implicit ec: ExecutionContext, r: Reads[Data], w: OWrites[T], req: RequestHeader): Future[Result] = {
     result({
-      validation match {
+      json.validate[Data] match {
         case JsSuccess(data, path) =>
-          create(data).flatMap {
-            case (res, id) => returnItemOnSuccess(res, get(id))
+          srv.create(data, user).flatMap {
+            case (res, id) => returnItemOnSuccess(res, srv.get(id))
           }
         case JsError(error) =>
           Future(Left(ApiError.from(error)))
@@ -77,17 +36,13 @@ object ApiHelper {
     }, Created, BadRequest)
   }
 
-  def update[T, Id, TData](id: Id)(
-    validation: JsResult[TData],
-    update: (T, TData) => Future[WriteResult],
-    get: Id => Future[Option[T]]
-  )(implicit ec: ExecutionContext, w: OWrites[T], req: RequestHeader): Future[Result] = {
+  def update[T, Id, Data, User](srv: DbService[T, Id, Data, User], user: User, id: Id, json: JsValue)(implicit ec: ExecutionContext, r: Reads[Data], w: OWrites[T], req: RequestHeader): Future[Result] = {
     result({
-      validation match {
+      json.validate[Data] match {
         case JsSuccess(data, path) =>
-          onSuccessFut(get(id)) { elt =>
-            update(elt, data).flatMap { res =>
-              returnItemOnSuccess(res, get(id))
+          onSuccessFut(srv.get(id)) { elt =>
+            srv.update(elt, data, user).flatMap { res =>
+              returnItemOnSuccess(res, srv.get(id))
             }
           }
         case JsError(error) =>
@@ -96,34 +51,38 @@ object ApiHelper {
     }, Created, BadRequest)
   }
 
-  def delete()(delete: => Future[WriteResult])(implicit ec: ExecutionContext, req: RequestHeader): Future[Result] = {
+  def delete[T, Id, Data, User](srv: DbService[T, Id, Data, User], id: Id)(implicit ec: ExecutionContext, req: RequestHeader): Future[Result] = {
     resultJson({
-      delete.map { res =>
-        onSuccess(res)(Right(JsNull))
+      srv.delete(id).map { res =>
+        onSuccess(res)(Right(JsNull))(Left(ApiError(Code.Validation, "Unable to delete element, it still has dependencies")))
       }
     }, Ok, InternalServerError)
   }
 
   /* Helper utils */
 
-  def returnItemOnSuccess[T](res: WriteResult, get: => Future[Option[T]])(implicit ec: ExecutionContext): Future[Either[ApiError, T]] = {
+  private def returnItemOnSuccess[T](res: WriteResult, get: => Future[Option[T]])(implicit ec: ExecutionContext): Future[Either[ApiError, T]] = {
     onSuccessFut(res) {
       onSuccess(get) { data => Right(data) }
     }
   }
 
-  def onSuccess[T](get: Future[Option[T]])(exec: T => Either[ApiError, T])(implicit ec: ExecutionContext): Future[Either[ApiError, T]] =
+  private def onSuccess[T](get: Future[Option[T]])(exec: T => Either[ApiError, T])(implicit ec: ExecutionContext): Future[Either[ApiError, T]] =
     get.map { dataOpt => onSuccess(dataOpt) { data => exec(data) } }
-  def onSuccessFut[T](get: Future[Option[T]])(exec: T => Future[Either[ApiError, T]])(implicit ec: ExecutionContext): Future[Either[ApiError, T]] =
+  private def onSuccessFut[T](get: Future[Option[T]])(exec: T => Future[Either[ApiError, T]])(implicit ec: ExecutionContext): Future[Either[ApiError, T]] =
     get.flatMap { dataOpt => onSuccessFut(dataOpt) { data => exec(data) } }
-  def onSuccess[T](res: Option[T])(exec: T => Either[ApiError, T]): Either[ApiError, T] =
+  private def onSuccess[T](res: Option[T])(exec: T => Either[ApiError, T]): Either[ApiError, T] =
     res.map(exec).getOrElse(Left(ApiError.notFound()))
-  def onSuccessFut[T](res: Option[T])(exec: T => Future[Either[ApiError, T]])(implicit ec: ExecutionContext): Future[Either[ApiError, T]] =
+  private def onSuccessFut[T](res: Option[T])(exec: T => Future[Either[ApiError, T]])(implicit ec: ExecutionContext): Future[Either[ApiError, T]] =
     res.map(exec).getOrElse(Future(Left(ApiError.notFound())))
-  def onSuccess[T](res: WriteResult)(default: Either[ApiError, T]): Either[ApiError, T] =
+  private def onSuccess[T](res: WriteResult)(default: Either[ApiError, T]): Either[ApiError, T] =
     ApiError.from(res).map { error => Left(error) }.getOrElse(default)
-  def onSuccessFut[T](res: WriteResult)(default: Future[Either[ApiError, T]])(implicit ec: ExecutionContext): Future[Either[ApiError, T]] =
+  private def onSuccessFut[T](res: WriteResult)(default: Future[Either[ApiError, T]])(implicit ec: ExecutionContext): Future[Either[ApiError, T]] =
     ApiError.from(res).map { error => Future(Left(error)) }.getOrElse(default)
+  private def onSuccess[T](res: Either[Any, WriteResult])(default: Either[ApiError, T])(objRes: Either[ApiError, T]): Either[ApiError, T] = res match {
+    case Right(wr) => onSuccess(wr)(default)
+    case Left(obj) => objRes
+  }
 
   private def toEither[T](e: Future[Option[T]])(implicit ec: ExecutionContext): Future[Either[ApiError, T]] = e.map(_.map(l => Right(l)).getOrElse(Left(ApiError.notFound())))
   private def toEitherList[T](e: Future[List[T]])(implicit ec: ExecutionContext): Future[Either[ApiError, List[T]]] = e.map(l => Right(l))

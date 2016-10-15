@@ -9,7 +9,7 @@ import reactivemongo.api.commands.WriteResult
 
 import scala.concurrent.{ ExecutionContext, Future }
 
-case class TalkDbService(meetupRepository: MeetupRepository, talkRepository: TalkRepository) extends DbService[Talk, Talk.Id] {
+case class TalkDbService(meetupRepository: MeetupRepository, talkRepository: TalkRepository) extends DbService[Talk, Talk.Id, Talk.Data, User.Id] {
   val name = talkRepository.name
 
   def find(filter: JsObject = Json.obj(), sort: JsObject = talkRepository.defaultSort): Future[List[Talk]] = talkRepository.find(filter, sort)

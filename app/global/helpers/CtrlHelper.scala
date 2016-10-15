@@ -8,14 +8,14 @@ import scala.concurrent.{ ExecutionContext, Future }
 
 object CtrlHelper {
 
-  def findAction[T, Id](srv: DbService[T, Id])(html: List[T] => Future[Result])(implicit ec: ExecutionContext) = Action.async { implicit req: Request[AnyContent] =>
+  def findAction[T, Id, Data, User](srv: DbService[T, Id, Data, User])(html: List[T] => Future[Result])(implicit ec: ExecutionContext) = Action.async { implicit req: Request[AnyContent] =>
     srv.find().flatMap { list =>
       html(list)
     }
   }
 
   // Service[T, Id]  to  {name: String, get: Id => Future[Option[T]]}
-  def withItem[T, Id](srv: DbService[T, Id])(id: Id)(block: T => Future[Result])(implicit ec: ExecutionContext): Future[Result] = {
+  def withItem[T, Id, Data, User](srv: DbService[T, Id, Data, User])(id: Id)(block: T => Future[Result])(implicit ec: ExecutionContext): Future[Result] = {
     srv.get(id).flatMap { itemOpt =>
       itemOpt.map { item =>
         block(item)
