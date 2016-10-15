@@ -1,16 +1,22 @@
 package com.humantalks.internal.persons
 
+import com.humantalks.auth.forms.RegisterForm
 import com.humantalks.common.values.Meta
 import com.humantalks.common.services.TwitterSrv
+import com.mohiva.play.silhouette.api.{ Identity, LoginInfo }
 import global.values.{ TypedId, TypedIdHelper }
 import play.api.data.Forms._
 import play.api.libs.json.Json
 
 case class Person(
-  id: Person.Id,
-  data: Person.Data,
-  meta: Meta
-)
+    id: Person.Id,
+    data: Person.Data,
+    loginInfo: Option[LoginInfo],
+    activated: Boolean,
+    meta: Meta
+) extends Identity {
+  def hasProvider(provider: String): Boolean = loginInfo.exists(_.providerID == provider)
+}
 object Person {
   case class Id(value: String) extends TypedId(value)
   object Id extends TypedIdHelper[Id] {
@@ -33,6 +39,24 @@ object Person {
       phone = this.phone.map(_.trim),
       avatar = this.avatar.map(_.trim),
       description = this.description.map(_.trim)
+    )
+  }
+
+  def from(register: RegisterForm, loginInfo: LoginInfo, avatar: Option[String] = None): Person = {
+    val id = Id.generate()
+    Person(
+      id = id,
+      data = Data(
+        name = register.name,
+        twitter = None,
+        email = Some(register.email),
+        phone = None,
+        avatar = avatar,
+        description = None
+      ),
+      loginInfo = Some(loginInfo),
+      activated = false,
+      meta = Meta.from(id)
     )
   }
 

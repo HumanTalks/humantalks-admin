@@ -1,8 +1,8 @@
 package com.humantalks.internal.venues
 
-import com.humantalks.auth.entities.User
 import com.humantalks.common.Conf
 import com.humantalks.common.values.Meta
+import com.humantalks.internal.persons.Person
 import global.Contexts
 import global.infrastructure.{ Mongo, Repository }
 import global.values.Page
@@ -12,7 +12,7 @@ import reactivemongo.api.commands.WriteResult
 
 import scala.concurrent.Future
 
-case class VenueRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Repository[Venue, Venue.Id, Venue.Data] {
+case class VenueRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Repository[Venue, Venue.Id, Venue.Data, Person.Id] {
   import Contexts.dbToEC
   import ctx._
   private val collection = db.getCollection(conf.Repositories.venue)
@@ -31,12 +31,12 @@ case class VenueRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposit
   def get(id: Venue.Id): Future[Option[Venue]] =
     collection.get(Json.obj("id" -> id))
 
-  def create(elt: Venue.Data, by: User.Id): Future[(WriteResult, Venue.Id)] = {
+  def create(elt: Venue.Data, by: Person.Id): Future[(WriteResult, Venue.Id)] = {
     val toCreate = Venue(Venue.Id.generate(), elt.trim, Meta(new DateTime(), by, new DateTime(), by))
     collection.create(toCreate).map { res => (res, toCreate.id) }
   }
 
-  def update(elt: Venue, data: Venue.Data, by: User.Id): Future[WriteResult] =
+  def update(elt: Venue, data: Venue.Data, by: Person.Id): Future[WriteResult] =
     collection.update(Json.obj("id" -> elt.id), elt.copy(data = data.trim, meta = elt.meta.update(by)))
 
   /*def partialUpdate(id: Venue.Id, patch: JsObject): Future[WriteResult] =

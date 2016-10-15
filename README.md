@@ -3,8 +3,6 @@
 ## TODO
 
 - auth
-    - link person with user OR merge them ?
-    - create or find a person when creating a new user
     - add user roles
     - add user admin (list all and define roles)
     - improve auth texts

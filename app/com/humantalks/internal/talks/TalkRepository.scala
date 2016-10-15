@@ -1,6 +1,5 @@
 package com.humantalks.internal.talks
 
-import com.humantalks.auth.entities.User
 import com.humantalks.common.Conf
 import com.humantalks.common.values.Meta
 import com.humantalks.common.services.EmbedSrv
@@ -14,7 +13,7 @@ import reactivemongo.api.commands.WriteResult
 
 import scala.concurrent.Future
 
-case class TalkRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: EmbedSrv) extends Repository[Talk, Talk.Id, Talk.Data] {
+case class TalkRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: EmbedSrv) extends Repository[Talk, Talk.Id, Talk.Data, Person.Id] {
   import Contexts.dbToEC
   import ctx._
   private val collection = db.getCollection(conf.Repositories.talk)
@@ -36,12 +35,12 @@ case class TalkRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: EmbedS
   def get(id: Talk.Id): Future[Option[Talk]] =
     collection.get(Json.obj("id" -> id))
 
-  def create(elt: Talk.Data, by: User.Id): Future[(WriteResult, Talk.Id)] =
+  def create(elt: Talk.Data, by: Person.Id): Future[(WriteResult, Talk.Id)] =
     fillEmbedCode(Talk(Talk.Id.generate(), elt.trim, Meta(new DateTime(), by, new DateTime(), by))).flatMap { toCreate =>
       collection.create(toCreate).map { res => (res, toCreate.id) }
     }
 
-  def update(elt: Talk, data: Talk.Data, by: User.Id): Future[WriteResult] =
+  def update(elt: Talk, data: Talk.Data, by: Person.Id): Future[WriteResult] =
     fillEmbedCode(elt.copy(data = data.trim, meta = elt.meta.update(by))).flatMap { toUpdate =>
       collection.update(Json.obj("id" -> elt.id), toUpdate)
     }

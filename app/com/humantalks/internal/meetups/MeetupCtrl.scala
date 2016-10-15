@@ -1,10 +1,9 @@
 package com.humantalks.internal.meetups
 
-import com.humantalks.auth.entities.User
 import com.humantalks.auth.silhouette.SilhouetteEnv
-import com.humantalks.internal.persons.{ PersonDbService, Person, PersonRepository }
-import com.humantalks.internal.talks.{ TalkDbService, Talk, TalkRepository }
-import com.humantalks.internal.venues.{ VenueDbService, VenueRepository }
+import com.humantalks.internal.persons.{ PersonDbService, Person }
+import com.humantalks.internal.talks.{ TalkDbService, Talk }
+import com.humantalks.internal.venues.VenueDbService
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
 import global.helpers.CtrlHelper

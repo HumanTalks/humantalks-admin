@@ -1,6 +1,5 @@
 package com.humantalks.internal.venues
 
-import com.humantalks.auth.entities.User
 import com.humantalks.auth.silhouette.SilhouetteEnv
 import com.humantalks.internal.meetups.MeetupDbService
 import com.humantalks.internal.persons.PersonDbService

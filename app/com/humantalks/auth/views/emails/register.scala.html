@@ -1,8 +1,8 @@
-@import com.humantalks.auth.entities.User
-@(user: User, url: String)(implicit messagesApi: MessagesApi)
+@import com.humantalks.internal.persons.Person
+@(person: Person, url: String)(implicit messagesApi: MessagesApi)
 <html>
     <body>
-        <p>Hello @user.name.getOrElse("user"),</p>
+        <p>Hello @person.data.name,</p>
         <p>Please follow <a href="@url">this link</a> to confirm and activate your new account.</p>
     </body>
 </html>

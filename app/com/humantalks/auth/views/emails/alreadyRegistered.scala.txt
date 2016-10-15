@@ -1,5 +1,5 @@
-@import com.humantalks.auth.entities.User
-@(user: User, url: String)(implicit messagesApi: MessagesApi)
-Hello @user.name.getOrElse("user"),
+@import com.humantalks.internal.persons.Person
+@(person: Person, url: String)(implicit messagesApi: MessagesApi)
+Hello @person.data.name,
 
 You already have an account registered. Please follow the link to login into your account: @url

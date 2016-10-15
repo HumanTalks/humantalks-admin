@@ -1,8 +1,8 @@
 package com.humantalks.internal.meetups
 
-import com.humantalks.auth.entities.User
 import com.humantalks.common.Conf
 import com.humantalks.common.values.Meta
+import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
 import com.humantalks.internal.venues.Venue
 import global.Contexts
@@ -14,7 +14,7 @@ import reactivemongo.api.commands.WriteResult
 
 import scala.concurrent.Future
 
-case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Repository[Meetup, Meetup.Id, Meetup.Data] {
+case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Repository[Meetup, Meetup.Id, Meetup.Data, Person.Id] {
   import Contexts.dbToEC
   import ctx._
   private val collection = db.getCollection(conf.Repositories.meetup)
@@ -42,12 +42,12 @@ case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   def get(id: Meetup.Id): Future[Option[Meetup]] =
     collection.get(Json.obj("id" -> id))
 
-  def create(data: Meetup.Data, by: User.Id): Future[(WriteResult, Meetup.Id)] = {
+  def create(data: Meetup.Data, by: Person.Id): Future[(WriteResult, Meetup.Id)] = {
     val toCreate = Meetup(Meetup.Id.generate(), data.trim, published = false, Meta(new DateTime(), by, new DateTime(), by))
     collection.create(toCreate).map { res => (res, toCreate.id) }
   }
 
-  def update(elt: Meetup, data: Meetup.Data, by: User.Id): Future[WriteResult] =
+  def update(elt: Meetup, data: Meetup.Data, by: Person.Id): Future[WriteResult] =
     collection.update(Json.obj("id" -> elt.id), elt.copy(data = data.trim, meta = elt.meta.update(by)))
 
   private def partialUpdate(id: Meetup.Id, patch: JsObject): Future[WriteResult] =

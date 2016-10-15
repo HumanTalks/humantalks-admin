@@ -1,11 +1,11 @@
-@import com.humantalks.auth.entities.User
+@import com.humantalks.internal.persons.Person
 @import com.humantalks.internal.views.html.partials._
-@(user: User)
+@(person: Person)
 @main("Mon profil") {
     @header("user")
 
     <div class="container">
-        <h1>@user.name</h1>
-        @user
+        <h1>@person.data.name</h1>
+        @person
     </div>
 }

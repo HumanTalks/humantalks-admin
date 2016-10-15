@@ -9,8 +9,7 @@
     <fieldset class="col-md-6 col-md-offset-3">
         <legend>Register for a new account</legend>
         @helper.form(action = AuthCtrl.doRegister()) {
-            @fieldHorizontal(registerForm("firstName"), 'label -> "First name") { field => @inputText(field, 'placeholder -> "ex: John") }
-            @fieldHorizontal(registerForm("lastName"), 'label -> "Last name") { field => @inputText(field, 'placeholder -> "ex: Doe") }
+            @fieldHorizontal(registerForm("name"), 'label -> "Name") { field => @inputText(field, 'placeholder -> "ex: John Doe") }
             @fieldHorizontal(registerForm("email"), 'label -> "Email") { field => @inputEmail(field, 'placeholder -> "ex: john@doe.com") }
             @fieldHorizontal(registerForm("password"), 'label -> "Password") { field => @inputText(field, 'type -> "password") }
             <div class="form-group">

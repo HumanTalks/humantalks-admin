@@ -1,7 +1,8 @@
 package com.humantalks.auth.infrastructure
 
-import com.humantalks.auth.entities.{ AuthToken, User }
+import com.humantalks.auth.entities.AuthToken
 import com.humantalks.common.Conf
+import com.humantalks.internal.persons.Person
 import global.Contexts
 import global.infrastructure.Mongo
 import org.joda.time.DateTime
@@ -28,14 +29,14 @@ case class AuthTokenRepository(conf: Conf, ctx: Contexts, db: Mongo) {
   def create(token: AuthToken): Future[AuthToken] =
     collection.create(token).map(_ => token)
 
-  def create(id: User.Id): Future[AuthToken] =
+  def create(id: Person.Id): Future[AuthToken] =
     create(AuthToken.from(id))
 
   def delete(id: AuthToken.Id): Future[Unit] =
     collection.delete(Json.obj("id" -> id)).map(_ => ())
 
-  def delete(id: User.Id): Future[Unit] =
-    collection.delete(Json.obj("userId" -> id)).map(_ => ())
+  def delete(id: Person.Id): Future[Unit] =
+    collection.delete(Json.obj("person" -> id)).map(_ => ())
 
   def deleteExpired(): Future[Unit] =
     collection.delete(Json.obj("expiry" -> Json.obj("$lt" -> new DateTime))).map(_ => ())

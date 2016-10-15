@@ -1,6 +1,6 @@
 package com.humantalks
 
-import com.humantalks.auth.infrastructure.{ UserRepository, CredentialsRepository, AuthTokenRepository }
+import com.humantalks.auth.infrastructure.{ CredentialsRepository, AuthTokenRepository }
 import com.humantalks.auth.services.{ AuthSrv, MailerSrv }
 import com.humantalks.auth.silhouette._
 import com.humantalks.common.Conf
@@ -9,7 +9,6 @@ import com.humantalks.common.services.sendgrid.SendgridSrv
 import com.humantalks.internal.meetups.{ MeetupDbService, MeetupRepository, MeetupCtrl, MeetupApi }
 import com.humantalks.internal.persons.{ PersonDbService, PersonRepository, PersonCtrl, PersonApi }
 import com.humantalks.internal.talks.{ TalkDbService, TalkRepository, TalkCtrl, TalkApi }
-import com.humantalks.internal.users.UserCtrl
 import com.humantalks.tools.EmbedCtrl
 import com.humantalks.tools.scrapers.TwitterScraper
 import com.humantalks.internal.venues.{ VenueDbService, VenueRepository, VenueCtrl, VenueApi }
@@ -49,7 +48,6 @@ class MyComponents(context: ApplicationLoader.Context)
 
   val reactiveMongoApi: ReactiveMongoApi = new DefaultReactiveMongoApi(configuration, applicationLifecycle)
   val mongo = Mongo(ctx, reactiveMongoApi)
-  val userRepository = UserRepository(conf, ctx, mongo)
   val credentialsRepository = CredentialsRepository(conf, ctx, mongo)
   val authTokenRepository = AuthTokenRepository(conf, ctx, mongo)
   val venueRepository = VenueRepository(conf, ctx, mongo)
@@ -70,13 +68,12 @@ class MyComponents(context: ApplicationLoader.Context)
   val router: Router = new Routes(
     httpErrorHandler,
     new com.humantalks.exposed.Application(ctx),
-    new com.humantalks.auth.AuthCtrl(ctx, silhouette, conf, authSrv, userRepository, credentialsRepository, authTokenRepository, avatarService, mailerSrv),
+    new com.humantalks.auth.AuthCtrl(ctx, silhouette, conf, authSrv, personRepository, credentialsRepository, authTokenRepository, avatarService, mailerSrv),
     new com.humantalks.internal.Application(ctx, silhouette),
     new VenueCtrl(ctx, silhouette, venueDbService, personDbService, meetupDbService),
     new PersonCtrl(ctx, silhouette, personDbService, talkDbService),
     new TalkCtrl(ctx, silhouette, personDbService, talkDbService, meetupDbService),
     new MeetupCtrl(ctx, silhouette, venueDbService, personDbService, talkDbService, meetupDbService),
-    new UserCtrl(ctx, silhouette, userRepository),
     new VenueApi(ctx, silhouette, venueDbService),
     new PersonApi(ctx, silhouette, personDbService),
     new TalkApi(ctx, silhouette, talkDbService),

@@ -1,8 +1,7 @@
 package com.humantalks.internal.persons
 
-import com.humantalks.auth.entities.User
 import com.humantalks.auth.silhouette.SilhouetteEnv
-import com.humantalks.internal.talks.{ TalkDbService, TalkRepository }
+import com.humantalks.internal.talks.TalkDbService
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
 import global.helpers.CtrlHelper
@@ -73,6 +72,10 @@ case class PersonCtrl(
         case Right(res) => Redirect(routes.PersonCtrl.find())
       }
     }
+  }
+
+  def profil = silhouette.SecuredAction.async { implicit req =>
+    Future(Ok(views.html.profil(req.identity)))
   }
 
   private def formView(status: Status, personForm: Form[Person.Data], personOpt: Option[Person]): Future[Result] = {

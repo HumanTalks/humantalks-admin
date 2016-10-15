@@ -1,20 +1,19 @@
-@import com.humantalks.auth.entities.{Credentials, AuthToken, User}
-@import com.humantalks.auth.routes.AuthCtrl
-@import com.humantalks.exposed.views.html.partials._
+@import com.humantalks.auth.entities.{Credentials, AuthToken}
+@import com.humantalks.internal.persons.Person
 @import global.views.html.format._
-@(users: List[User], credentials: List[Credentials], authTokens: List[AuthToken], user: Option[User])(implicit request: RequestHeader)
+@import com.humantalks.exposed.views.html.partials._
+@import com.humantalks.auth.routes.AuthCtrl
+@(persons: List[Person], credentials: List[Credentials], authTokens: List[AuthToken], person: Option[Person])(implicit request: RequestHeader)
 @main("Debug users") {
     <div class="container">
-        User: @user
+        User: @person
         <h1>Users</h1>
         <table class="table table-hover table-condensed">
             <thead>
                 <tr>
                     <th>Id</th>
                     <th>LoginInfo</th>
-                    <th>FirstName</th>
-                    <th>LastName</th>
-                    <th>FullName</th>
+                    <th>Name</th>
                     <th>Email</th>
                     <th>Avatar</th>
                     <th>Created</th>
@@ -23,19 +22,17 @@
                 </tr>
             </thead>
             <tbody>
-                @users.map { u =>
-                    <tr @if(!u.activated){class="danger"}>
-                        <td>@u.id</td>
-                        <td>(@u.loginInfo.providerID,@u.loginInfo.providerKey)</td>
-                        <td>@u.firstName</td>
-                        <td>@u.lastName</td>
-                        <td>@u.fullName</td>
-                        <td>@u.email</td>
-                        <td>@u.avatarURL.map{url => <img src="@url" style="max-height: 30px;">}</td>
-                        <td>@datetime(u.created.toLocalDateTime)</td>
-                        <td>@datetime(u.updated.toLocalDateTime)</td>
+                @persons.map { p =>
+                    <tr @if(!p.activated){class="danger"}>
+                        <td>@p.id</td>
+                        <td>@p.loginInfo.map{l => (@l.providerID,@l.providerKey)}</td>
+                        <td>@p.data.name</td>
+                        <td>@p.data.email</td>
+                        <td>@p.data.avatar.map{url => <img src="@url" style="max-height: 30px;">}</td>
+                        <td>@datetime(p.meta.created.toLocalDateTime)</td>
+                        <td>@datetime(p.meta.updated.toLocalDateTime)</td>
                         <td>
-                            @helper.form(action=AuthCtrl.debugRemoveUser(u.id)) {
+                            @helper.form(action=AuthCtrl.debugRemoveUser(p.id)) {
                                 <button type="submit" class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>
                             }
                         </td>
@@ -57,7 +54,7 @@
             @authTokens.map { a =>
                 <tr>
                     <td>@a.id</td>
-                    <td>@a.userId @users.find(_.id == a.userId).map{u => (@u.email)}</td>
+                    <td>@a.person @persons.find(_.id == a.person).map{u => (@u.data.name)}</td>
                     <td>@datetime(a.expiry.toLocalDateTime)</td>
                     <td>
                         @helper.form(action=AuthCtrl.debugRemoveToken(a.id)) {

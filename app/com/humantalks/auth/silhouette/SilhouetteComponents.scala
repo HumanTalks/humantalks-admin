@@ -1,6 +1,7 @@
 package com.humantalks.auth.silhouette
 
-import com.humantalks.auth.infrastructure.{ UserRepository, CredentialsRepository }
+import com.humantalks.auth.infrastructure.CredentialsRepository
+import com.humantalks.internal.persons.PersonRepository
 import com.mohiva.play.silhouette.api.actions._
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.{ SilhouetteProvider, Silhouette, Environment, EventBus }
@@ -31,7 +32,7 @@ trait SilhouetteComponents
   // needed components
   val configuration: Configuration
   val wsClient: WSClient
-  val userRepository: UserRepository
+  val personRepository: PersonRepository
   val credentialsRepository: CredentialsRepository
 
   // silhouette components
@@ -42,7 +43,7 @@ trait SilhouetteComponents
   private lazy val idGenerator: IDGenerator = new SecureRandomIDGenerator()
   private lazy val authenticatorService: AuthenticatorService[CookieAuthenticator] = provideAuthenticatorService(cookieSigner, crypter, fingerprintGenerator, idGenerator, configuration, clock)
   private lazy val eventBus: EventBus = EventBus()
-  private lazy val env: Environment[SilhouetteEnv] = Environment[SilhouetteEnv](userRepository, authenticatorService, Seq(), eventBus)
+  private lazy val env: Environment[SilhouetteEnv] = Environment[SilhouetteEnv](personRepository, authenticatorService, Seq(), eventBus)
 
   private lazy val httpLayer: HTTPLayer = new PlayHTTPLayer(wsClient)
   private lazy val passwordInfoDAO: DelegableAuthInfoDAO[PasswordInfo] = credentialsRepository

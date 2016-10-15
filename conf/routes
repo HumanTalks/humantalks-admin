@@ -16,7 +16,7 @@ POST    /forgotPassword                                     com.humantalks.auth.
 GET     /resetPassword/:id                                  com.humantalks.auth.AuthCtrl.resetPassword(id: AuthToken.Id)
 POST    /resetPassword/:id                                  com.humantalks.auth.AuthCtrl.doResetPassword(id: AuthToken.Id)
 GET     /auth/debug                                         com.humantalks.auth.AuthCtrl.debug
-GET     /auth/debug/removeUser/:id                          com.humantalks.auth.AuthCtrl.debugRemoveUser(id: User.Id)
+GET     /auth/debug/removeUser/:id                          com.humantalks.auth.AuthCtrl.debugRemoveUser(id: Person.Id)
 GET     /auth/debug/removeToken/:id                         com.humantalks.auth.AuthCtrl.debugRemoveToken(id: AuthToken.Id)
 
 GET     /home                                               com.humantalks.internal.Application.index
@@ -36,6 +36,7 @@ GET     /persons/$id<.{36}>                                 com.humantalks.inter
 GET     /persons/$id<.{36}>/edit                            com.humantalks.internal.persons.PersonCtrl.update(id: Person.Id)
 POST    /persons/$id<.{36}>/edit                            com.humantalks.internal.persons.PersonCtrl.doUpdate(id: Person.Id)
 POST    /persons/$id<.{36}>/delete                          com.humantalks.internal.persons.PersonCtrl.doDelete(id: Person.Id)
+GET     /persons/me                                         com.humantalks.internal.persons.PersonCtrl.profil
 
 GET     /talks                                              com.humantalks.internal.talks.TalkCtrl.find
 GET     /talks/create                                       com.humantalks.internal.talks.TalkCtrl.create
@@ -58,8 +59,6 @@ POST    /meetups/$id<.{36}>/talks                           com.humantalks.inter
 POST    /meetups/$id<.{36}>/talks/add                       com.humantalks.internal.meetups.MeetupCtrl.doAddTalkForm(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/add        com.humantalks.internal.meetups.MeetupCtrl.doAddTalk(id: Meetup.Id, talkId: Talk.Id)
 POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/delete     com.humantalks.internal.meetups.MeetupCtrl.doRemoveTalk(id: Meetup.Id, talkId: Talk.Id)
-
-GET     /users/me                                           com.humantalks.internal.users.UserCtrl.profil
 
 GET     /api/internal                                       com.humantalks.internal.Application.apiRoot
 
