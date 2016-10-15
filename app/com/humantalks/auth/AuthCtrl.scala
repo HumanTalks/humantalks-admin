@@ -4,7 +4,7 @@ import java.net.URLDecoder
 
 import com.humantalks.auth.entities.{ AuthToken, User }
 import com.humantalks.auth.infrastructure.{ UserRepository, CredentialsRepository, AuthTokenRepository }
-import com.humantalks.auth.forms.{ LoginForm, RegisterForm }
+import com.humantalks.auth.forms._
 import com.humantalks.auth.services.MailerSrv
 import com.humantalks.auth.silhouette._
 import com.mohiva.play.silhouette.api.actions.UserAwareRequest
@@ -12,7 +12,7 @@ import com.mohiva.play.silhouette.api.exceptions.ProviderException
 import com.mohiva.play.silhouette.api._
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AvatarService
-import com.mohiva.play.silhouette.api.util.{ Credentials, PasswordHasherRegistry }
+import com.mohiva.play.silhouette.api.util.{ PasswordInfo, Credentials, PasswordHasherRegistry }
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import global.Contexts
@@ -40,7 +40,8 @@ case class AuthCtrl(
   import ctx._
   val registerForm = Form(RegisterForm.fields)
   val loginForm = Form(LoginForm.fields)
-  val emailFrom = "HumanTalks <paris@humantalks.com>"
+  val forgotPasswordForm = Form(ForgotPasswordForm.fields)
+  val resetPasswordForm = Form(ResetPasswordForm.fields)
   val loginRedirect = Redirect(com.humantalks.internal.routes.Application.index())
   val logoutRedirect = Redirect(com.humantalks.exposed.routes.Application.index())
 
@@ -68,7 +69,7 @@ case class AuthCtrl(
               avatar <- avatarService.retrieveURL(formData.email)
               user <- userRepository.create(user.copy(avatarURL = avatar))
               authInfo <- authInfoRepository.add(loginInfo, authInfo)
-              authToken <- authTokenRepository.create(AuthToken.from(user.id))
+              authToken <- authTokenRepository.create(user.id)
             } yield {
               mailerSrv.sendRegister(formData.email, user, authToken)
               silhouette.env.eventBus.publish(SignUpEvent(user, req))
@@ -137,7 +138,7 @@ case class AuthCtrl(
     val result = Redirect(routes.AuthCtrl.login()).flashing("info" -> s"We sent another activation email to you at <b>$decodedEmail</b>. It might take a few minutes for it to arrive; be sure to check your spam folder.")
     userRepository.retrieve(loginInfo).flatMap {
       case Some(user) if !user.activated =>
-        authTokenRepository.create(AuthToken.from(user.id)).map { authToken =>
+        authTokenRepository.create(user.id).map { authToken =>
           mailerSrv.sendActivateAccount(decodedEmail, user, authToken)
           result
         }
@@ -155,6 +156,54 @@ case class AuthCtrl(
         case _ => Future(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please login to send the activation email again."))
       }
       case None => Future(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please login to send the activation email again."))
+    }
+  }
+
+  def forgotPassword() = silhouette.UnsecuredAction.async { implicit req =>
+    Future(Ok(views.html.forgotPassword(forgotPasswordForm)))
+  }
+
+  def doForgotPassword() = silhouette.UnsecuredAction.async { implicit req =>
+    forgotPasswordForm.bindFromRequest.fold(
+      formWithErrors => Future(BadRequest(views.html.forgotPassword(formWithErrors))),
+      formData => {
+        val result = Redirect(routes.AuthCtrl.login()).flashing("info" -> "We have sent you an email with further instructions to reset your password, on condition that the address was found in our system. If you do not receive an email within the next 5 minutes, then please recheck your entered email address and try it again.")
+        val loginInfo = LoginInfo(CredentialsProvider.ID, formData.email)
+        userRepository.retrieve(loginInfo).flatMap {
+          case Some(user) if user.email.isDefined =>
+            authTokenRepository.create(user.id).map { authToken =>
+              mailerSrv.sentResetPassword(formData.email, user, authToken)
+              result
+            }
+          case None =>
+            Future(result)
+        }
+      }
+    )
+  }
+
+  def resetPassword(token: AuthToken.Id) = silhouette.UnsecuredAction.async { implicit req =>
+    authTokenRepository.get(token).map {
+      case Some(authToken) => Ok(views.html.resetPassword(resetPasswordForm, token))
+      case None => Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please request a new link to reset your password.")
+    }
+  }
+
+  def doResetPassword(token: AuthToken.Id) = silhouette.UnsecuredAction.async { implicit req =>
+    authTokenRepository.get(token).flatMap {
+      case Some(authToken) =>
+        resetPasswordForm.bindFromRequest.fold(
+          formWithErrors => Future(BadRequest(views.html.resetPassword(formWithErrors, token))),
+          formData => userRepository.get(authToken.userId).flatMap {
+            case Some(user) if user.loginInfo.providerID == CredentialsProvider.ID =>
+              val passwordInfo = passwordHasherRegistry.current.hash(formData.password)
+              authInfoRepository.update(user.loginInfo, passwordInfo).map { _ =>
+                Redirect(routes.AuthCtrl.login()).flashing("success" -> "Mot de passe réinitialisé")
+              }
+            case _ => Future.successful(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please request a new link to reset your password. (no user)"))
+          }
+        )
+      case None => Future(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please request a new link to reset your password. (no token)"))
     }
   }
 

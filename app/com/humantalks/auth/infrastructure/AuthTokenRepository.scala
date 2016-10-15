@@ -23,10 +23,13 @@ case class AuthTokenRepository(conf: Conf, ctx: Contexts, db: Mongo) {
     collection.find(Json.obj("expiry" -> Json.obj("$lt" -> new DateTime)))
 
   def get(id: AuthToken.Id): Future[Option[AuthToken]] =
-    collection.get(Json.obj("id" -> id, "expiry" -> Json.obj("$lt" -> new DateTime)))
+    collection.get(Json.obj("id" -> id, "expiry" -> Json.obj("$gt" -> new DateTime)))
 
   def create(token: AuthToken): Future[AuthToken] =
     collection.create(token).map(_ => token)
+
+  def create(id: User.Id): Future[AuthToken] =
+    create(AuthToken.from(id))
 
   def delete(id: AuthToken.Id): Future[Unit] =
     collection.delete(Json.obj("id" -> id)).map(_ => ())

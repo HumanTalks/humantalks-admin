@@ -1,6 +1,5 @@
 @import com.humantalks.auth.forms.LoginForm
 @import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
-@import com.mohiva.play.silhouette.impl.providers.oauth2.ClefProvider
 @import com.humantalks.exposed.views.html.partials._
 @import global.views.html.form._
 @import global.views.html.format._
@@ -24,7 +23,7 @@
         <div>
             <p class="not-a-member">
                 Not a member? <a href="@AuthCtrl.register">Register now</a>
-                @*| <a href="@rout.AuthCtrl.forgotPassword()" title="Forgot your password?">Forgot your password?</a>*@
+                | <a href="@AuthCtrl.forgotPassword()" title="Forgot your password?">Forgot your password?</a>
             </p>
         </div>
 

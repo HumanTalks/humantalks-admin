@@ -7,7 +7,7 @@ import play.api.libs.mailer.{ Email, MailerClient }
 import play.api.mvc.RequestHeader
 
 case class MailerSrv(mailerClient: MailerClient) {
-  val emailFrom = "Silhouette <noreply@mohiva.com>"
+  val emailFrom = "HumanTalks <paris@humantalks.com>"
 
   def sendRegister(email: String, user: User, authToken: AuthToken)(implicit request: RequestHeader, messagesApi: MessagesApi): String = {
     val url = routes.AuthCtrl.activateAccount(authToken.id).absoluteURL()
@@ -39,6 +39,17 @@ case class MailerSrv(mailerClient: MailerClient) {
       to = Seq(email),
       bodyText = Some(views.txt.emails.activateAccount(user, url).body),
       bodyHtml = Some(views.html.emails.activateAccount(user, url).body)
+    ))
+  }
+
+  def sentResetPassword(email: String, user: User, authToken: AuthToken)(implicit request: RequestHeader, messagesApi: MessagesApi): String = {
+    val url = routes.AuthCtrl.resetPassword(authToken.id).absoluteURL()
+    mailerClient.send(Email(
+      subject = "Reset password",
+      from = emailFrom,
+      to = Seq(email),
+      bodyText = Some(views.txt.emails.resetPassword(user, url).body),
+      bodyHtml = Some(views.html.emails.resetPassword(user, url).body)
     ))
   }
 }
