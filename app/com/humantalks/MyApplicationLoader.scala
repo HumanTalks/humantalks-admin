@@ -6,6 +6,7 @@ import com.humantalks.auth.silhouette._
 import com.humantalks.common.Conf
 import com.humantalks.common.services.EmbedSrv
 import com.humantalks.common.services.sendgrid.SendgridSrv
+import com.humantalks.internal.admin.AdminCtrl
 import com.humantalks.internal.meetups.{ MeetupDbService, MeetupRepository, MeetupCtrl, MeetupApi }
 import com.humantalks.internal.persons.{ PersonDbService, PersonRepository, PersonCtrl, PersonApi }
 import com.humantalks.internal.talks.{ TalkDbService, TalkRepository, TalkCtrl, TalkApi }
@@ -67,21 +68,22 @@ class MyComponents(context: ApplicationLoader.Context)
   implicit val messagesApiImp = messagesApi
   val router: Router = new Routes(
     httpErrorHandler,
-    new com.humantalks.exposed.Application(ctx),
-    new com.humantalks.auth.AuthCtrl(ctx, silhouette, conf, authSrv, personRepository, credentialsRepository, authTokenRepository, avatarService, mailerSrv),
-    new com.humantalks.internal.Application(ctx, silhouette),
-    new VenueCtrl(ctx, silhouette, venueDbService, personDbService, meetupDbService),
-    new PersonCtrl(ctx, silhouette, personDbService, talkDbService),
-    new TalkCtrl(ctx, silhouette, personDbService, talkDbService, meetupDbService),
-    new MeetupCtrl(ctx, silhouette, venueDbService, personDbService, talkDbService, meetupDbService),
-    new VenueApi(ctx, silhouette, venueDbService),
-    new PersonApi(ctx, silhouette, personDbService),
-    new TalkApi(ctx, silhouette, talkDbService),
-    new MeetupApi(ctx, silhouette, meetupDbService),
-    new com.humantalks.tools.Application(ctx),
-    new EmbedCtrl(ctx, embedSrv),
-    new TwitterScraper(ctx, wsClient),
-    new _root_.global.controllers.Application(ctx, mongo),
+    com.humantalks.exposed.Application(ctx),
+    com.humantalks.auth.AuthCtrl(ctx, silhouette, conf, authSrv, personRepository, credentialsRepository, authTokenRepository, avatarService, mailerSrv),
+    com.humantalks.internal.Application(ctx, silhouette),
+    VenueCtrl(ctx, silhouette, venueDbService, personDbService, meetupDbService),
+    PersonCtrl(ctx, silhouette, personDbService, talkDbService),
+    TalkCtrl(ctx, silhouette, personDbService, talkDbService, meetupDbService),
+    MeetupCtrl(ctx, silhouette, venueDbService, personDbService, talkDbService, meetupDbService),
+    AdminCtrl(ctx, silhouette, personDbService, credentialsRepository, authTokenRepository),
+    VenueApi(ctx, silhouette, venueDbService),
+    PersonApi(ctx, silhouette, personDbService),
+    TalkApi(ctx, silhouette, talkDbService),
+    MeetupApi(ctx, silhouette, meetupDbService),
+    com.humantalks.tools.Application(ctx),
+    EmbedCtrl(ctx, embedSrv),
+    TwitterScraper(ctx, wsClient),
+    _root_.global.controllers.Application(ctx, mongo),
     new _root_.controllers.Assets(httpErrorHandler)
   )
 

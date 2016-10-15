@@ -4,6 +4,7 @@ import com.humantalks.auth.forms.RegisterForm
 import com.humantalks.common.values.Meta
 import com.humantalks.common.services.TwitterSrv
 import com.mohiva.play.silhouette.api.{ Identity, LoginInfo }
+import global.helpers.EnumerationHelper
 import global.values.{ TypedId, TypedIdHelper }
 import play.api.data.Forms._
 import play.api.libs.json.Json
@@ -12,6 +13,7 @@ case class Person(
     id: Person.Id,
     data: Person.Data,
     loginInfo: Option[LoginInfo],
+    role: Option[Person.Role.Value],
     activated: Boolean,
     meta: Meta
 ) extends Identity {
@@ -22,6 +24,10 @@ object Person {
   object Id extends TypedIdHelper[Id] {
     def from(value: String): Either[String, Id] = TypedId.from(value, "Person.Id").right.map(Id(_))
     def generate(): Id = Id(TypedId.generate())
+  }
+
+  object Role extends Enumeration {
+    val Admin, Organizer, User = Value
   }
 
   case class Data(
@@ -56,10 +62,21 @@ object Person {
       ),
       loginInfo = Some(loginInfo),
       activated = false,
+      role = Some(Role.User),
       meta = Meta.from(id)
     )
   }
+  def from(data: Person.Data, by: Person.Id): Person =
+    Person(
+      id = Person.Id.generate(),
+      data = data.trim,
+      loginInfo = None,
+      activated = false,
+      role = Some(Role.User),
+      meta = Meta.from(by)
+    )
 
+  implicit val formatRole = EnumerationHelper.enumFormat(Role)
   implicit val formatData = Json.format[Person.Data]
   implicit val format = Json.format[Person]
   val fields = mapping(

@@ -60,6 +60,10 @@ POST    /meetups/$id<.{36}>/talks/add                       com.humantalks.inter
 POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/add        com.humantalks.internal.meetups.MeetupCtrl.doAddTalk(id: Meetup.Id, talkId: Talk.Id)
 POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/delete     com.humantalks.internal.meetups.MeetupCtrl.doRemoveTalk(id: Meetup.Id, talkId: Talk.Id)
 
+GET     /admin/users                                        com.humantalks.internal.admin.AdminCtrl.users
+POST    /admin/users/$id<.{36}>/role                        com.humantalks.internal.admin.AdminCtrl.setRole(id: Person.Id)
+POST    /admin/users/deleteToken/:id                        com.humantalks.internal.admin.AdminCtrl.deleteToken(id: AuthToken.Id)
+
 GET     /api/internal                                       com.humantalks.internal.Application.apiRoot
 
 GET     /api/internal/venues                                com.humantalks.internal.venues.VenueApi.find

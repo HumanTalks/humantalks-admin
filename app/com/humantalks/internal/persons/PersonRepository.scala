@@ -2,13 +2,11 @@ package com.humantalks.internal.persons
 
 import com.humantalks.auth.forms.RegisterForm
 import com.humantalks.common.Conf
-import com.humantalks.common.values.Meta
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.services.IdentityService
 import global.Contexts
 import global.infrastructure.{ Mongo, Repository }
 import global.values.Page
-import org.joda.time.DateTime
 import play.api.libs.json.{ JsObject, Json }
 import reactivemongo.api.commands.WriteResult
 
@@ -40,7 +38,7 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
     collection.create(elt).map { res => (res, elt.id) }
 
   def create(data: Person.Data, by: Person.Id): Future[(WriteResult, Person.Id)] =
-    create(Person(Person.Id.generate(), data.trim, None, activated = false, Meta(new DateTime(), by, new DateTime(), by)))
+    create(Person.from(data.trim, by))
 
   def update(elt: Person): Future[WriteResult] =
     collection.update(Json.obj("id" -> elt.id), elt)
@@ -92,4 +90,7 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
 
   def activate(id: Person.Id): Future[WriteResult] =
     collection.partialUpdate(Json.obj("id" -> id), Json.obj("$set" -> Json.obj("activated" -> true)))
+
+  def setRole(id: Person.Id, role: Option[Person.Role.Value]): Future[WriteResult] =
+    collection.partialUpdate(Json.obj("id" -> id), Json.obj("$set" -> Json.obj("role" -> role)))
 }
