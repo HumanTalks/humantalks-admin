@@ -1,0 +1,12 @@
+@import com.humantalks.internal.venues.Venue
+@import global.views.html.form._
+@import com.humantalks.internal.persons.Person
+
+@(venueForm: Form[Venue.Data], personList: List[Person])(implicit messagesApi: MessagesApi)
+@fieldHorizontal(venueForm("name"), 'label -> "Nom") { field => @inputText(field, 'placeholder -> "ex: Google", 'autofocus -> "") }
+@fieldHorizontal(venueForm("twitter"), 'label -> "Compte twitter") { field => @inputText(field, 'twitterScraper -> "", 'avatar -> "logo", 'placeholder -> "ex: @google") }
+@fieldHorizontal(venueForm("location"), 'label -> "Adresse") { field => @inputGMapPlace(field, 'placeholder -> "ex: CPE Lyon, Boulevard du 11 Novembre 1918, Villeurbanne, France") }
+@fieldHorizontal(venueForm("logo"), 'label -> "Logo") { field => @inputImageUrl(field, 'placeholder -> "ex: https://image.freepik.com/free-icon/male-user-shadow_318-34042.png") }
+@fieldHorizontal(venueForm("contacts"), 'label -> "Contact(s)") { field => @inputSelectMulti2(field, personList.map(p => (p.id.toString, p.data.name)), 'placeholder -> "Sélectionner les contacts", 'onCreate -> "createPersonModal", 'onCreateLabel -> "Nouveau contact") }
+@fieldHorizontal(venueForm("capacity"), 'label -> "Taille de la salle") { field => @inputNumber(field, 'placeholder -> "ex: 80") }
+@fieldHorizontal(venueForm("comment"), 'label -> "Commentaire") { field => @inputTextarea(field, 'rows -> "5", 'placeholder -> "ex: Super ambiance, à refaire !") }

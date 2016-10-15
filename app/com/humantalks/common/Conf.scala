@@ -1,10 +1,10 @@
 package com.humantalks.common
 
 import com.humantalks.auth.silhouette.{ Credentials, AuthToken, User }
-import com.humantalks.meetups.Meetup
-import com.humantalks.persons.Person
-import com.humantalks.talks.Talk
-import com.humantalks.venues.Venue
+import com.humantalks.internal.meetups.Meetup
+import com.humantalks.internal.persons.Person
+import com.humantalks.internal.talks.Talk
+import com.humantalks.internal.venues.Venue
 import global.infrastructure.Repository
 import play.api.Configuration
 import play.api.i18n.DefaultLangs

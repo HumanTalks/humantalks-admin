@@ -104,7 +104,7 @@ case class AuthCtrl(
       login => {
         val credentials = Credentials(login.email, login.password)
         credentialsProvider.authenticate(credentials).flatMap { loginInfo =>
-          val result = Redirect(com.humantalks.common.controllers.routes.Application.index())
+          val result = Redirect(com.humantalks.internal.common.controllers.routes.Application.index())
           userRepository.retrieve(loginInfo).flatMap {
             case Some(user) if !user.activated => Future(Ok(views.html.activateAccount(login.email)))
             case Some(user) => {

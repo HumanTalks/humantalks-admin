@@ -36,10 +36,10 @@ libraryDependencies ++= Seq(
 play.sbt.routes.RoutesKeys.routesImport ++= Seq(
   "com.humantalks.auth.silhouette.User",
   "com.humantalks.auth.silhouette.AuthToken",
-  "com.humantalks.persons.Person",
-  "com.humantalks.venues.Venue",
-  "com.humantalks.talks.Talk",
-  "com.humantalks.meetups.Meetup")
+  "com.humantalks.internal.venues.Venue",
+  "com.humantalks.internal.persons.Person",
+  "com.humantalks.internal.talks.Talk",
+  "com.humantalks.internal.meetups.Meetup")
 
 lazy val root =
   (project in file("."))

@@ -3,12 +3,12 @@ package com.humantalks
 import com.humantalks.auth.silhouette._
 import com.humantalks.common.Conf
 import com.humantalks.common.services.EmbedSrv
-import com.humantalks.meetups.{ MeetupDbService, MeetupRepository, MeetupCtrl, MeetupApi }
-import com.humantalks.persons.{ PersonDbService, PersonRepository, PersonCtrl, PersonApi }
-import com.humantalks.talks.{ TalkDbService, TalkRepository, TalkCtrl, TalkApi }
+import com.humantalks.internal.meetups.{ MeetupDbService, MeetupRepository, MeetupCtrl, MeetupApi }
+import com.humantalks.internal.persons.{ PersonDbService, PersonRepository, PersonCtrl, PersonApi }
+import com.humantalks.internal.talks.{ TalkDbService, TalkRepository, TalkCtrl, TalkApi }
 import com.humantalks.tools.EmbedCtrl
 import com.humantalks.tools.scrapers.TwitterScraper
-import com.humantalks.venues.{ VenueDbService, VenueRepository, VenueCtrl, VenueApi }
+import com.humantalks.internal.venues.{ VenueDbService, VenueRepository, VenueCtrl, VenueApi }
 import global.Contexts
 import global.infrastructure.Mongo
 import play.api.cache.EhCacheComponents
@@ -63,16 +63,17 @@ class MyComponents(context: ApplicationLoader.Context)
   implicit val messagesApiImp = messagesApi
   val router: Router = new Routes(
     httpErrorHandler,
-    new com.humantalks.common.controllers.Application(ctx),
+    new com.humantalks.internal.common.controllers.Application(ctx),
     new com.humantalks.auth.AuthCtrl(configuration, ctx, userRepository, credentialsRepository, authTokenRepository, silhouette, passwordHasherRegistry, avatarService, authInfoRepository, credentialsProvider, socialProviderRegistry, mailerClient),
-    new VenueCtrl(ctx, meetupRepository, personDbService, venueDbService),
-    new PersonCtrl(ctx, talkRepository, personDbService),
-    new TalkCtrl(ctx, meetupRepository, personRepository, talkDbService),
-    new MeetupCtrl(ctx, talkRepository, personRepository, venueRepository, meetupDbService),
+    new VenueCtrl(ctx, venueDbService, personDbService, meetupDbService),
+    new PersonCtrl(ctx, personDbService, talkDbService),
+    new TalkCtrl(ctx, personDbService, talkDbService, meetupDbService),
+    new MeetupCtrl(ctx, venueDbService, personDbService, talkDbService, meetupDbService),
     new VenueApi(ctx, venueRepository),
     new PersonApi(ctx, personRepository),
     new TalkApi(ctx, talkRepository),
     new MeetupApi(ctx, meetupRepository),
+    new com.humantalks.tools.Application(ctx),
     new EmbedCtrl(ctx, embedSrv),
     new TwitterScraper(ctx, wsClient),
     new _root_.global.controllers.Application(ctx, mongo),

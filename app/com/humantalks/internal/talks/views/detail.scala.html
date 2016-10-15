@@ -1,0 +1,40 @@
+@import com.humantalks.internal.talks.Talk
+@import com.humantalks.internal.persons.Person
+@import com.humantalks.internal.meetups.Meetup
+@import com.humantalks.internal.common.views.html.partials._
+@import com.humantalks.internal.persons.routes.PersonCtrl
+@import com.humantalks.internal.talks.routes.TalkCtrl
+@import com.humantalks.internal.meetups.routes.MeetupCtrl
+@import global.views.html.format._
+@(talk: Talk, personList: List[Person], meetupList: List[Meetup])
+@main(talk.data.title, talk.data.description.getOrElse("")) {
+    @header("talk")
+
+    <div class="container">
+        <h1>
+            @helper.form(action=TalkCtrl.doDelete(talk.id), 'class->"pull-right") {
+                <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i></button>
+            }
+            <a href="@TalkCtrl.update(talk.id)" class="btn btn-default pull-right"><i class="fa fa-pencil-square-o"></i></a>
+            @talk.data.title
+        </h1>
+        @talk.data.description.map{d => <p>@multiline(d)</p>}
+        @if(talk.data.speakers.nonEmpty){
+            <p>par @talk.data.speakers.flatMap(id => personList.find(_.id == id)).map { speaker => <a href="@PersonCtrl.get(speaker.id)">@speaker.data.name</a> }</p>
+        }
+        @talk.data.slidesEmbedCode.map{c => <p><b>Slides:</b><br>@Html(c)</p>}.getOrElse{
+            @talk.data.slides.map{s => <p><b>Slides:</b><br>@embed(s)</p>}
+        }
+        @talk.data.videoEmbedCode.map{c => <p><b>Vidéo:</b><br>@Html(c)</p>}.getOrElse{
+            @talk.data.video.map{v => <p><b>Vidéo:</b><br>@embed(v)</p>}
+        }
+        @if(meetupList.nonEmpty){
+            <h3>Meetups</h3>
+            <ul>
+            @meetupList.map { meetup =>
+                <li><a href="@MeetupCtrl.get(meetup.id)">@meetup.data.title</a></li>
+            }
+            </ul>
+        }
+    </div>
+}

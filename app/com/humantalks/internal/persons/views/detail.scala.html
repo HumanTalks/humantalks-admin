@@ -1,0 +1,31 @@
+@import com.humantalks.internal.persons.Person
+@import com.humantalks.internal.talks.Talk
+@import com.humantalks.internal.common.views.html.partials._
+@import com.humantalks.internal.persons.routes.PersonCtrl
+@import com.humantalks.internal.talks.routes.TalkCtrl
+@import global.views.html.format._
+@(person: Person, talkList: List[Talk])
+@main(person.data.name) {
+    @header("person")
+
+    <div class="container">
+        <h1>
+            @helper.form(action=PersonCtrl.doDelete(person.id), 'class->"pull-right") {
+                <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i></button>
+            }
+            <a href="@PersonCtrl.update(person.id)" class="btn btn-default pull-right"><i class="fa fa-pencil-square-o"></i></a>
+            @person.data.name
+        </h1>
+        @person.data.description.map{d => <p>@multiline(d)</p>}
+        @person.data.email.map{email => <a href="mailto:@email" target="_blank">@email</a>}
+        @person.data.twitter.map{account => <a href="https://twitter.com/@account" target="_blank">@@@account</a>}
+        @if(talkList.nonEmpty){
+            <h3>Talks</h3>
+            <ul>
+            @talkList.map { talk =>
+                <li><a href="@TalkCtrl.get(talk.id)">@talk.data.title</a> à ???</li>
+            }
+            </ul>
+        }
+    </div>
+}

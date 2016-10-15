@@ -1,7 +1,7 @@
 package global.infrastructure
 
 import global.Contexts
-import global.models.{ Page, Status }
+import global.values.{ Page, Status }
 import play.api.libs.json._
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.commands.{ Command, MultiBulkWriteResult, UpdateWriteResult, WriteResult }

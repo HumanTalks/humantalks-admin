@@ -3,7 +3,7 @@ package com.humantalks.auth.silhouette
 import com.humantalks.auth.silhouette.forms.Register
 import com.mohiva.play.silhouette.api.{ Identity, LoginInfo }
 import com.mohiva.play.silhouette.impl.providers.CommonSocialProfile
-import global.models.{ TypedId, TypedIdHelper }
+import global.values.{ TypedId, TypedIdHelper }
 import org.joda.time.DateTime
 import play.api.libs.json.Json
 

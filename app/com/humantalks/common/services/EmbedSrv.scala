@@ -1,6 +1,6 @@
 package com.humantalks.common.services
 
-import global.models.ApiError
+import global.values.ApiError
 import play.api.libs.json.Json
 import play.api.libs.ws.{ WSResponse, WSClient }
 

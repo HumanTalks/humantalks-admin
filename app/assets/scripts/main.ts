@@ -1,5 +1,6 @@
 declare const $: any;
 declare const google: any;
+declare const config: any;
 
 class Utils {
     static setSafe(obj: any, path: string | string[], value: any) {
@@ -92,8 +93,8 @@ function buildSelect2CreateModal(modalSelector: string, mainInputName: string, c
         select.trigger('change');
     }
 }
-var createTalkModal = buildSelect2CreateModal('#create-talk-modal', 'title', '/api/talks', talk => talk.data.title);
-var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', '/api/persons', person => person.data.name);
+var createTalkModal = buildSelect2CreateModal('#create-talk-modal', 'title', config.api.internal+'/talks', talk => talk.data.title);
+var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', config.api.internal+'/persons', person => person.data.name);
 (function(){
     $('.select2').each(function(){
         var $select = $(this);
@@ -194,7 +195,7 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
         }
     }
     function getEmbedCode(url: string) {
-        return $.get('/api/tools/embed?url='+encodeURIComponent(url)).then(function(res){
+        return $.get(config.api.tools+'/embed?url='+encodeURIComponent(url)).then(function(res){
             return res.data.embedCode;
         });
     }
@@ -202,25 +203,37 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
 
 // fill img url with twitter account (input having twitterToImg attribute pointing to imgUrl field id)
 (function(){
-    $('input[twitterToImageUrl]').each(function(){
+    $('input[twitterScraper]').each(function(){
         var $twitterAccountField = $(this);
-        var $imgUrlField = $('#'+$twitterAccountField.attr('twitterToImageUrl'));
-        update($twitterAccountField, $imgUrlField); // run on page load
+        update($twitterAccountField); // run on page load
         $twitterAccountField.on('change', function () {
-            update($twitterAccountField, $imgUrlField);
+            update($twitterAccountField);
         });
     });
-    function update($twitterAccountField, $imgUrlField){
-        if ($twitterAccountField.val() !== '' && $imgUrlField.val() === '') {
-            getTwitterAccount($twitterAccountField.val()).then(function(account){
-                if (account && $imgUrlField.val() === '') {
-                    $imgUrlField.val(account.avatar).change();
+    function update($field){
+        if ($field.val() !== '') {
+            getTwitterAccount($field.val()).then(function(account){
+                if(account){
+                    attrToField($field, 'avatar', account.avatar);
+                    attrToField($field, 'background', account.backgroundImage);
+                    attrToField($field, 'fullname', account.name);
+                    attrToField($field, 'bio', account.bio);
+                    attrToField($field, 'site', account.url);
                 }
             });
         }
     }
+    function attrToField($field, attrName: string, value: string){
+        var attr = $field.attr(attrName);
+        if(attr){
+            var $target = $('#'+attr);
+            if($target.val() === ''){
+                $target.val(value).change();
+            }
+        }
+    }
     function getTwitterAccount(account: string){
-        return $.get('/api/tools/scrapers/twitter/profil?account='+account).then(function(res){
+        return $.get(config.api.tools+'/scrapers/twitter/profil?account='+account).then(function(res){
             return res.data;
         });
     }

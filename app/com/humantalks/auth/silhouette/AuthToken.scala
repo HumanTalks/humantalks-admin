@@ -1,6 +1,6 @@
 package com.humantalks.auth.silhouette
 
-import global.models.{ TypedIdHelper, TypedId }
+import global.values.{ TypedIdHelper, TypedId }
 import org.joda.time.{ DateTimeZone, DateTime }
 import play.api.libs.json.Json
 

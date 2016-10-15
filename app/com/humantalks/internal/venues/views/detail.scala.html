@@ -1,0 +1,31 @@
+@import com.humantalks.internal.venues.Venue
+@import com.humantalks.internal.meetups.Meetup
+@import com.humantalks.internal.common.views.html.partials._
+@import com.humantalks.internal.venues.routes.VenueCtrl
+@import com.humantalks.internal.meetups.routes.MeetupCtrl
+@import global.views.html.format._
+@(venue: Venue, meetupList: List[Meetup])
+@main(venue.data.name) {
+    @header("venue")
+
+    <div class="container">
+        <h1>
+            @helper.form(action=VenueCtrl.doDelete(venue.id), 'class->"pull-right") {
+                <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i></button>
+            }
+            <a href="@VenueCtrl.update(venue.id)" class="btn btn-default pull-right"><i class="fa fa-pencil-square-o"></i></a>
+            @venue.data.name
+        </h1>
+        @venue.data.location.map{loc => <p>@loc.formatted</p>}
+        @venue.data.comment.map{c => <p>@multiline(c)</p>}
+        @venue.data.twitter.map{account => <a href="https://twitter.com/@account" target="_blank">@@@account</a>}
+        @if(meetupList.nonEmpty){
+            <h3>Meetups</h3>
+            <ul>
+            @meetupList.map { meetup =>
+                <li><a href="@MeetupCtrl.get(meetup.id)">@meetup.data.title</a></li>
+            }
+            </ul>
+        }
+    </div>
+}

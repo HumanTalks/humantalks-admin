@@ -1,9 +1,0 @@
-@import com.humantalks.persons.Person
-@import com.humantalks.talks.Talk
-@import global.views.html.form._
-@(talkForm: Form[Talk.Data], personList: List[Person])(implicit messagesApi: MessagesApi)
-@fieldHorizontal(talkForm("title"), 'label -> "Titre") { field => @inputText(field, 'placeholder -> "ex: Ionic2, les développeurs web à l'assaut du mobile", 'autofocus -> "") }
-@fieldHorizontal(talkForm("description"), 'label -> "Description") { field => @inputTextarea(field, 'rows -> "5", 'placeholder -> "ex: Ionic c'est génial !") }
-@fieldHorizontal(talkForm("speakers"), 'label -> "Speakers") { field => @inputSelectMulti2(field, personList.map(p => (p.id.toString, p.data.name)), 'placeholder -> "Sélectionner les speakers", 'onCreate -> "createPersonModal", 'onCreateLabel -> "Nouveau speaker") }
-@fieldHorizontal(talkForm("video"), 'label -> "Vidéo") { field => @inputEmbed(field, 'placeholder -> "ex: https://www.youtube.com/watch?v=3CldnObRbf0") }
-@fieldHorizontal(talkForm("slides"), 'label -> "Slides") { field => @inputEmbed(field, 'placeholder -> "ex: http://www.slideshare.net/inarocket/learn-bem-css-naming-convention") }

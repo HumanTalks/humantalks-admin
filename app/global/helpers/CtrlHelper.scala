@@ -25,5 +25,5 @@ object CtrlHelper {
     }
   }
   def notFound[Id](name: String, id: Id): Result =
-    NotFound(com.humantalks.common.views.html.errors.notFound("Unable to find a " + name + " with id " + id))
+    NotFound(global.views.html.errors.notFound("Unable to find a " + name + " with id " + id))
 }
