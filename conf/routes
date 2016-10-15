@@ -15,9 +15,9 @@ GET     /forgotPassword                                     com.humantalks.auth.
 POST    /forgotPassword                                     com.humantalks.auth.AuthCtrl.doForgotPassword
 GET     /resetPassword/:id                                  com.humantalks.auth.AuthCtrl.resetPassword(id: AuthToken.Id)
 POST    /resetPassword/:id                                  com.humantalks.auth.AuthCtrl.doResetPassword(id: AuthToken.Id)
-GET     /auth/debug                                         com.humantalks.auth.AuthCtrl.debug
-GET     /auth/debug/removeUser/:id                          com.humantalks.auth.AuthCtrl.debugRemoveUser(id: Person.Id)
-GET     /auth/debug/removeToken/:id                         com.humantalks.auth.AuthCtrl.debugRemoveToken(id: AuthToken.Id)
+#GET     /auth/debug                                         com.humantalks.auth.AuthCtrl.debug
+#GET     /auth/debug/removeUser/:id                          com.humantalks.auth.AuthCtrl.debugRemoveUser(id: Person.Id)
+#GET     /auth/debug/removeToken/:id                         com.humantalks.auth.AuthCtrl.debugRemoveToken(id: AuthToken.Id)
 
 GET     /home                                               com.humantalks.internal.Application.index
 

@@ -210,7 +210,7 @@ case class AuthCtrl(
     }
   }
 
-  def debug = silhouette.UserAwareAction.async { implicit req =>
+  /*def debug = silhouette.UserAwareAction.async { implicit req =>
     for {
       persons <- personRepository.findUsers()
       authTokens <- authTokenRepository.find()
@@ -234,5 +234,5 @@ case class AuthCtrl(
     authTokenRepository.delete(id).map { _ =>
       Redirect(routes.AuthCtrl.debug())
     }
-  }
+  }*/
 }
