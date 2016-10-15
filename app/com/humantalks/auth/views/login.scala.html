@@ -1,11 +1,11 @@
-@import com.humantalks.auth.forms.Login
+@import com.humantalks.auth.forms.LoginForm
 @import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 @import com.mohiva.play.silhouette.impl.providers.oauth2.ClefProvider
 @import com.humantalks.exposed.views.html.partials._
 @import global.views.html.form._
 @import global.views.html.format._
 @import com.humantalks.auth.routes.AuthCtrl
-@(loginForm: Form[Login], socialProviders: SocialProviderRegistry)(implicit request: RequestHeader, messagesApi: MessagesApi)
+@(loginForm: Form[LoginForm])(implicit request: RequestHeader, messagesApi: MessagesApi)
 @main("Login") {
     @flash()
     <fieldset class="col-md-6 col-md-offset-3">
@@ -27,24 +27,6 @@
                 @*| <a href="@rout.AuthCtrl.forgotPassword()" title="Forgot your password?">Forgot your password?</a>*@
             </p>
         </div>
-
-        @*
-        @if(socialProviders.providers.nonEmpty) {
-            <div class="social-providers">
-                <p>Or use your existing account on one of the following services to register:</p>
-                <div>
-                @for(p <- socialProviders.providers if p.id != "clef") {
-                    <a href="@rout.AuthCtrl.socialAuth(p.id)" class="provider @p.id" title="@p.id"><img src="@routes.Assets.at(s"images/providers/${p.id}.png")" width="64px" height="64px" alt="@messagesApi(p.id)"></a>
-                }
-                </div>
-                @defining(socialProviders.get[ClefProvider]) { clef =>
-                    @if(clef.isDefined) {
-                        <script type="text/javascript" src="https://clef.io/v3/clef.js" class="clef-button" data-app-id="@clef.get.settings.clientID" data-color="blue" data-style="flat" data-redirect-url="@clef.get.settings.redirectURL" data-type="login"></script>
-                    }
-                }
-            </div>
-        }
-        *@
 
     </fieldset>
 }

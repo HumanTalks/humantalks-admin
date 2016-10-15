@@ -43,7 +43,7 @@ case class TalkRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: EmbedS
 
   def update(elt: Talk, data: Talk.Data, by: User.Id): Future[WriteResult] =
     fillEmbedCode(elt.copy(data = data.trim, meta = elt.meta.update(by))).flatMap { toUpdate =>
-      collection.fullUpdate(Json.obj("id" -> elt.id), toUpdate)
+      collection.update(Json.obj("id" -> elt.id), toUpdate)
     }
 
   /*def partialUpdate(id: Talk.Id, patch: JsObject): Future[WriteResult] =

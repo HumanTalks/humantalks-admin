@@ -1,6 +1,7 @@
 package com.humantalks
 
 import com.humantalks.auth.infrastructure.{ UserRepository, CredentialsRepository, AuthTokenRepository }
+import com.humantalks.auth.services.MailerSrv
 import com.humantalks.auth.silhouette._
 import com.humantalks.common.Conf
 import com.humantalks.common.services.EmbedSrv
@@ -42,6 +43,7 @@ class MyComponents(context: ApplicationLoader.Context)
     with MailerComponents
     with SilhouetteComponents {
   val conf = Conf(configuration)
+  val silhouetteConf = SilhouetteConf(configuration)
   val ctx = Contexts(actorSystem)
 
   val embedSrv = EmbedSrv(wsClient)
@@ -61,11 +63,13 @@ class MyComponents(context: ApplicationLoader.Context)
   val talkDbService = TalkDbService(meetupRepository, talkRepository)
   val meetupDbService = MeetupDbService(meetupRepository)
 
+  val mailerSrv = MailerSrv(mailerClient)
+
   implicit val messagesApiImp = messagesApi
   val router: Router = new Routes(
     httpErrorHandler,
     new com.humantalks.exposed.Application(ctx),
-    new com.humantalks.auth.AuthCtrl(configuration, ctx, userRepository, credentialsRepository, authTokenRepository, silhouette, passwordHasherRegistry, avatarService, authInfoRepository, credentialsProvider, socialProviderRegistry, mailerClient),
+    new com.humantalks.auth.AuthCtrl(silhouetteConf, ctx, userRepository, credentialsRepository, authTokenRepository, silhouette, passwordHasherRegistry, avatarService, authInfoRepository, credentialsProvider, mailerSrv),
     new com.humantalks.internal.Application(ctx),
     new VenueCtrl(ctx, venueDbService, personDbService, meetupDbService),
     new PersonCtrl(ctx, personDbService, talkDbService),

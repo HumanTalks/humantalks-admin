@@ -2,15 +2,15 @@ package com.humantalks.auth.forms
 
 import play.api.data.Forms._
 
-case class Login(
+case class LoginForm(
   email: String,
   password: String,
   rememberMe: Boolean
 )
-object Login {
+object LoginForm {
   val fields = mapping(
     "email" -> email,
     "password" -> nonEmptyText,
     "rememberMe" -> boolean
-  )(Login.apply)(Login.unapply)
+  )(LoginForm.apply)(LoginForm.unapply)
 }

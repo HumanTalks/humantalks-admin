@@ -35,7 +35,10 @@ case class UserRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Identity
     collection.create(user).map(_ => user)
 
   def update(user: User): Future[User] =
-    collection.fullUpdate(Json.obj("id" -> user.id), user.copy(updated = new DateTime())).map(_ => user)
+    collection.update(Json.obj("id" -> user.id), user.copy(updated = new DateTime())).map(_ => user)
+
+  def activate(id: User.Id): Future[WriteResult] =
+    collection.partialUpdate(Json.obj("id" -> id), Json.obj("$set" -> Json.obj("activated" -> true)))
 
   def delete(id: User.Id): Future[WriteResult] =
     collection.delete(Json.obj("id" -> id))

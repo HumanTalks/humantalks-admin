@@ -42,7 +42,7 @@ trait SilhouetteComponents
   private lazy val idGenerator: IDGenerator = new SecureRandomIDGenerator()
   private lazy val authenticatorService: AuthenticatorService[CookieAuthenticator] = provideAuthenticatorService(cookieSigner, crypter, fingerprintGenerator, idGenerator, configuration, clock)
   private lazy val eventBus: EventBus = EventBus()
-  private lazy val env: Environment[DefaultEnv] = Environment[DefaultEnv](userRepository, authenticatorService, Seq(), eventBus)
+  private lazy val env: Environment[SilhouetteEnv] = Environment[SilhouetteEnv](userRepository, authenticatorService, Seq(), eventBus)
 
   private lazy val httpLayer: HTTPLayer = new PlayHTTPLayer(wsClient)
   private lazy val passwordInfoDAO: DelegableAuthInfoDAO[PasswordInfo] = credentialsRepository
@@ -52,7 +52,7 @@ trait SilhouetteComponents
   lazy val passwordHasherRegistry: PasswordHasherRegistry = new PasswordHasherRegistry(passwordHasher)
   lazy val credentialsProvider: CredentialsProvider = new CredentialsProvider(authInfoRepository, passwordHasherRegistry)
   lazy val socialProviderRegistry: SocialProviderRegistry = SocialProviderRegistry(Seq())
-  lazy val silhouette: Silhouette[DefaultEnv] = new SilhouetteProvider(env, securedAction, unsecuredAction, userAwareAction)
+  lazy val silhouette: Silhouette[SilhouetteEnv] = new SilhouetteProvider(env, securedAction, unsecuredAction, userAwareAction)
 
   def provideAuthenticatorCookieSigner(configuration: Configuration): CookieSigner = {
     val config = configuration.underlying.as[JcaCookieSignerSettings]("silhouette.authenticator.cookie.signer")

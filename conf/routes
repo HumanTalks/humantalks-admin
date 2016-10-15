@@ -9,7 +9,7 @@ POST    /register                                           com.humantalks.auth.
 GET     /login                                              com.humantalks.auth.AuthCtrl.login
 POST    /login                                              com.humantalks.auth.AuthCtrl.doLogin
 POST    /logout                                             com.humantalks.auth.AuthCtrl.doLogout
-POST    /activationEmail                                    com.humantalks.auth.AuthCtrl.activationEmail(email: String)
+POST    /sendActivationEmail                                com.humantalks.auth.AuthCtrl.sendActivationEmail(email: String)
 GET     /activateAccount/:id                                com.humantalks.auth.AuthCtrl.activateAccount(id: AuthToken.Id)
 GET     /auth/debug                                         com.humantalks.auth.AuthCtrl.debug
 GET     /auth/debug/removeUser/:id                          com.humantalks.auth.AuthCtrl.debugRemoveUser(id: User.Id)

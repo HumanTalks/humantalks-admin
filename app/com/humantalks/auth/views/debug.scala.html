@@ -2,9 +2,10 @@
 @import com.humantalks.auth.routes.AuthCtrl
 @import com.humantalks.exposed.views.html.partials._
 @import global.views.html.format._
-@(users: List[User], credentials: List[Credentials], authTokens: List[AuthToken])(implicit request: RequestHeader)
+@(users: List[User], credentials: List[Credentials], authTokens: List[AuthToken], user: Option[User])(implicit request: RequestHeader)
 @main("Debug users") {
     <div class="container">
+        User: @user
         <h1>Users</h1>
         <table class="table table-hover table-condensed">
             <thead>

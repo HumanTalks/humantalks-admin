@@ -1,9 +1,9 @@
-@import com.humantalks.auth.forms.Register
+@import com.humantalks.auth.forms.RegisterForm
 @import com.humantalks.internal.views.html.partials._
 @import global.views.html.form._
 @import global.views.html.format._
 @import com.humantalks.auth.routes.AuthCtrl
-@(registerForm: Form[Register])(implicit request: RequestHeader, messagesApi: MessagesApi)
+@(registerForm: Form[RegisterForm])(implicit request: RequestHeader, messagesApi: MessagesApi)
 @main("Register") {
     @flash()
     <fieldset class="col-md-6 col-md-offset-3">

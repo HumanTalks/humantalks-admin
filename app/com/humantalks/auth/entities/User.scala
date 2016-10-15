@@ -1,6 +1,6 @@
 package com.humantalks.auth.entities
 
-import com.humantalks.auth.forms.Register
+import com.humantalks.auth.forms.RegisterForm
 import com.mohiva.play.silhouette.api.{ Identity, LoginInfo }
 import com.mohiva.play.silhouette.impl.providers.CommonSocialProfile
 import global.values.{ TypedId, TypedIdHelper }
@@ -57,7 +57,7 @@ object User {
       created = new DateTime(),
       updated = new DateTime()
     )
-  def from(register: Register, loginInfo: LoginInfo): User =
+  def from(register: RegisterForm, loginInfo: LoginInfo): User =
     User(
       id = Id.generate(),
       loginInfo = loginInfo,

@@ -27,11 +27,11 @@ case class CredentialsRepository(conf: Conf, ctx: Contexts, db: Mongo) extends D
   def add(loginInfo: LoginInfo, passwordInfo: PasswordInfo): Future[PasswordInfo] =
     collection.create(Credentials(loginInfo, passwordInfo)).map(_ => passwordInfo)
 
-  def update(loginInfo: LoginInfo, passwordInfo: PasswordInfo): Future[PasswordInfo] =
-    collection.fullUpdate(Json.obj("loginInfo" -> loginInfo), Credentials(loginInfo, passwordInfo)).map(_ => passwordInfo)
-
   def save(loginInfo: LoginInfo, passwordInfo: PasswordInfo): Future[PasswordInfo] =
     collection.upsert(Json.obj("loginInfo" -> loginInfo), Credentials(loginInfo, passwordInfo)).map(_ => passwordInfo)
+
+  def update(loginInfo: LoginInfo, passwordInfo: PasswordInfo): Future[PasswordInfo] =
+    collection.update(Json.obj("loginInfo" -> loginInfo), Credentials(loginInfo, passwordInfo)).map(_ => passwordInfo)
 
   def remove(loginInfo: LoginInfo): Future[Unit] =
     collection.delete(Json.obj("loginInfo" -> loginInfo)).map(_ => ())

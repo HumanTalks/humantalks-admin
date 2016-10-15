@@ -37,7 +37,7 @@ case class VenueRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposit
   }
 
   def update(elt: Venue, data: Venue.Data, by: User.Id): Future[WriteResult] =
-    collection.fullUpdate(Json.obj("id" -> elt.id), elt.copy(data = data.trim, meta = elt.meta.update(by)))
+    collection.update(Json.obj("id" -> elt.id), elt.copy(data = data.trim, meta = elt.meta.update(by)))
 
   /*def partialUpdate(id: Venue.Id, patch: JsObject): Future[WriteResult] =
     collection.update(Json.obj("id" -> id), Json.obj("$set" -> (patch - "id")))*/

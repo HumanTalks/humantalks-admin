@@ -34,6 +34,7 @@ heroku config:unset SBT_CLEAN --app humantalksparis
 
 exemples :
 
+- https://github.com/mohiva/play-silhouette-seed
 - https://github.com/adrianhurt/play-silhouette-credentials-seed
 - https://github.com/ezzahraoui/play-silhouette-reactivemongo-seed
 - https://github.com/pariksheet/dribble

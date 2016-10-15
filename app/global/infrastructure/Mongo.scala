@@ -50,17 +50,17 @@ case class MongoRepository[T](ctx: Contexts, reactiveMongoApi: ReactiveMongoApi,
     jsonCollection().flatMap { _.find(filter).one[T] }
   def create(elt: T)(implicit w: OWrites[T]): Future[WriteResult] =
     jsonCollection().flatMap { _.insert(elt) }
-  def fullUpdate(filter: JsObject, elt: T)(implicit w: OWrites[T]): Future[UpdateWriteResult] =
-    jsonCollection().flatMap { _.update(filter, elt, upsert = false, multi = false) }
-  def update(filter: JsObject, patch: JsObject)(implicit w: OWrites[T]): Future[UpdateWriteResult] =
-    jsonCollection().flatMap { _.update(filter, patch, upsert = false, multi = false) }
   def upsert(filter: JsObject, elt: T)(implicit w: OWrites[T]): Future[UpdateWriteResult] =
     jsonCollection().flatMap { _.update(filter, elt, upsert = true, multi = false) }
-  def updateAll(filter: JsObject, modifier: JsObject): Future[UpdateWriteResult] =
+  def update(filter: JsObject, elt: T)(implicit w: OWrites[T]): Future[UpdateWriteResult] =
+    jsonCollection().flatMap { _.update(filter, elt, upsert = false, multi = false) }
+  def partialUpdate(filter: JsObject, patch: JsObject)(implicit w: OWrites[T]): Future[UpdateWriteResult] =
+    jsonCollection().flatMap { _.update(filter, patch, upsert = false, multi = false) }
+  def partialUpdateMulti(filter: JsObject, modifier: JsObject): Future[UpdateWriteResult] =
     jsonCollection().flatMap { _.update(filter, modifier, upsert = false, multi = true) }
   def delete(filter: JsObject): Future[WriteResult] =
     jsonCollection().flatMap { _.remove(filter, firstMatchOnly = true) }
-  def deleteAll(filter: JsObject): Future[WriteResult] =
+  def deleteMulti(filter: JsObject): Future[WriteResult] =
     jsonCollection().flatMap { _.remove(filter, firstMatchOnly = false) }
   def count(filter: JsObject = Json.obj()): Future[Int] =
     jsonCollection().flatMap { _.count(Some(filter)) }
