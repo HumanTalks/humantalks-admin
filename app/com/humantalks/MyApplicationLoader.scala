@@ -64,8 +64,9 @@ class MyComponents(context: ApplicationLoader.Context)
   implicit val messagesApiImp = messagesApi
   val router: Router = new Routes(
     httpErrorHandler,
-    new com.humantalks.internal.Application(ctx),
+    new com.humantalks.exposed.Application(ctx),
     new com.humantalks.auth.AuthCtrl(configuration, ctx, userRepository, credentialsRepository, authTokenRepository, silhouette, passwordHasherRegistry, avatarService, authInfoRepository, credentialsProvider, socialProviderRegistry, mailerClient),
+    new com.humantalks.internal.Application(ctx),
     new VenueCtrl(ctx, venueDbService, personDbService, meetupDbService),
     new PersonCtrl(ctx, personDbService, talkDbService),
     new TalkCtrl(ctx, personDbService, talkDbService, meetupDbService),

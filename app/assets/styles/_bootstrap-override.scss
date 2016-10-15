@@ -7,6 +7,12 @@ img.media-object {
   background: transparent;
   border: transparent;
 }
+.navbar-nav .navbar-form {
+  .btn-link:focus, .btn-link:hover {
+    text-decoration: none;
+    outline: none;
+  }
+}
 
 .modal-body {
   max-height: 700px;

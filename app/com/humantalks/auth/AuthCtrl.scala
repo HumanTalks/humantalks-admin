@@ -135,6 +135,10 @@ case class AuthCtrl(
     )
   }
 
+  def doLogout() = silhouette.SecuredAction.async { implicit req: Request[AnyContent] =>
+    Future(Redirect(com.humantalks.exposed.routes.Application.index()))
+  }
+
   def activationEmail(email: String) = silhouette.UnsecuredAction.async { implicit req: Request[AnyContent] =>
     val decodedEmail = URLDecoder.decode(email, "UTF-8")
     val loginInfo = LoginInfo(CredentialsProvider.ID, decodedEmail)
