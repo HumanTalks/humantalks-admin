@@ -27,7 +27,7 @@ object Person {
   }
 
   object Role extends Enumeration {
-    val Admin, Organizer, User = Value
+    val User, Organizer, Admin = Value
   }
 
   case class Data(

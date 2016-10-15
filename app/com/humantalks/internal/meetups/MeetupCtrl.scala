@@ -1,5 +1,6 @@
 package com.humantalks.internal.meetups
 
+import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
 import com.humantalks.internal.persons.{ PersonDbService, Person }
 import com.humantalks.internal.talks.{ TalkDbService, Talk }
@@ -27,18 +28,21 @@ case class MeetupCtrl(
   val talkForm = Form(Talk.fields)
   val personForm = Form(Person.fields)
 
-  def find = silhouette.SecuredAction.async { implicit req =>
+  def find = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     for {
       meetupList <- meetupDbService.find()
       venueList <- venueDbService.findByIds(meetupList.flatMap(_.data.venue))
     } yield Ok(views.html.list(meetupList, venueList))
   }
 
-  def create = silhouette.SecuredAction.async { implicit req =>
+  def create = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     formView(Ok, meetupForm, None)
   }
 
-  def doCreate() = silhouette.SecuredAction.async { implicit req =>
+  def doCreate() = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     meetupForm.bindFromRequest.fold(
       formWithErrors => formView(BadRequest, formWithErrors, None),
       meetupData => meetupDbService.create(meetupData, req.identity.id).map {
@@ -47,7 +51,8 @@ case class MeetupCtrl(
     )
   }
 
-  def get(id: Meetup.Id) = silhouette.SecuredAction.async { implicit req =>
+  def get(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     CtrlHelper.withItem(meetupDbService)(id) { meetup =>
       val venueListFut = venueDbService.findByIds(meetup.data.venue.toSeq)
       val allTalksFut = talkDbService.find()
@@ -60,13 +65,15 @@ case class MeetupCtrl(
     }
   }
 
-  def update(id: Meetup.Id) = silhouette.SecuredAction.async { implicit req =>
+  def update(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     CtrlHelper.withItem(meetupDbService)(id) { meetup =>
       formView(Ok, meetupForm.fill(meetup.data), Some(meetup))
     }
   }
 
-  def doUpdate(id: Meetup.Id) = silhouette.SecuredAction.async { implicit req =>
+  def doUpdate(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     meetupForm.bindFromRequest.fold(
       formWithErrors => CtrlHelper.withItem(meetupDbService)(id) { meetup => formView(BadRequest, formWithErrors, Some(meetup)) },
       meetupData => CtrlHelper.withItem(meetupDbService)(id) { meetup =>
@@ -77,7 +84,8 @@ case class MeetupCtrl(
     )
   }
 
-  def doCreateTalk(id: Meetup.Id) = silhouette.SecuredAction.async { implicit req =>
+  def doCreateTalk(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     talkForm.bindFromRequest.fold(
       formWithErrors => Future(Redirect(routes.MeetupCtrl.get(id))), // TODO : add flashing message to show errors
       talkData => talkDbService.create(talkData, req.identity.id).flatMap {
@@ -88,7 +96,8 @@ case class MeetupCtrl(
     )
   }
 
-  def doAddTalkForm(id: Meetup.Id) = silhouette.SecuredAction.async { implicit req =>
+  def doAddTalkForm(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     req.body.asFormUrlEncoded.get("talkId").headOption.flatMap(p => Talk.Id.from(p).right.toOption).map { talkId =>
       meetupDbService.addTalk(id, talkId).map { _ =>
         Redirect(routes.MeetupCtrl.get(id))
@@ -98,19 +107,22 @@ case class MeetupCtrl(
     }
   }
 
-  def doAddTalk(id: Meetup.Id, talkId: Talk.Id) = silhouette.SecuredAction.async { implicit req =>
+  def doAddTalk(id: Meetup.Id, talkId: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     meetupDbService.addTalk(id, talkId).map { _ =>
       Redirect(routes.MeetupCtrl.get(id))
     }
   }
 
-  def doRemoveTalk(id: Meetup.Id, talkId: Talk.Id) = silhouette.SecuredAction.async { implicit req =>
+  def doRemoveTalk(id: Meetup.Id, talkId: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     meetupDbService.removeTalk(id, talkId).map { _ =>
       Redirect(routes.MeetupCtrl.get(id))
     }
   }
 
-  def publish(id: Meetup.Id) = silhouette.SecuredAction.async { implicit req =>
+  def publish(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     CtrlHelper.withItem(meetupDbService)(id) { meetup =>
       val venueListFut = venueDbService.findByIds(meetup.data.venue.toSeq)
       val talkListFut = talkDbService.findByIds(meetup.data.talks)
@@ -122,13 +134,15 @@ case class MeetupCtrl(
     }
   }
 
-  def doPublish(id: Meetup.Id) = silhouette.SecuredAction.async { implicit req =>
+  def doPublish(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     meetupDbService.setPublished(id).map { _ =>
       Redirect(routes.MeetupCtrl.get(id))
     }
   }
 
-  def doDelete(id: Meetup.Id) = silhouette.SecuredAction.async { implicit req =>
+  def doDelete(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     meetupDbService.delete(id).map {
       _ match {
         case Left(nothing) => Redirect(routes.MeetupCtrl.get(id))
@@ -137,7 +151,7 @@ case class MeetupCtrl(
     }
   }
 
-  private def formView(status: Status, meetupForm: Form[Meetup.Data], meetupOpt: Option[Meetup]): Future[Result] = {
+  private def formView(status: Status, meetupForm: Form[Meetup.Data], meetupOpt: Option[Meetup])(implicit user: Option[Person]): Future[Result] = {
     val allTalksFut = talkDbService.find()
     val allPersonsFut = personDbService.find()
     val allVenuesFut = venueDbService.find()

@@ -1,11 +1,11 @@
-@import com.humantalks.internal.meetups.Meetup
 @import com.humantalks.internal.venues.Venue
 @import com.humantalks.internal.persons.Person
+@import com.humantalks.internal.meetups.Meetup
 @import com.humantalks.internal.talks.Talk
+@import global.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.meetups.routes.MeetupCtrl
-@import global.views.html.format._
-@(meetup: Meetup, talkList: List[Talk], personList: List[Person], venueList: List[Venue])
+@(meetup: Meetup, talkList: List[Talk], personList: List[Person], venueList: List[Venue])(implicit user: Option[Person])
 @main("Publier "+meetup.data.title) {
     @header("meetup")
 

@@ -1,5 +1,5 @@
-@import com.humantalks.internal.talks.Talk
 @import com.humantalks.internal.persons.Person
+@import com.humantalks.internal.talks.Talk
 @import com.humantalks.internal.meetups.Meetup
 @import global.views.html.format._
 @import com.humantalks.common.views.html.format._
@@ -7,7 +7,7 @@
 @import com.humantalks.internal.persons.routes.PersonCtrl
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @import com.humantalks.internal.meetups.routes.MeetupCtrl
-@(talk: Talk, personList: List[Person], meetupList: List[Meetup])
+@(talk: Talk, personList: List[Person], meetupList: List[Meetup])(implicit user: Option[Person])
 @main(talk.data.title, talk.data.description.getOrElse("")) {
     @header("talk")
 

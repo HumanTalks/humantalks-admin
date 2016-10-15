@@ -1,14 +1,14 @@
-@import com.humantalks.internal.meetups.Meetup
 @import com.humantalks.internal.venues.Venue
 @import com.humantalks.internal.persons.Person
 @import com.humantalks.internal.talks.Talk
+@import com.humantalks.internal.meetups.Meetup
+@import global.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.venues.routes.VenueCtrl
 @import com.humantalks.internal.persons.routes.PersonCtrl
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @import com.humantalks.internal.meetups.routes.MeetupCtrl
-@import global.views.html.format._
-@(meetup: Meetup, talkForm: Form[Talk.Data], personForm: Form[Person.Data], allTalks: List[Talk], allPersons: List[Person], venueList: List[Venue])(implicit messagesApi: MessagesApi)
+@(meetup: Meetup, talkForm: Form[Talk.Data], personForm: Form[Person.Data], allTalks: List[Talk], allPersons: List[Person], venueList: List[Venue])(implicit messagesApi: MessagesApi, user: Option[Person])
 @main(meetup.data.title) {
     @header("meetup")
 

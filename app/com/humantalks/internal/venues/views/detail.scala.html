@@ -1,10 +1,11 @@
 @import com.humantalks.internal.venues.Venue
+@import com.humantalks.internal.persons.Person
 @import com.humantalks.internal.meetups.Meetup
+@import global.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.venues.routes.VenueCtrl
 @import com.humantalks.internal.meetups.routes.MeetupCtrl
-@import global.views.html.format._
-@(venue: Venue, meetupList: List[Meetup])
+@(venue: Venue, meetupList: List[Meetup])(implicit user: Option[Person])
 @main(venue.data.name) {
     @header("venue")
 

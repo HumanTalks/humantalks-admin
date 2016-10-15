@@ -1,5 +1,6 @@
 package com.humantalks.internal.persons
 
+import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
 import com.humantalks.internal.talks.TalkDbService
 import com.mohiva.play.silhouette.api.Silhouette
@@ -21,17 +22,20 @@ case class PersonCtrl(
   import ctx._
   val personForm = Form(Person.fields)
 
-  def find = silhouette.SecuredAction.async { implicit req =>
+  def find = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     personDbService.find().map { personList =>
       Ok(views.html.list(personList))
     }
   }
 
-  def create = silhouette.SecuredAction.async { implicit req =>
+  def create = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     formView(Ok, personForm, None)
   }
 
-  def doCreate() = silhouette.SecuredAction.async { implicit req =>
+  def doCreate() = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     personForm.bindFromRequest.fold(
       formWithErrors => formView(BadRequest, formWithErrors, None),
       personData => personDbService.create(personData, req.identity.id).map {
@@ -40,7 +44,8 @@ case class PersonCtrl(
     )
   }
 
-  def get(id: Person.Id) = silhouette.SecuredAction.async { implicit req =>
+  def get(id: Person.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     CtrlHelper.withItem(personDbService)(id) { person =>
       for {
         talkList <- talkDbService.findForPerson(id)
@@ -48,13 +53,15 @@ case class PersonCtrl(
     }
   }
 
-  def update(id: Person.Id) = silhouette.SecuredAction.async { implicit req =>
+  def update(id: Person.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     CtrlHelper.withItem(personDbService)(id) { person =>
       formView(Ok, personForm.fill(person.data), Some(person))
     }
   }
 
-  def doUpdate(id: Person.Id) = silhouette.SecuredAction.async { implicit req =>
+  def doUpdate(id: Person.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     personForm.bindFromRequest.fold(
       formWithErrors => CtrlHelper.withItem(personDbService)(id) { person => formView(BadRequest, formWithErrors, Some(person)) },
       personData => CtrlHelper.withItem(personDbService)(id) { person =>
@@ -65,7 +72,8 @@ case class PersonCtrl(
     )
   }
 
-  def doDelete(id: Person.Id) = silhouette.SecuredAction.async { implicit req =>
+  def doDelete(id: Person.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     personDbService.delete(id).map {
       _ match {
         case Left(talks) => Redirect(routes.PersonCtrl.get(id))
@@ -75,10 +83,11 @@ case class PersonCtrl(
   }
 
   def profil = silhouette.SecuredAction.async { implicit req =>
+    implicit val user = Some(req.identity)
     Future(Ok(views.html.profil(req.identity)))
   }
 
-  private def formView(status: Status, personForm: Form[Person.Data], personOpt: Option[Person]): Future[Result] = {
+  private def formView(status: Status, personForm: Form[Person.Data], personOpt: Option[Person])(implicit user: Option[Person]): Future[Result] = {
     Future(status(views.html.form(personForm, personOpt)))
   }
 }

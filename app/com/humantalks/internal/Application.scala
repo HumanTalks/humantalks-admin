@@ -17,6 +17,7 @@ case class Application(
   import ctx._
 
   def index = silhouette.SecuredAction { implicit req =>
+    implicit val user = Some(req.identity)
     Ok(views.html.index())
   }
 

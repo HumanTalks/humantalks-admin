@@ -4,7 +4,7 @@
 @import com.humantalks.internal.persons.routes.PersonCtrl
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @import global.views.html.format._
-@(person: Person, talkList: List[Talk])
+@(person: Person, talkList: List[Talk])(implicit user: Option[Person])
 @main(person.data.name) {
     @header("person")
 

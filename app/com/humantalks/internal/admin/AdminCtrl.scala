@@ -1,5 +1,6 @@
 package com.humantalks.internal.admin
 
+import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.entities.AuthToken
 import com.humantalks.auth.infrastructure.{ AuthTokenRepository, CredentialsRepository }
 import com.humantalks.auth.silhouette.SilhouetteEnv
@@ -19,7 +20,8 @@ case class AdminCtrl(
   import Contexts.ctrlToEC
   import ctx._
 
-  def users = silhouette.SecuredAction.async { implicit req =>
+  def users = silhouette.SecuredAction(WithRole(Person.Role.Admin)).async { implicit req =>
+    implicit val user = Some(req.identity)
     for {
       users <- personDbService.findUsers()
       credentials <- credentialsRepository.find()
@@ -27,14 +29,16 @@ case class AdminCtrl(
     } yield Ok(views.html.userList(users, credentials, authTokens))
   }
 
-  def setRole(id: Person.Id) = silhouette.SecuredAction.async { implicit req =>
+  def setRole(id: Person.Id) = silhouette.SecuredAction(WithRole(Person.Role.Admin)).async { implicit req =>
+    implicit val user = Some(req.identity)
     val role = req.body.asFormUrlEncoded.get("role").headOption.filter(_.length > 0).map(Person.Role.withName)
     personDbService.setRole(id, role).map { _ =>
       Redirect(routes.AdminCtrl.users())
     }
   }
 
-  def deleteToken(id: AuthToken.Id) = silhouette.SecuredAction.async { implicit req =>
+  def deleteToken(id: AuthToken.Id) = silhouette.SecuredAction(WithRole(Person.Role.Admin)).async { implicit req =>
+    implicit val user = Some(req.identity)
     authTokenRepository.delete(id).map { _ =>
       Redirect(routes.AdminCtrl.users())
     }

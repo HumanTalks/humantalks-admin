@@ -1,9 +1,13 @@
+@import com.humantalks.internal.persons.Person
 @import com.humantalks.internal.views.html.partials._
-@()
+@()(implicit user: Option[Person])
 @main("") {
     @header("index")
 
     <div class="container">
         <h1>Hello ! </h1>
+        @if(!user.flatMap(_.role).exists(_ >= Person.Role.Organizer)){
+            <p>Vous n'avez pas les droits d'Organisateur, demandez-les pour accéder à l'ensemble du site.</p>
+        }
     </div>
 }

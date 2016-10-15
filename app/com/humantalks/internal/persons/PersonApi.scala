@@ -1,5 +1,6 @@
 package com.humantalks.internal.persons
 
+import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
@@ -14,9 +15,9 @@ case class PersonApi(
   import Contexts.wsToEC
   import ctx._
 
-  def find = silhouette.SecuredAction.async { implicit req => ApiHelper.find(personDbService) }
-  def get(id: Person.Id) = silhouette.SecuredAction.async { implicit req => ApiHelper.get(personDbService, id) }
-  def create = silhouette.SecuredAction.async(parse.json) { implicit req => ApiHelper.create(personDbService, req.identity.id, req.body) }
-  def update(id: Person.Id) = silhouette.SecuredAction.async(parse.json) { implicit req => ApiHelper.update(personDbService, req.identity.id, id, req.body) }
-  def delete(id: Person.Id) = silhouette.SecuredAction.async { implicit req => ApiHelper.delete(personDbService, id) }
+  def find = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req => ApiHelper.find(personDbService) }
+  def get(id: Person.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req => ApiHelper.get(personDbService, id) }
+  def create = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async(parse.json) { implicit req => ApiHelper.create(personDbService, req.identity.id, req.body) }
+  def update(id: Person.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async(parse.json) { implicit req => ApiHelper.update(personDbService, req.identity.id, id, req.body) }
+  def delete(id: Person.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req => ApiHelper.delete(personDbService, id) }
 }

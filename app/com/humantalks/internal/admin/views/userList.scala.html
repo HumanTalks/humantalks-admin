@@ -4,7 +4,7 @@
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.persons.routes.PersonCtrl
 @import com.humantalks.internal.admin.routes.AdminCtrl
-@(userList: List[Person], credentials: List[Credentials], authTokens: List[AuthToken])
+@(userList: List[Person], credentials: List[Credentials], authTokens: List[AuthToken])(implicit user: Option[Person])
 @main("Users") {
     @header("admin")
 
@@ -26,35 +26,35 @@
                 </tr>
             </thead>
             <tbody>
-                @userList.map { user =>
-                    <tr @if(!user.activated){class="danger"}>
+                @userList.map { u =>
+                    <tr @if(!u.activated){class="danger"}>
                         <td>
-                            <a href="@PersonCtrl.get(user.id)">
-                                @user.data.avatar.map{url => <img src="@url" style="max-height: 30px;">}
-                                @user.data.name
+                            <a href="@PersonCtrl.get(u.id)">
+                                @u.data.avatar.map{url => <img src="@url" style="max-height: 30px;">}
+                                @u.data.name
                             </a>
                         </td>
-                        <td>@user.loginInfo.map{l => (@l.providerID,@l.providerKey)}</td>
-                        <td>@credentials.find(c => user.loginInfo.contains(c.loginInfo)).map{c => <span title="Hash: @c.passwordInfo.password / Salt: @c.passwordInfo.salt">@c.passwordInfo.hasher</span>}</td>
-                        <td>@user.data.email.map{e => <a href="mailto:@e">@e</a>}</td>
-                        <td>@user.data.twitter.map{t => <a href="https://twitter.com/@t" target="_blank">@@@t</a>}</td>
+                        <td>@u.loginInfo.map{l => (@l.providerID,@l.providerKey)}</td>
+                        <td>@credentials.find(c => u.loginInfo.contains(c.loginInfo)).map{c => <span title="Hash: @c.passwordInfo.password / Salt: @c.passwordInfo.salt">@c.passwordInfo.hasher</span>}</td>
+                        <td>@u.data.email.map{e => <a href="mailto:@e">@e</a>}</td>
+                        <td>@u.data.twitter.map{t => <a href="https://twitter.com/@t" target="_blank">@@@t</a>}</td>
                         <td>
-                            @helper.form(action=AdminCtrl.setRole(user.id), 'class -> "form-inline") {
+                            @helper.form(action=AdminCtrl.setRole(u.id), 'class -> "form-inline") {
                                 <div class="form-group">
                                     <select name="role" class="form-control">
                                         <option></option>
                                         @Person.Role.values.map { role =>
-                                          <option value="@role" @if(user.role.contains(role)){selected}>@role</option>
+                                          <option value="@role" @if(u.role.contains(role)){selected}>@role</option>
                                         }
                                     </select>
                                 </div>
                                 <button type="submit" class="btn btn-default">Change</button>
                             }
                         </td>
-                        <td>@datetime(user.meta.created.toLocalDateTime)</td>
-                        <td>@datetime(user.meta.updated.toLocalDateTime)</td>
+                        <td>@datetime(u.meta.created.toLocalDateTime)</td>
+                        <td>@datetime(u.meta.updated.toLocalDateTime)</td>
                     </tr>
-                    @authTokens.filter(_.person == user.id).map { token =>
+                    @authTokens.filter(_.person == u.id).map { token =>
                         <tr @if(token.expiry.isBeforeNow){class="danger"}>
                             <td></td>
                             <td colspan="4">

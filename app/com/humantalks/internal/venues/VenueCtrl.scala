@@ -1,8 +1,9 @@
 package com.humantalks.internal.venues
 
+import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
 import com.humantalks.internal.meetups.MeetupDbService
-import com.humantalks.internal.persons.PersonDbService
+import com.humantalks.internal.persons.{ Person, PersonDbService }
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
 import global.helpers.CtrlHelper
@@ -23,17 +24,20 @@ case class VenueCtrl(
   import ctx._
   val venueForm = Form(Venue.fields)
 
-  def find = silhouette.SecuredAction.async { implicit req =>
+  def find = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     venueDbService.find().map { venueList =>
       Ok(views.html.list(venueList))
     }
   }
 
-  def create = silhouette.SecuredAction.async { implicit req =>
+  def create = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     formView(Ok, venueForm, None)
   }
 
-  def doCreate() = silhouette.SecuredAction.async { implicit req =>
+  def doCreate() = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     venueForm.bindFromRequest.fold(
       formWithErrors => formView(BadRequest, formWithErrors, None),
       venueData => venueDbService.create(venueData, req.identity.id).map {
@@ -42,7 +46,8 @@ case class VenueCtrl(
     )
   }
 
-  def get(id: Venue.Id) = silhouette.SecuredAction.async { implicit req =>
+  def get(id: Venue.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     CtrlHelper.withItem(venueDbService)(id) { venue =>
       for {
         meetupList <- meetupDbService.findForVenue(id)
@@ -50,13 +55,15 @@ case class VenueCtrl(
     }
   }
 
-  def update(id: Venue.Id) = silhouette.SecuredAction.async { implicit req =>
+  def update(id: Venue.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     CtrlHelper.withItem(venueDbService)(id) { venue =>
       formView(Ok, venueForm.fill(venue.data), Some(venue))
     }
   }
 
-  def doUpdate(id: Venue.Id) = silhouette.SecuredAction.async { implicit req =>
+  def doUpdate(id: Venue.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     venueForm.bindFromRequest.fold(
       formWithErrors => CtrlHelper.withItem(venueDbService)(id) { venue => formView(BadRequest, formWithErrors, Some(venue)) },
       venueData => CtrlHelper.withItem(venueDbService)(id) { venue =>
@@ -67,7 +74,8 @@ case class VenueCtrl(
     )
   }
 
-  def doDelete(id: Venue.Id) = silhouette.SecuredAction.async { implicit req =>
+  def doDelete(id: Venue.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
     venueDbService.delete(id).map {
       _ match {
         case Left(meetups) => Redirect(routes.VenueCtrl.get(id))
@@ -76,7 +84,7 @@ case class VenueCtrl(
     }
   }
 
-  private def formView(status: Status, venueForm: Form[Venue.Data], venueOpt: Option[Venue]): Future[Result] = {
+  private def formView(status: Status, venueForm: Form[Venue.Data], venueOpt: Option[Venue])(implicit user: Option[Person]): Future[Result] = {
     personDbService.find().map { personList =>
       status(views.html.form(venueForm, venueOpt, personList))
     }

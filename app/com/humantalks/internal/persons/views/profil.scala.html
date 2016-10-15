@@ -1,6 +1,6 @@
 @import com.humantalks.internal.persons.Person
 @import com.humantalks.internal.views.html.partials._
-@(person: Person)
+@(person: Person)(implicit user: Option[Person])
 @main("Mon profil") {
     @header("user")
 

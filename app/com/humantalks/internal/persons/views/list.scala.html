@@ -2,7 +2,7 @@
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.persons.routes.PersonCtrl
 @import global.views.html.format._
-@(personList: List[Person])
+@(personList: List[Person])(implicit user: Option[Person])
 @main("Personnes") {
     @header("person")
 

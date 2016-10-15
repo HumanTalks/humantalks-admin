@@ -2,6 +2,7 @@ package com.humantalks.internal.persons
 
 import com.humantalks.auth.forms.RegisterForm
 import com.humantalks.common.Conf
+import com.humantalks.internal.persons.Person.Role
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.services.IdentityService
 import global.Contexts
@@ -61,11 +62,12 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
     getByEmail(form.email).flatMap { personOpt =>
       personOpt.map { person =>
         val p = person.copy(
-          loginInfo = Some(loginInfo),
           data = person.data.copy(
             name = form.name,
             avatar = avatar.orElse(person.data.avatar)
           ),
+          loginInfo = Some(loginInfo),
+          role = Some(Role.User),
           activated = false,
           meta = person.meta.update(person.id)
         )
@@ -80,7 +82,7 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   def unregister(id: Person.Id): Future[Option[Person]] = {
     get(id).flatMap { personOpt =>
       personOpt.map { person =>
-        val p = person.copy(loginInfo = None, activated = false)
+        val p = person.copy(loginInfo = None, role = None, activated = false)
         update(p).map(_ => Some(p))
       }.getOrElse {
         Future(None)

@@ -1,10 +1,10 @@
-@import com.humantalks.internal.talks.Talk
 @import com.humantalks.internal.persons.Person
+@import com.humantalks.internal.talks.Talk
+@import global.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.persons.routes.PersonCtrl
 @import com.humantalks.internal.talks.routes.TalkCtrl
-@import global.views.html.format._
-@(talkList: List[Talk], personList: List[Person])
+@(talkList: List[Talk], personList: List[Person])(implicit user: Option[Person])
 @main("Talks") {
     @header("talk")
 
