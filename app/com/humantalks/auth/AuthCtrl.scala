@@ -45,6 +45,7 @@ case class AuthCtrl(
   import ctx._
   val registerForm = Form(Register.fields)
   val loginForm = Form(Login.fields)
+  val emailFrom = "Silhouette <noreply@mohiva.com>"
 
   def register() = silhouette.UnsecuredAction.async { implicit req: Request[AnyContent] =>
     Future(Ok(views.html.register(registerForm)))
@@ -54,14 +55,14 @@ case class AuthCtrl(
     registerForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest(views.html.register(formWithErrors))),
       register => {
-        val result = Redirect(routes.AuthCtrl.register()).flashing("info" -> messagesApi("sign.up.email.sent", register.email))
+        val result = Redirect(routes.AuthCtrl.register()).flashing("info" -> s"You're almost done! We sent an activation mail to ${register.email}. Please follow the instructions in the email to activate your account. If it doesn't arrive, check your spam folder, or try to log in again to send another activation mail.")
         val loginInfo = LoginInfo(CredentialsProvider.ID, register.email)
         userRepository.retrieve(loginInfo).flatMap {
           case Some(user) => {
             val url = routes.AuthCtrl.login().absoluteURL()
             mailerClient.send(Email(
-              subject = messagesApi("email.already.signed.up.subject"),
-              from = messagesApi("email.from"),
+              subject = "Welcome",
+              from = emailFrom,
               to = Seq(register.email),
               bodyText = Some(views.txt.emails.alreadyRegistered(user, url).body),
               bodyHtml = Some(views.html.emails.alreadyRegistered(user, url).body)
@@ -80,8 +81,8 @@ case class AuthCtrl(
             } yield {
               val url = routes.AuthCtrl.activateAccount(authToken.id).absoluteURL()
               mailerClient.send(Email(
-                subject = messagesApi("email.sign.up.subject"),
-                from = messagesApi("email.from"),
+                subject = "Welcome",
+                from = emailFrom,
                 to = Seq(register.email),
                 bodyText = Some(views.txt.emails.register(user, url).body),
                 bodyHtml = Some(views.html.emails.register(user, url).body)
@@ -129,7 +130,7 @@ case class AuthCtrl(
             case None => Future.failed(new IdentityNotFoundException("Couldn't find user"))
           }
         }.recover {
-          case e: ProviderException => Redirect(routes.AuthCtrl.login()).flashing("error" -> messagesApi("invalid.credentials"))
+          case e: ProviderException => Redirect(routes.AuthCtrl.login()).flashing("error" -> "Invalid credentials!")
         }
       }
     )
@@ -142,7 +143,7 @@ case class AuthCtrl(
   def activationEmail(email: String) = silhouette.UnsecuredAction.async { implicit req: Request[AnyContent] =>
     val decodedEmail = URLDecoder.decode(email, "UTF-8")
     val loginInfo = LoginInfo(CredentialsProvider.ID, decodedEmail)
-    val result = Redirect(routes.AuthCtrl.login()).flashing("info" -> messagesApi("activation.email.sent", decodedEmail))
+    val result = Redirect(routes.AuthCtrl.login()).flashing("info" -> s"We sent another activation email to you at $decodedEmail. It might take a few minutes for it to arrive; be sure to check your spam folder.")
 
     userRepository.retrieve(loginInfo).flatMap {
       case Some(user) if !user.activated =>
@@ -150,8 +151,8 @@ case class AuthCtrl(
           val url = routes.AuthCtrl.activateAccount(authToken.id).absoluteURL()
 
           mailerClient.send(Email(
-            subject = messagesApi("email.activate.account.subject"),
-            from = messagesApi("email.from"),
+            subject = "Activate account",
+            from = emailFrom,
             to = Seq(decodedEmail),
             bodyText = Some(views.txt.emails.activateAccount(user, url).body),
             bodyHtml = Some(views.html.emails.activateAccount(user, url).body)
@@ -167,11 +168,11 @@ case class AuthCtrl(
       case Some(authToken) => userRepository.get(authToken.userId).flatMap {
         case Some(user) if user.loginInfo.providerID == CredentialsProvider.ID =>
           userRepository.update(user.copy(activated = true)).map { _ =>
-            Redirect(routes.AuthCtrl.login()).flashing("success" -> messagesApi("account.activated"))
+            Redirect(routes.AuthCtrl.login()).flashing("success" -> "Your account is now activated! Please sign in to use your new account.")
           }
-        case _ => Future(Redirect(routes.AuthCtrl.login()).flashing("error" -> messagesApi("invalid.activation.link")))
+        case _ => Future(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please sign in to send the activation email again."))
       }
-      case None => Future(Redirect(routes.AuthCtrl.login()).flashing("error" -> messagesApi("invalid.activation.link")))
+      case None => Future(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please sign in to send the activation email again."))
     }
   }
 

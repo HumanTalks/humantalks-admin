@@ -1,5 +1,5 @@
 @import com.humantalks.auth.entities.User
 @(user: User, url: String)(implicit messagesApi: MessagesApi)
-@messagesApi("email.sign.up.hello", user.name.getOrElse("user"))
+Hello @user.name.getOrElse("user"),
 
-@messagesApi("email.sign.up.txt.text", url)
+Please follow the link to confirm and activate your new account: @url

@@ -1,38 +1,38 @@
 @import com.humantalks.auth.forms.Login
 @import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 @import com.mohiva.play.silhouette.impl.providers.oauth2.ClefProvider
-@import com.humantalks.internal.views.html.partials._
+@import com.humantalks.exposed.views.html.partials._
 @import global.views.html.form._
-@import com.humantalks.auth.routes
+@import com.humantalks.auth.routes.AuthCtrl
 @(loginForm: Form[Login], socialProviders: SocialProviderRegistry)(implicit request: RequestHeader, messagesApi: MessagesApi)
-@main(messagesApi("sign.in.title")) {
+@main("Login") {
     <fieldset class="col-md-6 col-md-offset-3">
-        <legend>@messagesApi("sign.in.credentials")</legend>
-        @helper.form(action = routes.AuthCtrl.doLogin()) {
+        <legend>Sign in with your credentials</legend>
+        @helper.form(action = AuthCtrl.doLogin()) {
             @fieldHorizontal(loginForm("email"), 'label -> "Email") { field => @inputEmail(field, 'placeholder -> "ex: john@doe.com") }
             @fieldHorizontal(loginForm("password"), 'label -> "Password") { field => @inputText(field, 'type -> "password") }
-            @* @b3.checkbox(loginForm("rememberMe"), '_text -> messagesApi("remember.me"), 'checked -> true) *@
+            @* @b3.checkbox(loginForm("rememberMe"), '_text -> "Remember my login on this computer", 'checked -> true) *@
             <div class="form-group">
                 <div>
-                    <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">@messagesApi("sign.in")</button>
+                    <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">Login</button>
                 </div>
             </div>
         }
 
         <div>
             <p class="not-a-member">
-                @messagesApi("not.a.member") <a href="@routes.AuthCtrl.register">@messagesApi("sign.up.now")</a>
-                @*| <a href="@routes.AuthCtrl.forgotPassword()" title="@messagesApi("forgot.your.password")">@messagesApi("forgot.your.password")</a>*@
+                Not a member? <a href="@AuthCtrl.register">Register now</a>
+                @*| <a href="@rout.AuthCtrl.forgotPassword()" title="Forgot your password?">Forgot your password?</a>*@
             </p>
         </div>
 
         @*
         @if(socialProviders.providers.nonEmpty) {
             <div class="social-providers">
-                <p>@messagesApi("or.use.social")</p>
+                <p>Or use your existing account on one of the following services to register:</p>
                 <div>
                 @for(p <- socialProviders.providers if p.id != "clef") {
-                    <a href="@routes.AuthCtrl.socialAuth(p.id)" class="provider @p.id" title="@messagesApi(p.id)"><img src="@routes.Assets.at(s"images/providers/${p.id}.png")" width="64px" height="64px" alt="@messagesApi(p.id)"></a>
+                    <a href="@rout.AuthCtrl.socialAuth(p.id)" class="provider @p.id" title="@p.id"><img src="@routes.Assets.at(s"images/providers/${p.id}.png")" width="64px" height="64px" alt="@messagesApi(p.id)"></a>
                 }
                 </div>
                 @defining(socialProviders.get[ClefProvider]) { clef =>

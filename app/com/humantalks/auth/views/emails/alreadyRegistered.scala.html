@@ -2,7 +2,7 @@
 @(user: User, url: String)(implicit messagesApi: MessagesApi)
 <html>
     <body>
-        <p>@messagesApi("email.already.signed.up.hello", user.name.getOrElse("user"))</p>
-        <p>@Html(messagesApi("email.already.signed.up.html.text", url))</p>
+        <p>Hello @user.name.getOrElse("user"),</p>
+        <p>You already have an account registered. Please follow <a href="@url">this link</a> to login into your account.</p>
     </body>
 </html>
