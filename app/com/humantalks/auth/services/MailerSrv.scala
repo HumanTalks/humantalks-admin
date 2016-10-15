@@ -2,54 +2,66 @@ package com.humantalks.auth.services
 
 import com.humantalks.auth.entities.{ AuthToken, User }
 import com.humantalks.auth.{ views, routes }
+import com.humantalks.common.Conf
+import com.humantalks.common.services.sendgrid._
 import play.api.i18n.MessagesApi
-import play.api.libs.mailer.{ Email, MailerClient }
+import play.api.libs.ws.WSResponse
 import play.api.mvc.RequestHeader
 
-case class MailerSrv(mailerClient: MailerClient) {
-  val emailFrom = "HumanTalks <paris@humantalks.com>"
+import scala.concurrent.Future
 
-  def sendRegister(email: String, user: User, authToken: AuthToken)(implicit request: RequestHeader, messagesApi: MessagesApi): String = {
+case class MailerSrv(conf: Conf, sendgridSrv: SendgridSrv) {
+  val from = Address(conf.Sendgrid.senderEmail, conf.Sendgrid.senderName)
+
+  def sendRegister(email: String, user: User, authToken: AuthToken)(implicit request: RequestHeader, messagesApi: MessagesApi): Future[WSResponse] = {
     val url = routes.AuthCtrl.activateAccount(authToken.id).absoluteURL()
-    mailerClient.send(Email(
+    sendgridSrv.send(Email(
+      personalizations = Recipient.single(email),
+      from = from,
       subject = "Welcome",
-      from = emailFrom,
-      to = Seq(email),
-      bodyText = Some(views.txt.emails.register(user, url).body),
-      bodyHtml = Some(views.html.emails.register(user, url).body)
+      content = Seq(
+        Content.text(views.txt.emails.register(user, url).body),
+        Content.html(views.html.emails.register(user, url).body)
+      )
     ))
   }
 
-  def sendAlreadyRegistered(email: String, user: User)(implicit request: RequestHeader, messagesApi: MessagesApi): String = {
+  def sendAlreadyRegistered(email: String, user: User)(implicit request: RequestHeader, messagesApi: MessagesApi): Future[WSResponse] = {
     val url = routes.AuthCtrl.login().absoluteURL()
-    mailerClient.send(Email(
+    sendgridSrv.send(Email(
+      personalizations = Recipient.single(email),
+      from = from,
       subject = "Welcome",
-      from = emailFrom,
-      to = Seq(email),
-      bodyText = Some(views.txt.emails.alreadyRegistered(user, url).body),
-      bodyHtml = Some(views.html.emails.alreadyRegistered(user, url).body)
+      content = Seq(
+        Content.text(views.txt.emails.alreadyRegistered(user, url).body),
+        Content.html(views.html.emails.alreadyRegistered(user, url).body)
+      )
     ))
   }
 
-  def sendActivateAccount(email: String, user: User, authToken: AuthToken)(implicit request: RequestHeader, messagesApi: MessagesApi): String = {
+  def sendActivateAccount(email: String, user: User, authToken: AuthToken)(implicit request: RequestHeader, messagesApi: MessagesApi): Future[WSResponse] = {
     val url = routes.AuthCtrl.activateAccount(authToken.id).absoluteURL()
-    mailerClient.send(Email(
+    sendgridSrv.send(Email(
+      personalizations = Recipient.single(email),
+      from = from,
       subject = "Activate account",
-      from = emailFrom,
-      to = Seq(email),
-      bodyText = Some(views.txt.emails.activateAccount(user, url).body),
-      bodyHtml = Some(views.html.emails.activateAccount(user, url).body)
+      content = Seq(
+        Content.text(views.txt.emails.activateAccount(user, url).body),
+        Content.html(views.html.emails.activateAccount(user, url).body)
+      )
     ))
   }
 
-  def sentResetPassword(email: String, user: User, authToken: AuthToken)(implicit request: RequestHeader, messagesApi: MessagesApi): String = {
+  def sentResetPassword(email: String, user: User, authToken: AuthToken)(implicit request: RequestHeader, messagesApi: MessagesApi): Future[WSResponse] = {
     val url = routes.AuthCtrl.resetPassword(authToken.id).absoluteURL()
-    mailerClient.send(Email(
+    sendgridSrv.send(Email(
+      personalizations = Recipient.single(email),
+      from = from,
       subject = "Reset password",
-      from = emailFrom,
-      to = Seq(email),
-      bodyText = Some(views.txt.emails.resetPassword(user, url).body),
-      bodyHtml = Some(views.html.emails.resetPassword(user, url).body)
+      content = Seq(
+        Content.text(views.txt.emails.resetPassword(user, url).body),
+        Content.html(views.html.emails.resetPassword(user, url).body)
+      )
     ))
   }
 }

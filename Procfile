@@ -1,1 +1,1 @@
-web: target/universal/stage/bin/humantalks-backend-orga -Dhttp.port=${PORT} -Dplay.crypto.secret=$APP_SECRET -Dapplication.env=$APP_ENV -Dmongodb.uri=$MONGODB_URI
+web: target/universal/stage/bin/humantalks-backend-orga -Dhttp.port=${PORT} -Dplay.crypto.secret=$APP_SECRET -Dapplication.env=$APP_ENV -Dmongodb.uri=$MONGODB_URI -Dsendgrid.api-key=$SENDGRID_API_KEY

@@ -7,6 +7,7 @@ import com.humantalks.auth.infrastructure.{ UserRepository, CredentialsRepositor
 import com.humantalks.auth.forms._
 import com.humantalks.auth.services.{ AuthSrv, MailerSrv }
 import com.humantalks.auth.silhouette._
+import com.humantalks.common.Conf
 import com.mohiva.play.silhouette.api._
 import com.mohiva.play.silhouette.api.services.AvatarService
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
@@ -22,7 +23,7 @@ import scala.concurrent.Future
 case class AuthCtrl(
     ctx: Contexts,
     silhouette: Silhouette[SilhouetteEnv],
-    conf: SilhouetteConf,
+    conf: Conf,
     authSrv: AuthSrv,
     userRepository: UserRepository,
     credentialsRepository: CredentialsRepository,
@@ -91,9 +92,9 @@ case class AuthCtrl(
               silhouette.env.authenticatorService.create(loginInfo).map {
                 case authenticator: CookieAuthenticator if formData.rememberMe =>
                   authenticator.copy(
-                    expirationDateTime = DateTime.now.withDurationAdded(conf.RememberMe.expiry.toMillis, 1),
-                    idleTimeout = conf.RememberMe.idleTimeout,
-                    cookieMaxAge = conf.RememberMe.cookieMaxAge
+                    expirationDateTime = DateTime.now.withDurationAdded(conf.Auth.RememberMe.expiry.toMillis, 1),
+                    idleTimeout = conf.Auth.RememberMe.idleTimeout,
+                    cookieMaxAge = conf.Auth.RememberMe.cookieMaxAge
                   )
                 case authenticator => authenticator
               }.flatMap { authenticator =>
@@ -161,9 +162,14 @@ case class AuthCtrl(
         val loginInfo = LoginInfo(CredentialsProvider.ID, formData.email)
         userRepository.retrieve(loginInfo).flatMap {
           case Some(user) if user.email.isDefined =>
-            authTokenRepository.create(user.id).map { authToken =>
-              mailerSrv.sentResetPassword(formData.email, user, authToken)
-              result
+            authTokenRepository.create(user.id).flatMap { authToken =>
+              mailerSrv.sentResetPassword(formData.email, user, authToken).map { res =>
+                if (res.status == 202) {
+                  result
+                } else {
+                  Redirect(routes.AuthCtrl.forgotPassword()).flashing("error" -> s"<b>${res.status} ${res.statusText}</b> ${res.body}")
+                }
+              }
             }
           case None =>
             Future(result)

@@ -5,6 +5,7 @@ import com.humantalks.auth.services.{ AuthSrv, MailerSrv }
 import com.humantalks.auth.silhouette._
 import com.humantalks.common.Conf
 import com.humantalks.common.services.EmbedSrv
+import com.humantalks.common.services.sendgrid.SendgridSrv
 import com.humantalks.internal.meetups.{ MeetupDbService, MeetupRepository, MeetupCtrl, MeetupApi }
 import com.humantalks.internal.persons.{ PersonDbService, PersonRepository, PersonCtrl, PersonApi }
 import com.humantalks.internal.talks.{ TalkDbService, TalkRepository, TalkCtrl, TalkApi }
@@ -17,7 +18,6 @@ import global.infrastructure.Mongo
 import play.api.cache.EhCacheComponents
 import play.api.i18n.I18nComponents
 import play.api.inject.{ NewInstanceInjector, SimpleInjector }
-import play.api.libs.mailer.MailerComponents
 import play.api.libs.ws.ahc.AhcWSComponents
 import play.api.routing.Router
 import play.api._
@@ -41,10 +41,8 @@ class MyComponents(context: ApplicationLoader.Context)
     with EhCacheComponents
     with GzipFilterComponents
     with ReactiveMongoComponents
-    with MailerComponents
     with SilhouetteComponents {
   val conf = Conf(configuration)
-  val silhouetteConf = SilhouetteConf(configuration)
   val ctx = Contexts(actorSystem)
 
   val embedSrv = EmbedSrv(wsClient)
@@ -65,13 +63,14 @@ class MyComponents(context: ApplicationLoader.Context)
   val meetupDbService = MeetupDbService(meetupRepository)
 
   val authSrv = AuthSrv(passwordHasherRegistry, credentialsProvider, authInfoRepository)
-  val mailerSrv = MailerSrv(mailerClient)
+  val sendgridSrv = SendgridSrv(conf, wsClient)
+  val mailerSrv = MailerSrv(conf, sendgridSrv)
 
   implicit val messagesApiImp = messagesApi
   val router: Router = new Routes(
     httpErrorHandler,
     new com.humantalks.exposed.Application(ctx),
-    new com.humantalks.auth.AuthCtrl(ctx, silhouette, silhouetteConf, authSrv, userRepository, credentialsRepository, authTokenRepository, avatarService, mailerSrv),
+    new com.humantalks.auth.AuthCtrl(ctx, silhouette, conf, authSrv, userRepository, credentialsRepository, authTokenRepository, avatarService, mailerSrv),
     new com.humantalks.internal.Application(ctx, silhouette),
     new VenueCtrl(ctx, silhouette, venueDbService, personDbService, meetupDbService),
     new PersonCtrl(ctx, silhouette, personDbService, talkDbService),
