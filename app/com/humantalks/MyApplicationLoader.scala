@@ -1,13 +1,14 @@
 package com.humantalks
 
 import com.humantalks.auth.infrastructure.{ UserRepository, CredentialsRepository, AuthTokenRepository }
-import com.humantalks.auth.services.MailerSrv
+import com.humantalks.auth.services.{ AuthSrv, MailerSrv }
 import com.humantalks.auth.silhouette._
 import com.humantalks.common.Conf
 import com.humantalks.common.services.EmbedSrv
 import com.humantalks.internal.meetups.{ MeetupDbService, MeetupRepository, MeetupCtrl, MeetupApi }
 import com.humantalks.internal.persons.{ PersonDbService, PersonRepository, PersonCtrl, PersonApi }
 import com.humantalks.internal.talks.{ TalkDbService, TalkRepository, TalkCtrl, TalkApi }
+import com.humantalks.internal.users.UserCtrl
 import com.humantalks.tools.EmbedCtrl
 import com.humantalks.tools.scrapers.TwitterScraper
 import com.humantalks.internal.venues.{ VenueDbService, VenueRepository, VenueCtrl, VenueApi }
@@ -63,18 +64,20 @@ class MyComponents(context: ApplicationLoader.Context)
   val talkDbService = TalkDbService(meetupRepository, talkRepository)
   val meetupDbService = MeetupDbService(meetupRepository)
 
+  val authSrv = AuthSrv(passwordHasherRegistry, credentialsProvider, authInfoRepository)
   val mailerSrv = MailerSrv(mailerClient)
 
   implicit val messagesApiImp = messagesApi
   val router: Router = new Routes(
     httpErrorHandler,
     new com.humantalks.exposed.Application(ctx),
-    new com.humantalks.auth.AuthCtrl(silhouetteConf, ctx, userRepository, credentialsRepository, authTokenRepository, silhouette, passwordHasherRegistry, avatarService, authInfoRepository, credentialsProvider, mailerSrv),
+    new com.humantalks.auth.AuthCtrl(ctx, silhouette, silhouetteConf, authSrv, userRepository, credentialsRepository, authTokenRepository, avatarService, mailerSrv),
     new com.humantalks.internal.Application(ctx, silhouette),
     new VenueCtrl(ctx, silhouette, venueDbService, personDbService, meetupDbService),
     new PersonCtrl(ctx, silhouette, personDbService, talkDbService),
     new TalkCtrl(ctx, silhouette, personDbService, talkDbService, meetupDbService),
     new MeetupCtrl(ctx, silhouette, venueDbService, personDbService, talkDbService, meetupDbService),
+    new UserCtrl(ctx, silhouette, userRepository),
     new VenueApi(ctx, silhouette, venueDbService),
     new PersonApi(ctx, silhouette, personDbService),
     new TalkApi(ctx, silhouette, talkDbService),

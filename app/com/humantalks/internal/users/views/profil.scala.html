@@ -1,0 +1,11 @@
+@import com.humantalks.auth.entities.User
+@import com.humantalks.internal.views.html.partials._
+@(user: User)
+@main("Mon profil") {
+    @header("user")
+
+    <div class="container">
+        <h1>@user.name</h1>
+        @user
+    </div>
+}

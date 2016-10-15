@@ -5,35 +5,29 @@ import java.net.URLDecoder
 import com.humantalks.auth.entities.{ AuthToken, User }
 import com.humantalks.auth.infrastructure.{ UserRepository, CredentialsRepository, AuthTokenRepository }
 import com.humantalks.auth.forms._
-import com.humantalks.auth.services.MailerSrv
+import com.humantalks.auth.services.{ AuthSrv, MailerSrv }
 import com.humantalks.auth.silhouette._
-import com.mohiva.play.silhouette.api.actions.UserAwareRequest
-import com.mohiva.play.silhouette.api.exceptions.ProviderException
 import com.mohiva.play.silhouette.api._
-import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AvatarService
-import com.mohiva.play.silhouette.api.util.{ Credentials, PasswordHasherRegistry }
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import global.Contexts
 import org.joda.time.DateTime
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{ AnyContent, Action, Controller }
+import play.api.mvc.{ Action, Controller }
 
 import scala.concurrent.Future
 
 case class AuthCtrl(
-    conf: SilhouetteConf,
     ctx: Contexts,
+    silhouette: Silhouette[SilhouetteEnv],
+    conf: SilhouetteConf,
+    authSrv: AuthSrv,
     userRepository: UserRepository,
     credentialsRepository: CredentialsRepository,
     authTokenRepository: AuthTokenRepository,
-    silhouette: Silhouette[SilhouetteEnv],
-    passwordHasherRegistry: PasswordHasherRegistry,
     avatarService: AvatarService,
-    authInfoRepository: AuthInfoRepository,
-    credentialsProvider: CredentialsProvider,
     mailerSrv: MailerSrv
 )(implicit messagesApi: MessagesApi) extends Controller {
   import Contexts.ctrlToEC
@@ -63,12 +57,11 @@ case class AuthCtrl(
             mailerSrv.sendAlreadyRegistered(formData.email, user)
             Future(result)
           case None =>
-            val authInfo = passwordHasherRegistry.current.hash(formData.password)
-            val user = User.from(formData, loginInfo)
+            val passwordInfo = authSrv.hashPassword(formData.password)
             for {
               avatar <- avatarService.retrieveURL(formData.email)
-              user <- userRepository.create(user.copy(avatarURL = avatar))
-              authInfo <- authInfoRepository.add(loginInfo, authInfo)
+              user <- userRepository.create(User.from(formData, loginInfo, avatar))
+              authInfo <- authSrv.createAuthInfo(loginInfo, passwordInfo)
               authToken <- authTokenRepository.create(user.id)
             } yield {
               mailerSrv.sendRegister(formData.email, user, authToken)
@@ -80,7 +73,7 @@ case class AuthCtrl(
     )
   }
 
-  def login() = silhouette.UserAwareAction.async { implicit req: UserAwareRequest[SilhouetteEnv, AnyContent] =>
+  def login() = silhouette.UserAwareAction.async { implicit req =>
     req.identity match {
       case Some(user) => Future(loginRedirect)
       case None => Future(Ok(views.html.login(loginForm)))
@@ -91,8 +84,7 @@ case class AuthCtrl(
     loginForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest(views.html.login(formWithErrors))),
       formData => {
-        val credentials = Credentials(formData.email, formData.password)
-        credentialsProvider.authenticate(credentials).flatMap { loginInfo =>
+        authSrv.authenticate(formData.email, formData.password).flatMap { loginInfo =>
           userRepository.retrieve(loginInfo).flatMap {
             case Some(user) if !user.activated => Future(Ok(views.html.activateAccount(formData.email)))
             case Some(user) =>
@@ -115,8 +107,6 @@ case class AuthCtrl(
                 Redirect(routes.AuthCtrl.login()).flashing("error" -> "Unable to find corresponding user, credentials removed.")
               }
           }
-        }.recover {
-          case e: ProviderException => Redirect(routes.AuthCtrl.login()).flashing("error" -> "Invalid credentials!")
         }
       }
     )
@@ -196,8 +186,8 @@ case class AuthCtrl(
           formWithErrors => Future(BadRequest(views.html.resetPassword(formWithErrors, token))),
           formData => userRepository.get(authToken.userId).flatMap {
             case Some(user) if user.loginInfo.providerID == CredentialsProvider.ID =>
-              val passwordInfo = passwordHasherRegistry.current.hash(formData.password)
-              authInfoRepository.update(user.loginInfo, passwordInfo).map { _ =>
+              val passwordInfo = authSrv.hashPassword(formData.password)
+              authSrv.updateAuthInfo(user.loginInfo, passwordInfo).map { _ =>
                 Redirect(routes.AuthCtrl.login()).flashing("success" -> "Mot de passe réinitialisé")
               }
             case _ => Future.successful(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please request a new link to reset your password. (no user)"))

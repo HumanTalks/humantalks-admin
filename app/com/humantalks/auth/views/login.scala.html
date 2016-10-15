@@ -12,7 +12,9 @@
         @helper.form(action = AuthCtrl.doLogin()) {
             @fieldHorizontal(loginForm("email"), 'label -> "Email") { field => @inputEmail(field, 'placeholder -> "ex: john@doe.com") }
             @fieldHorizontal(loginForm("password"), 'label -> "Password") { field => @inputText(field, 'type -> "password") }
-            @* @b3.checkbox(loginForm("rememberMe"), '_text -> "Remember my login on this computer", 'checked -> true) *@
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">@fieldCheckbox(loginForm("rememberMe"), 'label -> "Remember me", 'value -> "true")</div>
+            </div>
             <div class="form-group">
                 <div>
                     <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">Login</button>

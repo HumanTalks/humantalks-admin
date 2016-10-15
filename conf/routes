@@ -59,6 +59,8 @@ POST    /meetups/$id<.{36}>/talks/add                       com.humantalks.inter
 POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/add        com.humantalks.internal.meetups.MeetupCtrl.doAddTalk(id: Meetup.Id, talkId: Talk.Id)
 POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/delete     com.humantalks.internal.meetups.MeetupCtrl.doRemoveTalk(id: Meetup.Id, talkId: Talk.Id)
 
+GET     /users/me                                           com.humantalks.internal.users.UserCtrl.profil
+
 GET     /api/internal                                       com.humantalks.internal.Application.apiRoot
 
 GET     /api/internal/venues                                com.humantalks.internal.venues.VenueApi.find

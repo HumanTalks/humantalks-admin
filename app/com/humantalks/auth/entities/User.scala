@@ -56,7 +56,7 @@ object User {
       created = new DateTime(),
       updated = new DateTime()
     )
-  def from(register: RegisterForm, loginInfo: LoginInfo): User =
+  def from(register: RegisterForm, loginInfo: LoginInfo, avatarURL: Option[String] = None): User =
     User(
       id = Id.generate(),
       loginInfo = loginInfo,
@@ -64,7 +64,7 @@ object User {
       lastName = Some(register.lastName),
       fullName = Some(register.firstName + " " + register.lastName),
       email = Some(register.email),
-      avatarURL = None,
+      avatarURL = avatarURL,
       activated = false,
       created = new DateTime(),
       updated = new DateTime()

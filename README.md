@@ -2,6 +2,14 @@
 
 ## TODO
 
+- auth
+    - link person with user OR merge them ?
+    - create or find a person when creating a new user
+    - send real emails
+    - add user roles
+    - add user admin (list all and define roles)
+    - improve auth texts
+- i18n
 - 107 vidéos enregistrés alors qu'il y en a 120 sur youtube... (voir celles qui manquent)
 - rentrer l'historique de humantalks.com
 - supprimer les personnes en double

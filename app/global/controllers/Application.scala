@@ -3,16 +3,15 @@ package global.controllers
 import global.Contexts
 import global.helpers.ApiHelper
 import global.infrastructure.Mongo
-import org.joda.time.DateTime
 import play.api.i18n.{ Lang, MessagesApi }
 import play.api.libs.json.Json
-import play.api.mvc.{ Action, AnyContent, Controller, Request, Results }
+import play.api.mvc.{ Action, Controller, Results }
 
 case class Application(ctx: Contexts, db: Mongo)(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.ctrlToEC
   import ctx._
 
-  def status = Action.async { implicit req: Request[AnyContent] =>
+  def status = Action.async { implicit req =>
     ApiHelper.resultJson({
       for {
         dbStatus <- db.pingStatus()
@@ -35,7 +34,7 @@ case class Application(ctx: Contexts, db: Mongo)(implicit messageApi: MessagesAp
     }, Results.Ok, Results.InternalServerError)
   }
 
-  def changeLang(lang: String) = Action { implicit req: Request[AnyContent] =>
+  def changeLang(lang: String) = Action { implicit req =>
     messageApi.setLang(Redirect(req.headers.get("Referer").orElse(req.headers.get("Host")).get), new Lang(lang))
   }
 }

@@ -1,0 +1,17 @@
+@import global.views.Helpers
+@(field: Field, args: (Symbol, String)*)(implicit messagesApi: MessagesApi)
+<div class="checkbox @if(field.hasErrors){has-error}">
+	<label for="@Helpers.fieldId(field, args)">
+		<input
+			type="checkbox"
+			id="@Helpers.fieldId(field, args)"
+			name="@Helpers.fieldName(field, args)"
+			value="@Helpers.fieldValue(field, args)"
+			@Helpers.toHtml(args)
+			@if(Helpers.isRequired(field, args)){required}
+			@if(Helpers.isChecked(field, args)){checked}>
+		@Helpers.getArg(args, "label", field.name)
+	</label>
+    @if(!Helpers.hasArg(args, "errors", "false")){@fieldErrors(field)}
+    @* @if(!Helpers.hasArg(args, "constraints", "false")){@fieldConstraints(field)} *@
+</div>
