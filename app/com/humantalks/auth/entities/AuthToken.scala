@@ -1,7 +1,7 @@
-package com.humantalks.auth.silhouette
+package com.humantalks.auth.entities
 
-import global.values.{ TypedIdHelper, TypedId }
-import org.joda.time.{ DateTimeZone, DateTime }
+import global.values.{ TypedId, TypedIdHelper }
+import org.joda.time.{ DateTime, DateTimeZone }
 import play.api.libs.json.Json
 
 import scala.concurrent.duration._

@@ -1,6 +1,6 @@
 package com.humantalks.common
 
-import com.humantalks.auth.silhouette.{ Credentials, AuthToken, User }
+import com.humantalks.auth.entities.{ Credentials, AuthToken, User }
 import com.humantalks.internal.meetups.Meetup
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk

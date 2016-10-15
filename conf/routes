@@ -2,7 +2,7 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /                                                   com.humantalks.internal.common.controllers.Application.index
+GET     /                                                   com.humantalks.internal.Application.index
 
 GET     /register                                           com.humantalks.auth.AuthCtrl.register
 POST    /register                                           com.humantalks.auth.AuthCtrl.doRegister
@@ -52,7 +52,7 @@ POST    /meetups/$id<.{36}>/talks/add                       com.humantalks.inter
 POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/add        com.humantalks.internal.meetups.MeetupCtrl.doAddTalk(id: Meetup.Id, talkId: Talk.Id)
 POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/delete     com.humantalks.internal.meetups.MeetupCtrl.doRemoveTalk(id: Meetup.Id, talkId: Talk.Id)
 
-GET     /api/internal                                       com.humantalks.internal.common.controllers.Application.apiRoot
+GET     /api/internal                                       com.humantalks.internal.Application.apiRoot
 
 GET     /api/internal/venues                                com.humantalks.internal.venues.VenueApi.find
 POST    /api/internal/venues                                com.humantalks.internal.venues.VenueApi.create

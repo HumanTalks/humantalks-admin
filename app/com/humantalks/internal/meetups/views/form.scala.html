@@ -2,7 +2,7 @@
 @import com.humantalks.internal.talks.Talk
 @import com.humantalks.internal.persons.Person
 @import com.humantalks.internal.venues.Venue
-@import com.humantalks.internal.common.views.html.partials._
+@import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.meetups.routes.MeetupCtrl
 @(meetupForm: Form[Meetup.Data], talkForm: Form[Talk.Data], personForm: Form[Person.Data], meetupOpt: Option[Meetup], allTalks: List[Talk], allPersons: List[Person], allVenues: List[Venue])(implicit messagesApi: MessagesApi)
 @main("Nouveau meetup") {

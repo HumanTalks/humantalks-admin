@@ -1,5 +1,6 @@
-package com.humantalks.auth.silhouette
+package com.humantalks.auth.infrastructure
 
+import com.humantalks.auth.entities.{ AuthToken, User }
 import com.humantalks.common.Conf
 import global.Contexts
 import global.infrastructure.Mongo

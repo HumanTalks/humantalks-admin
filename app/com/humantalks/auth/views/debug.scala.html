@@ -1,8 +1,6 @@
-@import com.humantalks.auth.silhouette.User
-@import com.humantalks.auth.silhouette.Credentials
-@import com.humantalks.auth.silhouette.AuthToken
+@import com.humantalks.auth.entities.{Credentials, AuthToken, User}
 @import com.humantalks.auth.routes
-@import com.humantalks.internal.common.views.html.partials._
+@import com.humantalks.internal.views.html.partials._
 @import global.views.html.format._
 @(users: List[User], credentials: List[Credentials], authTokens: List[AuthToken])
 @main("Users") {

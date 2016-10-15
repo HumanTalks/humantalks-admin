@@ -1,4 +1,4 @@
-package com.humantalks.auth.silhouette.forms
+package com.humantalks.auth.forms
 
 import play.api.data.Forms._
 

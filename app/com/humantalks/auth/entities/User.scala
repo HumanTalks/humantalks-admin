@@ -1,6 +1,6 @@
-package com.humantalks.auth.silhouette
+package com.humantalks.auth.entities
 
-import com.humantalks.auth.silhouette.forms.Register
+import com.humantalks.auth.forms.Register
 import com.mohiva.play.silhouette.api.{ Identity, LoginInfo }
 import com.mohiva.play.silhouette.impl.providers.CommonSocialProfile
 import global.values.{ TypedId, TypedIdHelper }

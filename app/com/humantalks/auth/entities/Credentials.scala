@@ -1,4 +1,4 @@
-package com.humantalks.auth.silhouette
+package com.humantalks.auth.entities
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo

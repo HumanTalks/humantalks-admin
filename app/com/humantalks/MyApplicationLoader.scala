@@ -1,5 +1,6 @@
 package com.humantalks
 
+import com.humantalks.auth.infrastructure.{ UserRepository, CredentialsRepository, AuthTokenRepository }
 import com.humantalks.auth.silhouette._
 import com.humantalks.common.Conf
 import com.humantalks.common.services.EmbedSrv
@@ -63,7 +64,7 @@ class MyComponents(context: ApplicationLoader.Context)
   implicit val messagesApiImp = messagesApi
   val router: Router = new Routes(
     httpErrorHandler,
-    new com.humantalks.internal.common.controllers.Application(ctx),
+    new com.humantalks.internal.Application(ctx),
     new com.humantalks.auth.AuthCtrl(configuration, ctx, userRepository, credentialsRepository, authTokenRepository, silhouette, passwordHasherRegistry, avatarService, authInfoRepository, credentialsProvider, socialProviderRegistry, mailerClient),
     new VenueCtrl(ctx, venueDbService, personDbService, meetupDbService),
     new PersonCtrl(ctx, personDbService, talkDbService),

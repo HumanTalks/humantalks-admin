@@ -1,4 +1,4 @@
-package com.humantalks.internal.common.controllers
+package com.humantalks.internal
 
 import global.Contexts
 import global.helpers.ApiHelper
@@ -12,7 +12,7 @@ case class Application(ctx: Contexts) extends Controller {
   import ctx._
 
   def index = Action { implicit req: Request[AnyContent] =>
-    Ok(com.humantalks.internal.common.views.html.index())
+    Ok(views.html.index())
   }
 
   def apiRoot = Action.async { implicit req: Request[AnyContent] =>

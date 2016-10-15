@@ -2,7 +2,9 @@ package com.humantalks.auth
 
 import java.net.URLDecoder
 
-import com.humantalks.auth.silhouette.forms.{ Login, Register }
+import com.humantalks.auth.entities.{ AuthToken, User }
+import com.humantalks.auth.infrastructure.{ UserRepository, CredentialsRepository, AuthTokenRepository }
+import com.humantalks.auth.forms.{ Login, Register }
 import com.humantalks.auth.silhouette._
 import com.mohiva.play.silhouette.api.exceptions.ProviderException
 import com.mohiva.play.silhouette.api.{ LoginEvent, SignUpEvent, LoginInfo, Silhouette }
@@ -104,7 +106,7 @@ case class AuthCtrl(
       login => {
         val credentials = Credentials(login.email, login.password)
         credentialsProvider.authenticate(credentials).flatMap { loginInfo =>
-          val result = Redirect(com.humantalks.internal.common.controllers.routes.Application.index())
+          val result = Redirect(com.humantalks.internal.routes.Application.index())
           userRepository.retrieve(loginInfo).flatMap {
             case Some(user) if !user.activated => Future(Ok(views.html.activateAccount(login.email)))
             case Some(user) => {

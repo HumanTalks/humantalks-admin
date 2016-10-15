@@ -1,4 +1,4 @@
-@import com.humantalks.auth.silhouette.User
+@import com.humantalks.auth.entities.User
 @(user: User, url: String)(implicit messagesApi: MessagesApi)
 @messagesApi("email.already.signed.up.hello", user.name.getOrElse("user"))
 

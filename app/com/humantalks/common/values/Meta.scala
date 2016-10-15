@@ -1,6 +1,6 @@
 package com.humantalks.common.values
 
-import com.humantalks.auth.silhouette.User
+import com.humantalks.auth.entities.User
 import org.joda.time.DateTime
 import play.api.libs.json.Json
 

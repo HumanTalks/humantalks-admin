@@ -1,6 +1,6 @@
 package com.humantalks.internal.talks
 
-import com.humantalks.auth.silhouette.User
+import com.humantalks.auth.entities.User
 import com.humantalks.internal.meetups.{ Meetup, MeetupRepository }
 import com.humantalks.internal.persons.Person
 import global.infrastructure.DbService

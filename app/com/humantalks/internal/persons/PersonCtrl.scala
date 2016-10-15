@@ -1,7 +1,7 @@
 package com.humantalks.internal.persons
 
-import com.humantalks.auth.silhouette.User
-import com.humantalks.internal.talks.{TalkDbService, TalkRepository}
+import com.humantalks.auth.entities.User
+import com.humantalks.internal.talks.{ TalkDbService, TalkRepository }
 import global.Contexts
 import global.helpers.CtrlHelper
 import play.api.data.Form

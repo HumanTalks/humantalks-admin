@@ -1,5 +1,6 @@
-package com.humantalks.auth.silhouette
+package com.humantalks.auth.infrastructure
 
+import com.humantalks.auth.entities.User
 import com.humantalks.common.Conf
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.services.IdentityService

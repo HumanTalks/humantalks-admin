@@ -1,5 +1,6 @@
 package com.humantalks.auth.silhouette
 
+import com.humantalks.auth.infrastructure.{ UserRepository, CredentialsRepository }
 import com.mohiva.play.silhouette.api.actions._
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.{ SilhouetteProvider, Silhouette, Environment, EventBus }

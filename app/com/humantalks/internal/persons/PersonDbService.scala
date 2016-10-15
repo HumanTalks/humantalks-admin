@@ -1,6 +1,6 @@
 package com.humantalks.internal.persons
 
-import com.humantalks.auth.silhouette.User
+import com.humantalks.auth.entities.User
 import com.humantalks.internal.talks.{ Talk, TalkRepository }
 import global.infrastructure.DbService
 import play.api.libs.json.{ Json, JsObject }

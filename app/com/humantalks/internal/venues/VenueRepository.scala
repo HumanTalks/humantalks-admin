@@ -1,6 +1,6 @@
 package com.humantalks.internal.venues
 
-import com.humantalks.auth.silhouette.User
+import com.humantalks.auth.entities.User
 import com.humantalks.common.Conf
 import com.humantalks.common.values.Meta
 import global.Contexts

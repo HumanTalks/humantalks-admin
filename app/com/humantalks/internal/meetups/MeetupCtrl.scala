@@ -1,9 +1,9 @@
 package com.humantalks.internal.meetups
 
-import com.humantalks.auth.silhouette.User
-import com.humantalks.internal.persons.{PersonDbService, Person, PersonRepository}
-import com.humantalks.internal.talks.{TalkDbService, Talk, TalkRepository}
-import com.humantalks.internal.venues.{VenueDbService, VenueRepository}
+import com.humantalks.auth.entities.User
+import com.humantalks.internal.persons.{ PersonDbService, Person, PersonRepository }
+import com.humantalks.internal.talks.{ TalkDbService, Talk, TalkRepository }
+import com.humantalks.internal.venues.{ VenueDbService, VenueRepository }
 import global.Contexts
 import global.helpers.CtrlHelper
 import play.api.data.Form
