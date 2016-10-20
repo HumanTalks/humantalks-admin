@@ -1,0 +1,43 @@
+@import com.humantalks.internal.persons.Person
+@import com.humantalks.exposed.proposals.Proposal
+@import com.humantalks.exposed.views.html.partials._
+@import com.humantalks.exposed.proposals.routes.ProposalCtrl
+@(proposalForm: Form[Proposal.Data], proposalOpt: Option[Proposal], personList: List[Person], personForm: Form[Person.Data])(implicit messagesApi: MessagesApi)
+@main("Nouvelle proposition de talk") {
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">HumanTalks Paris</a>
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" role="main">
+        <div class="page-header">
+            <h1>@proposalOpt.map{ p => Modifier @p.data.title}.getOrElse{Proposer un talk}</h1>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+            @helper.form(action=proposalOpt.map(p => ProposalCtrl.doUpdate(p.id)).getOrElse(ProposalCtrl.doCreate()), 'class->"form-horizontal proposal-form") {
+                @partials.fields(proposalForm, personList)
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <button type="submit" class="btn btn-primary btn-lg">@proposalOpt.map{ p => Modifier @p.data.title}.getOrElse{Proposer ce talk aux HumanTalks Paris}</button>
+                    </div>
+                </div>
+            }
+            </div>
+        </div>
+    </div>
+
+    @com.humantalks.internal.persons.views.html.partials.createModal(personForm)
+}

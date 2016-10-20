@@ -12,7 +12,7 @@ import play.api.mvc.RequestHeader
 import scala.concurrent.Future
 
 case class MailerSrv(conf: Conf, sendgridSrv: SendgridSrv) {
-  val from = Address(conf.Sendgrid.senderEmail, conf.Sendgrid.senderName)
+  val from = Address(conf.Organization.Admin.email, Some(conf.Organization.Admin.name))
 
   def sendRegister(email: String, person: Person, authToken: AuthToken)(implicit request: RequestHeader, messagesApi: MessagesApi): Future[WSResponse] = {
     val url = routes.AuthCtrl.activateAccount(authToken.id).absoluteURL()

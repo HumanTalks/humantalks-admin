@@ -30,7 +30,6 @@ case class AdminCtrl(
   }
 
   def setRole(id: Person.Id) = silhouette.SecuredAction(WithRole(Person.Role.Admin)).async { implicit req =>
-    implicit val user = Some(req.identity)
     val role = req.body.asFormUrlEncoded.get("role").headOption.filter(_.length > 0).map(Person.Role.withName)
     personDbService.setRole(id, role).map { _ =>
       Redirect(routes.AdminCtrl.users())
@@ -38,7 +37,6 @@ case class AdminCtrl(
   }
 
   def deleteToken(id: AuthToken.Id) = silhouette.SecuredAction(WithRole(Person.Role.Admin)).async { implicit req =>
-    implicit val user = Some(req.identity)
     authTokenRepository.delete(id).map { _ =>
       Redirect(routes.AdminCtrl.users())
     }

@@ -1,6 +1,7 @@
 package com.humantalks.common
 
 import com.humantalks.auth.entities.{ Credentials, AuthToken }
+import com.humantalks.exposed.proposals.Proposal
 import com.humantalks.internal.meetups.Meetup
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
@@ -16,6 +17,13 @@ case class Conf(configuration: Configuration) {
   object App {
     val langs = new DefaultLangs(configuration).availables
   }
+  object Organization {
+    object Admin {
+      val conf = configuration.getConfig("organization.admin").get
+      val name = conf.getString("name").get
+      val email = conf.getString("email").get
+    }
+  }
   object Repositories {
     val credentials = Repository.Collection[Credentials]("Credentials")
     val authToken = Repository.Collection[AuthToken]("AuthToken")
@@ -23,6 +31,7 @@ case class Conf(configuration: Configuration) {
     val venue = Repository.Collection[Venue]("Venue")
     val talk = Repository.Collection[Talk]("Talk")
     val meetup = Repository.Collection[Meetup]("Meetup")
+    val proposal = Repository.Collection[Proposal]("Proposal")
   }
   object Auth {
     object RememberMe {
@@ -35,7 +44,5 @@ case class Conf(configuration: Configuration) {
   object Sendgrid {
     val conf = configuration.getConfig("sendgrid").get
     val apiKey: String = conf.getString("api-key").get
-    val senderEmail: String = conf.getString("sender.email").get
-    val senderName: Option[String] = conf.getString("sender.name")
   }
 }

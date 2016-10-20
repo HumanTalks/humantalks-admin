@@ -85,7 +85,6 @@ case class MeetupCtrl(
   }
 
   def doCreateTalk(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    implicit val user = Some(req.identity)
     talkForm.bindFromRequest.fold(
       formWithErrors => Future(Redirect(routes.MeetupCtrl.get(id))), // TODO : add flashing message to show errors
       talkData => talkDbService.create(talkData, req.identity.id).flatMap {
@@ -97,7 +96,6 @@ case class MeetupCtrl(
   }
 
   def doAddTalkForm(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    implicit val user = Some(req.identity)
     req.body.asFormUrlEncoded.get("talkId").headOption.flatMap(p => Talk.Id.from(p).right.toOption).map { talkId =>
       meetupDbService.addTalk(id, talkId).map { _ =>
         Redirect(routes.MeetupCtrl.get(id))
@@ -108,14 +106,12 @@ case class MeetupCtrl(
   }
 
   def doAddTalk(id: Meetup.Id, talkId: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    implicit val user = Some(req.identity)
     meetupDbService.addTalk(id, talkId).map { _ =>
       Redirect(routes.MeetupCtrl.get(id))
     }
   }
 
   def doRemoveTalk(id: Meetup.Id, talkId: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    implicit val user = Some(req.identity)
     meetupDbService.removeTalk(id, talkId).map { _ =>
       Redirect(routes.MeetupCtrl.get(id))
     }
@@ -135,14 +131,12 @@ case class MeetupCtrl(
   }
 
   def doPublish(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    implicit val user = Some(req.identity)
     meetupDbService.setPublished(id).map { _ =>
       Redirect(routes.MeetupCtrl.get(id))
     }
   }
 
   def doDelete(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    implicit val user = Some(req.identity)
     meetupDbService.delete(id).map {
       _ match {
         case Left(nothing) => Redirect(routes.MeetupCtrl.get(id))

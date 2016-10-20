@@ -20,6 +20,7 @@ case class Person(
   def hasProvider(provider: String): Boolean = loginInfo.exists(_.providerID == provider)
 }
 object Person {
+  val anonymous = Id("ffffffff-ffff-ffff-ffff-ffffffffffff")
   case class Id(value: String) extends TypedId(value)
   object Id extends TypedIdHelper[Id] {
     def from(value: String): Either[String, Id] = TypedId.from(value, "Person.Id").right.map(Id(_))

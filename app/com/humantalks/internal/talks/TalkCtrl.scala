@@ -78,7 +78,6 @@ case class TalkCtrl(
   }
 
   def doDelete(id: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    implicit val user = Some(req.identity)
     talkDbService.delete(id).map {
       _ match {
         case Left(meetups) => Redirect(routes.TalkCtrl.get(id))

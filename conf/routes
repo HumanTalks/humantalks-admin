@@ -4,6 +4,11 @@
 
 GET     /                                                   com.humantalks.exposed.Application.index
 
+GET     /submit-talk                                        com.humantalks.exposed.proposals.ProposalCtrl.create
+POST    /submit-talk                                        com.humantalks.exposed.proposals.ProposalCtrl.doCreate
+GET     /submit-talk/$id<.{36}>/edit                        com.humantalks.exposed.proposals.ProposalCtrl.update(id: Proposal.Id)
+POST    /submit-talk/$id<.{36}>/edit                        com.humantalks.exposed.proposals.ProposalCtrl.doUpdate(id: Proposal.Id)
+
 GET     /register                                           com.humantalks.auth.AuthCtrl.register
 POST    /register                                           com.humantalks.auth.AuthCtrl.doRegister
 GET     /login                                              com.humantalks.auth.AuthCtrl.login
@@ -63,6 +68,9 @@ POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/delete     com.humantalks.inter
 GET     /admin/users                                        com.humantalks.internal.admin.AdminCtrl.users
 POST    /admin/users/$id<.{36}>/role                        com.humantalks.internal.admin.AdminCtrl.setRole(id: Person.Id)
 POST    /admin/users/deleteToken/:id                        com.humantalks.internal.admin.AdminCtrl.deleteToken(id: AuthToken.Id)
+
+GET     /api                                                com.humantalks.exposed.Application.apiRoot
+POST    /api/persons                                        com.humantalks.exposed.Application.createPerson
 
 GET     /api/internal                                       com.humantalks.internal.Application.apiRoot
 

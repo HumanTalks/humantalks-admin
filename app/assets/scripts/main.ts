@@ -93,8 +93,8 @@ function buildSelect2CreateModal(modalSelector: string, mainInputName: string, c
         select.trigger('change');
     }
 }
-var createTalkModal = buildSelect2CreateModal('#create-talk-modal', 'title', config.api.internal+'/talks', talk => talk.data.title);
-var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', config.api.internal+'/persons', person => person.data.name);
+var createTalkModal = buildSelect2CreateModal('#create-talk-modal', 'title', config.api.root+'/talks', talk => talk.data.title);
+var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', config.api.root+'/persons', person => person.data.name);
 (function(){
     $('.select2').each(function(){
         var $select = $(this);

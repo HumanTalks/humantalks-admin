@@ -6,6 +6,7 @@ import com.humantalks.auth.silhouette._
 import com.humantalks.common.Conf
 import com.humantalks.common.services.EmbedSrv
 import com.humantalks.common.services.sendgrid.SendgridSrv
+import com.humantalks.exposed.proposals.{ ProposalRepository, ProposalDbService, ProposalCtrl }
 import com.humantalks.internal.admin.AdminCtrl
 import com.humantalks.internal.meetups.{ MeetupDbService, MeetupRepository, MeetupCtrl, MeetupApi }
 import com.humantalks.internal.persons.{ PersonDbService, PersonRepository, PersonCtrl, PersonApi }
@@ -55,11 +56,13 @@ class MyComponents(context: ApplicationLoader.Context)
   val personRepository = PersonRepository(conf, ctx, mongo)
   val talkRepository = TalkRepository(conf, ctx, mongo, embedSrv)
   val meetupRepository = MeetupRepository(conf, ctx, mongo)
+  val proposalRepository = ProposalRepository(conf, ctx, mongo, embedSrv)
 
   val venueDbService = VenueDbService(meetupRepository, venueRepository)
   val personDbService = PersonDbService(personRepository, talkRepository)
   val talkDbService = TalkDbService(meetupRepository, talkRepository)
   val meetupDbService = MeetupDbService(meetupRepository)
+  val proposalDbService = ProposalDbService(proposalRepository)
 
   val authSrv = AuthSrv(passwordHasherRegistry, credentialsProvider, authInfoRepository)
   val sendgridSrv = SendgridSrv(conf, wsClient)
@@ -68,7 +71,8 @@ class MyComponents(context: ApplicationLoader.Context)
   implicit val messagesApiImp = messagesApi
   val router: Router = new Routes(
     httpErrorHandler,
-    com.humantalks.exposed.Application(ctx),
+    com.humantalks.exposed.Application(ctx, personDbService),
+    ProposalCtrl(conf, ctx, personDbService, proposalDbService, sendgridSrv),
     com.humantalks.auth.AuthCtrl(ctx, silhouette, conf, authSrv, personRepository, credentialsRepository, authTokenRepository, avatarService, mailerSrv),
     com.humantalks.internal.Application(ctx, silhouette),
     VenueCtrl(ctx, silhouette, venueDbService, personDbService, meetupDbService),

@@ -29,7 +29,7 @@ case class Recipient(
 )
 object Recipient {
   implicit val format = Json.format[Recipient]
-  def single(email: String): Seq[Recipient] = Seq(Recipient(to = Seq(Address(email))))
+  def single(email: String, name: Option[String] = None): Seq[Recipient] = Seq(Recipient(to = Seq(Address(email, name))))
 }
 
 case class Email(

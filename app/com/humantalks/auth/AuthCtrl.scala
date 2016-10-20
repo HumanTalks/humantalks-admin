@@ -8,7 +8,7 @@ import com.humantalks.auth.forms._
 import com.humantalks.auth.services.{ AuthSrv, MailerSrv }
 import com.humantalks.auth.silhouette._
 import com.humantalks.common.Conf
-import com.humantalks.internal.persons.{ Person, PersonRepository }
+import com.humantalks.internal.persons.PersonRepository
 import com.mohiva.play.silhouette.api._
 import com.mohiva.play.silhouette.api.exceptions.ConfigurationException
 import com.mohiva.play.silhouette.api.services.AvatarService
@@ -19,7 +19,7 @@ import global.Contexts
 import org.joda.time.DateTime
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{ Action, Controller }
+import play.api.mvc.Controller
 
 import scala.concurrent.Future
 

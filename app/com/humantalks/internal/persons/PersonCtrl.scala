@@ -73,7 +73,6 @@ case class PersonCtrl(
   }
 
   def doDelete(id: Person.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    implicit val user = Some(req.identity)
     personDbService.delete(id).map {
       _ match {
         case Left(talks) => Redirect(routes.PersonCtrl.get(id))
