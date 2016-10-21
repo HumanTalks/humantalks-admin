@@ -80,13 +80,13 @@ case class TalkCtrl(
   def doDelete(id: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     talkDbService.delete(id).map {
       _ match {
-        case Left(meetups) => Redirect(routes.TalkCtrl.get(id))
-        case Right(res) => Redirect(routes.TalkCtrl.find())
+        case Left(meetups) => Redirect(routes.TalkCtrl.get(id)).flashing("error" -> s"Unable to delete talk, it's still referenced in ${meetups.length} meetups, delete them first.")
+        case Right(res) => Redirect(routes.TalkCtrl.find()).flashing("success" -> "Talk deleted")
       }
     }
   }
 
-  private def formView(status: Status, talkForm: Form[Talk.Data], talkOpt: Option[Talk])(implicit user: Option[Person]): Future[Result] = {
+  private def formView(status: Status, talkForm: Form[Talk.Data], talkOpt: Option[Talk])(implicit request: RequestHeader, user: Option[Person]): Future[Result] = {
     personDbService.find().map { personList =>
       status(views.html.form(talkForm, talkOpt, personList, personForm))
     }

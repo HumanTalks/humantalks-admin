@@ -3,13 +3,15 @@
 @import com.humantalks.internal.meetups.Meetup
 @import com.humantalks.internal.talks.Talk
 @import global.views.html.format._
+@import global.views.html.partials._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.meetups.routes.MeetupCtrl
-@(meetup: Meetup, talkList: List[Talk], personList: List[Person], venueList: List[Venue])(implicit user: Option[Person])
+@(meetup: Meetup, talkList: List[Talk], personList: List[Person], venueList: List[Venue])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
 @main("Publier "+meetup.data.title) {
     @header("meetup")
 
     <div class="container">
+        @flash()
         <h1>A publier sur <a href="http://www.meetup.com/fr-FR/HumanTalks-Paris/" target="_blank">Meetup</a> :</h1>
         <div class="row">
             <div class="col-md-12">

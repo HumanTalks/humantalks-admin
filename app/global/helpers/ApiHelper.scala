@@ -31,7 +31,7 @@ object ApiHelper {
             case (res, id) => returnItemOnSuccess(res, srv.get(id))
           }
         case JsError(error) =>
-          Future(Left(ApiError.from(error)))
+          Future.successful(Left(ApiError.from(error)))
       }
     }, Created, BadRequest)
   }
@@ -46,7 +46,7 @@ object ApiHelper {
             }
           }
         case JsError(error) =>
-          Future(Left(ApiError.from(error)))
+          Future.successful(Left(ApiError.from(error)))
       }
     }, Created, BadRequest)
   }
@@ -74,11 +74,11 @@ object ApiHelper {
   private def onSuccess[T](res: Option[T])(exec: T => Either[ApiError, T]): Either[ApiError, T] =
     res.map(exec).getOrElse(Left(ApiError.notFound()))
   private def onSuccessFut[T](res: Option[T])(exec: T => Future[Either[ApiError, T]])(implicit ec: ExecutionContext): Future[Either[ApiError, T]] =
-    res.map(exec).getOrElse(Future(Left(ApiError.notFound())))
+    res.map(exec).getOrElse(Future.successful(Left(ApiError.notFound())))
   private def onSuccess[T](res: WriteResult)(default: Either[ApiError, T]): Either[ApiError, T] =
     ApiError.from(res).map { error => Left(error) }.getOrElse(default)
   private def onSuccessFut[T](res: WriteResult)(default: Future[Either[ApiError, T]])(implicit ec: ExecutionContext): Future[Either[ApiError, T]] =
-    ApiError.from(res).map { error => Future(Left(error)) }.getOrElse(default)
+    ApiError.from(res).map { error => Future.successful(Left(error)) }.getOrElse(default)
   private def onSuccess[T](res: Either[Any, WriteResult])(default: Either[ApiError, T])(objRes: Either[ApiError, T]): Either[ApiError, T] = res match {
     case Right(wr) => onSuccess(wr)(default)
     case Left(obj) => objRes

@@ -1,16 +1,17 @@
 package com.humantalks.exposed.proposals
 
+import com.humantalks.common.values.Meta
 import com.humantalks.internal.persons.Person
+import com.humantalks.internal.talks.Talk
 import global.values.{ TypedId, TypedIdHelper }
-import org.joda.time.DateTime
 import play.api.data.Forms._
 import play.api.libs.json.Json
 
 case class Proposal(
   id: Proposal.Id,
   data: Proposal.Data,
-  created: DateTime,
-  updated: DateTime
+  talk: Option[Talk.Id],
+  meta: Meta
 )
 object Proposal {
   case class Id(value: String) extends TypedId(value)
@@ -24,16 +25,14 @@ object Proposal {
       description: Option[String],
       speakers: List[Person.Id],
       slides: Option[String],
-      slidesEmbedCode: Option[String],
-      video: Option[String],
-      videoEmbedCode: Option[String]
+      slidesEmbedCode: Option[String]
   ) {
-    def trim: Data = this.copy(
-      title = this.title.trim,
-      description = this.description.map(_.trim),
-      slides = this.slides.map(_.trim),
-      video = this.video.map(_.trim)
+    def trim: Data = copy(
+      title = title.trim,
+      description = description.map(_.trim),
+      slides = slides.map(_.trim)
     )
+    def toTalk: Talk.Data = Talk.Data(title, description, speakers, slides, slidesEmbedCode, None, None)
   }
 
   implicit val formatData = Json.format[Proposal.Data]
@@ -43,8 +42,6 @@ object Proposal {
     "description" -> optional(text),
     "speakers" -> list(of[Person.Id]),
     "slides" -> optional(text),
-    "slidesEmbedCode" -> ignored(Option.empty[String]),
-    "video" -> optional(text),
-    "videoEmbedCode" -> ignored(Option.empty[String])
+    "slidesEmbedCode" -> ignored(Option.empty[String])
   )(Proposal.Data.apply)(Proposal.Data.unapply)
 }

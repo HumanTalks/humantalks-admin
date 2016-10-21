@@ -2,6 +2,7 @@ package com.humantalks.internal.meetups
 
 import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
+import com.humantalks.exposed.proposals.{ Proposal, ProposalDbService }
 import com.humantalks.internal.persons.{ PersonDbService, Person }
 import com.humantalks.internal.talks.{ TalkDbService, Talk }
 import com.humantalks.internal.venues.VenueDbService
@@ -20,7 +21,8 @@ case class MeetupCtrl(
     venueDbService: VenueDbService,
     personDbService: PersonDbService,
     talkDbService: TalkDbService,
-    meetupDbService: MeetupDbService
+    meetupDbService: MeetupDbService,
+    proposalDbService: ProposalDbService
 )(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.ctrlToEC
   import ctx._
@@ -57,11 +59,13 @@ case class MeetupCtrl(
       val venueListFut = venueDbService.findByIds(meetup.data.venue.toSeq)
       val allTalksFut = talkDbService.find()
       val allPersonsFut = personDbService.find()
+      val allProposalsFut = proposalDbService.find()
       for {
         venueList <- venueListFut
         allTalks <- allTalksFut
         allPersons <- allPersonsFut
-      } yield Ok(views.html.detail(meetup, talkForm, personForm, allTalks, allPersons, venueList))
+        allProposals <- allProposalsFut
+      } yield Ok(views.html.detail(meetup, talkForm, personForm, allTalks, allPersons, venueList, allProposals))
     }
   }
 
@@ -86,7 +90,7 @@ case class MeetupCtrl(
 
   def doCreateTalk(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     talkForm.bindFromRequest.fold(
-      formWithErrors => Future(Redirect(routes.MeetupCtrl.get(id))), // TODO : add flashing message to show errors
+      formWithErrors => Future.successful(Redirect(routes.MeetupCtrl.get(id)).flashing("error" -> "Incorrect form values")),
       talkData => talkDbService.create(talkData, req.identity.id).flatMap {
         case (_, talkId) => meetupDbService.addTalk(id, talkId).map { _ =>
           Redirect(routes.MeetupCtrl.get(id))
@@ -101,7 +105,7 @@ case class MeetupCtrl(
         Redirect(routes.MeetupCtrl.get(id))
       }
     }.getOrElse {
-      Future(Redirect(routes.MeetupCtrl.get(id))) // TODO : add flashing error message
+      Future.successful(Redirect(routes.MeetupCtrl.get(id)).flashing("error" -> "Unable to find talk :("))
     }
   }
 
@@ -114,6 +118,21 @@ case class MeetupCtrl(
   def doRemoveTalk(id: Meetup.Id, talkId: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     meetupDbService.removeTalk(id, talkId).map { _ =>
       Redirect(routes.MeetupCtrl.get(id))
+    }
+  }
+
+  def doAddProposalForm(id: Meetup.Id, proposalId: Proposal.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    proposalDbService.get(proposalId).flatMap { proposalOpt =>
+      proposalOpt.map { proposal =>
+        talkDbService.create(proposal, req.identity.id).flatMap {
+          case Left(err) => Future.successful(Redirect(routes.MeetupCtrl.get(id)).flashing("error" -> err))
+          case Right(talkId) => meetupDbService.addTalk(id, talkId).map { _ =>
+            Redirect(routes.MeetupCtrl.get(id)).flashing("success" -> "Proposal transformed into a talk and added to meetup :)")
+          }
+        }
+      }.getOrElse {
+        Future.successful(Redirect(routes.MeetupCtrl.get(id)).flashing("error" -> "Unable to find proposal :("))
+      }
     }
   }
 
@@ -139,13 +158,13 @@ case class MeetupCtrl(
   def doDelete(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     meetupDbService.delete(id).map {
       _ match {
-        case Left(nothing) => Redirect(routes.MeetupCtrl.get(id))
-        case Right(res) => Redirect(routes.MeetupCtrl.find())
+        case Left(nothing) => Redirect(routes.MeetupCtrl.get(id)).flashing("error" -> "Unable to delete meetup (should NEVER happen)")
+        case Right(res) => Redirect(routes.MeetupCtrl.find()).flashing("success" -> "Meetup deleted")
       }
     }
   }
 
-  private def formView(status: Status, meetupForm: Form[Meetup.Data], meetupOpt: Option[Meetup])(implicit user: Option[Person]): Future[Result] = {
+  private def formView(status: Status, meetupForm: Form[Meetup.Data], meetupOpt: Option[Meetup])(implicit request: RequestHeader, user: Option[Person]): Future[Result] = {
     val allTalksFut = talkDbService.find()
     val allPersonsFut = personDbService.find()
     val allVenuesFut = venueDbService.find()

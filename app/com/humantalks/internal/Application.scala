@@ -4,6 +4,7 @@ import com.humantalks.auth.silhouette.SilhouetteEnv
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
 import global.helpers.ApiHelper
+import play.api.i18n.MessagesApi
 import play.api.libs.json.Json
 import play.api.mvc._
 
@@ -12,7 +13,7 @@ import scala.concurrent.Future
 case class Application(
     ctx: Contexts,
     silhouette: Silhouette[SilhouetteEnv]
-) extends Controller {
+)(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.wsToEC
   import ctx._
 
@@ -22,6 +23,6 @@ case class Application(
   }
 
   def apiRoot = silhouette.SecuredAction.async { implicit req =>
-    ApiHelper.resultJson(Future(Right(Json.obj("api" -> "internalApi"))), Results.Ok, Results.InternalServerError)
+    ApiHelper.resultJson(Future.successful(Right(Json.obj("api" -> "internalApi"))), Results.Ok, Results.InternalServerError)
   }
 }

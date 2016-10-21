@@ -45,21 +45,21 @@ case class AuthCtrl(
 
   def register() = silhouette.UserAwareAction.async { implicit req =>
     req.identity match {
-      case Some(user) => Future(loginRedirect)
-      case None => Future(Ok(views.html.register(registerForm)))
+      case Some(user) => Future.successful(loginRedirect)
+      case None => Future.successful(Ok(views.html.register(registerForm)))
     }
   }
 
   def doRegister() = silhouette.UnsecuredAction.async { implicit req =>
     registerForm.bindFromRequest.fold(
-      formWithErrors => Future(BadRequest(views.html.register(formWithErrors))),
+      formWithErrors => Future.successful(BadRequest(views.html.register(formWithErrors))),
       formData => {
         val result = Redirect(routes.AuthCtrl.register()).flashing("info" -> s"You're almost done! We sent an activation mail to <b>${formData.email}</b>. Please follow the instructions in the email to activate your account. If it doesn't arrive, check your spam folder, or try to log in again to send another activation mail.")
         val loginInfo = LoginInfo(CredentialsProvider.ID, formData.email)
         personRepository.retrieve(loginInfo).flatMap {
           case Some(user) =>
             mailerSrv.sendAlreadyRegistered(formData.email, user)
-            Future(result)
+            Future.successful(result)
           case None =>
             val passwordInfo = authSrv.hashPassword(formData.password)
             for {
@@ -79,18 +79,18 @@ case class AuthCtrl(
 
   def login() = silhouette.UserAwareAction.async { implicit req =>
     req.identity match {
-      case Some(person) => Future(loginRedirect)
-      case None => Future(Ok(views.html.login(loginForm)))
+      case Some(person) => Future.successful(loginRedirect)
+      case None => Future.successful(Ok(views.html.login(loginForm)))
     }
   }
 
   def doLogin() = silhouette.UnsecuredAction.async { implicit req =>
     loginForm.bindFromRequest.fold(
-      formWithErrors => Future(BadRequest(views.html.login(formWithErrors))),
+      formWithErrors => Future.successful(BadRequest(views.html.login(formWithErrors))),
       formData => {
         authSrv.authenticate(formData.email, formData.password).flatMap { loginInfo =>
           personRepository.retrieve(loginInfo).flatMap {
-            case Some(person) if !person.activated => Future(Ok(views.html.activateAccount(formData.email)))
+            case Some(person) if !person.activated => Future.successful(Ok(views.html.activateAccount(formData.email)))
             case Some(person) =>
               silhouette.env.authenticatorService.create(loginInfo).map {
                 case authenticator: CookieAuthenticator if formData.rememberMe =>
@@ -125,7 +125,7 @@ case class AuthCtrl(
       case (Some(person), Some(authenticator)) =>
         silhouette.env.eventBus.publish(LogoutEvent(person, req))
         silhouette.env.authenticatorService.discard(authenticator, logoutRedirect)
-      case _ => Future(logoutRedirect)
+      case _ => Future.successful(logoutRedirect)
     }
   }
 
@@ -140,7 +140,7 @@ case class AuthCtrl(
           mailerSrv.sendActivateAccount(decodedEmail, person, authToken)
           result
         }
-      case None => Future(result)
+      case None => Future.successful(result)
     }
   }
 
@@ -151,19 +151,19 @@ case class AuthCtrl(
           personRepository.activate(person.id).map { _ =>
             Redirect(routes.AuthCtrl.login()).flashing("success" -> "Your account is now activated! Please login to use your new account.")
           }
-        case _ => Future(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please login to send the activation email again."))
+        case _ => Future.successful(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please login to send the activation email again."))
       }
-      case None => Future(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please login to send the activation email again."))
+      case None => Future.successful(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please login to send the activation email again."))
     }
   }
 
   def forgotPassword() = silhouette.UnsecuredAction.async { implicit req =>
-    Future(Ok(views.html.forgotPassword(forgotPasswordForm)))
+    Future.successful(Ok(views.html.forgotPassword(forgotPasswordForm)))
   }
 
   def doForgotPassword() = silhouette.UnsecuredAction.async { implicit req =>
     forgotPasswordForm.bindFromRequest.fold(
-      formWithErrors => Future(BadRequest(views.html.forgotPassword(formWithErrors))),
+      formWithErrors => Future.successful(BadRequest(views.html.forgotPassword(formWithErrors))),
       formData => {
         val result = Redirect(routes.AuthCtrl.login()).flashing("info" -> "We have sent you an email with further instructions to reset your password, on condition that the address was found in our system. If you do not receive an email within the next 5 minutes, then please recheck your entered email address and try it again.")
         val loginInfo = LoginInfo(CredentialsProvider.ID, formData.email)
@@ -179,7 +179,7 @@ case class AuthCtrl(
               }
             }
           case None =>
-            Future(result)
+            Future.successful(result)
         }
       }
     )
@@ -196,7 +196,7 @@ case class AuthCtrl(
     authTokenRepository.get(token).flatMap {
       case Some(authToken) =>
         resetPasswordForm.bindFromRequest.fold(
-          formWithErrors => Future(BadRequest(views.html.resetPassword(formWithErrors, token))),
+          formWithErrors => Future.successful(BadRequest(views.html.resetPassword(formWithErrors, token))),
           formData => personRepository.get(authToken.person).flatMap {
             case Some(person) if person.hasProvider(CredentialsProvider.ID) =>
               val passwordInfo = authSrv.hashPassword(formData.password)
@@ -206,7 +206,7 @@ case class AuthCtrl(
             case _ => Future.successful(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please request a new link to reset your password. (no user)"))
           }
         )
-      case None => Future(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please request a new link to reset your password. (no token)"))
+      case None => Future.successful(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please request a new link to reset your password. (no token)"))
     }
   }
 
@@ -226,7 +226,7 @@ case class AuthCtrl(
           u <- personRepository.unregister(id)
         } yield Redirect(routes.AuthCtrl.debug())
       }.getOrElse {
-        Future(Redirect(routes.AuthCtrl.debug()))
+        Future.successful(Redirect(routes.AuthCtrl.debug()))
       }
     }
   }

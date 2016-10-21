@@ -6,10 +6,11 @@ import com.humantalks.auth.silhouette._
 import com.humantalks.common.Conf
 import com.humantalks.common.services.EmbedSrv
 import com.humantalks.common.services.sendgrid.SendgridSrv
-import com.humantalks.exposed.proposals.{ ProposalRepository, ProposalDbService, ProposalCtrl }
+import com.humantalks.exposed.proposals.{ ProposalRepository, ProposalDbService }
 import com.humantalks.internal.admin.AdminCtrl
 import com.humantalks.internal.meetups.{ MeetupDbService, MeetupRepository, MeetupCtrl, MeetupApi }
 import com.humantalks.internal.persons.{ PersonDbService, PersonRepository, PersonCtrl, PersonApi }
+import com.humantalks.internal.proposals.ProposalCtrl
 import com.humantalks.internal.talks.{ TalkDbService, TalkRepository, TalkCtrl, TalkApi }
 import com.humantalks.tools.EmbedCtrl
 import com.humantalks.tools.scrapers.TwitterScraper
@@ -59,10 +60,10 @@ class MyComponents(context: ApplicationLoader.Context)
   val proposalRepository = ProposalRepository(conf, ctx, mongo, embedSrv)
 
   val venueDbService = VenueDbService(meetupRepository, venueRepository)
-  val personDbService = PersonDbService(personRepository, talkRepository)
-  val talkDbService = TalkDbService(meetupRepository, talkRepository)
+  val personDbService = PersonDbService(personRepository, talkRepository, proposalRepository)
+  val talkDbService = TalkDbService(meetupRepository, talkRepository, proposalRepository)
   val meetupDbService = MeetupDbService(meetupRepository)
-  val proposalDbService = ProposalDbService(proposalRepository)
+  val proposalDbService = ProposalDbService(talkRepository, proposalRepository)
 
   val authSrv = AuthSrv(passwordHasherRegistry, credentialsProvider, authInfoRepository)
   val sendgridSrv = SendgridSrv(conf, wsClient)
@@ -72,13 +73,14 @@ class MyComponents(context: ApplicationLoader.Context)
   val router: Router = new Routes(
     httpErrorHandler,
     com.humantalks.exposed.Application(ctx, personDbService),
-    ProposalCtrl(conf, ctx, personDbService, proposalDbService, sendgridSrv),
+    com.humantalks.exposed.proposals.ProposalCtrl(conf, ctx, personDbService, talkDbService, proposalDbService, sendgridSrv),
     com.humantalks.auth.AuthCtrl(ctx, silhouette, conf, authSrv, personRepository, credentialsRepository, authTokenRepository, avatarService, mailerSrv),
     com.humantalks.internal.Application(ctx, silhouette),
     VenueCtrl(ctx, silhouette, venueDbService, personDbService, meetupDbService),
-    PersonCtrl(ctx, silhouette, personDbService, talkDbService),
+    PersonCtrl(ctx, silhouette, personDbService, talkDbService, proposalDbService),
     TalkCtrl(ctx, silhouette, personDbService, talkDbService, meetupDbService),
-    MeetupCtrl(ctx, silhouette, venueDbService, personDbService, talkDbService, meetupDbService),
+    MeetupCtrl(ctx, silhouette, venueDbService, personDbService, talkDbService, meetupDbService, proposalDbService),
+    ProposalCtrl(ctx, silhouette, personDbService, proposalDbService),
     AdminCtrl(ctx, silhouette, personDbService, credentialsRepository, authTokenRepository),
     VenueApi(ctx, silhouette, venueDbService),
     PersonApi(ctx, silhouette, personDbService),

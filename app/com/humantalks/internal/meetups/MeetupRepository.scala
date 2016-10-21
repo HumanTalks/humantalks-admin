@@ -43,7 +43,7 @@ case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
     collection.get(Json.obj("id" -> id))
 
   def create(data: Meetup.Data, by: Person.Id): Future[(WriteResult, Meetup.Id)] = {
-    val toCreate = Meetup(Meetup.Id.generate(), data.trim, published = false, Meta(new DateTime(), by, new DateTime(), by))
+    val toCreate = Meetup(Meetup.Id.generate(), data.trim, published = false, Meta.from(by))
     collection.create(toCreate).map { res => (res, toCreate.id) }
   }
 

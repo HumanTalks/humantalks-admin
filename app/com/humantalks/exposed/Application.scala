@@ -20,7 +20,7 @@ case class Application(
   }
 
   def apiRoot = Action.async { implicit req =>
-    ApiHelper.resultJson(Future(Right(Json.obj("api" -> "exposedApi"))), Results.Ok, Results.InternalServerError)
+    ApiHelper.resultJson(Future.successful(Right(Json.obj("api" -> "exposedApi"))), Results.Ok, Results.InternalServerError)
   }
 
   def createPerson = Action.async(parse.json) { implicit req => ApiHelper.create(personDbService, Person.anonymous, req.body) }

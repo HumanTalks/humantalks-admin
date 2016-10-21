@@ -2,13 +2,15 @@
 @import com.humantalks.internal.talks.Talk
 @import com.humantalks.internal.persons.Person
 @import com.humantalks.internal.venues.Venue
+@import global.views.html.partials._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.meetups.routes.MeetupCtrl
-@(meetupForm: Form[Meetup.Data], talkForm: Form[Talk.Data], personForm: Form[Person.Data], meetupOpt: Option[Meetup], allTalks: List[Talk], allPersons: List[Person], allVenues: List[Venue])(implicit messagesApi: MessagesApi, user: Option[Person])
+@(meetupForm: Form[Meetup.Data], talkForm: Form[Talk.Data], personForm: Form[Person.Data], meetupOpt: Option[Meetup], allTalks: List[Talk], allPersons: List[Person], allVenues: List[Venue])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
 @main("Nouveau meetup") {
     @header("meetup")
 
-    <div class="container" role="main">
+    <div class="container">
+        @flash()
         <div class="page-header">
             <h1>@meetupOpt.map{ p => Modifier @p.data.title}.getOrElse{Ajouter un meetup}</h1>
         </div>

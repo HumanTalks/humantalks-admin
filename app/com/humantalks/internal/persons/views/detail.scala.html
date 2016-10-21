@@ -1,14 +1,18 @@
 @import com.humantalks.internal.persons.Person
 @import com.humantalks.internal.talks.Talk
+@import com.humantalks.exposed.proposals.Proposal
+@import global.views.html.format._
+@import global.views.html.partials._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.persons.routes.PersonCtrl
 @import com.humantalks.internal.talks.routes.TalkCtrl
-@import global.views.html.format._
-@(person: Person, talkList: List[Talk])(implicit user: Option[Person])
+@import com.humantalks.internal.proposals.routes.ProposalCtrl
+@(person: Person, talkList: List[Talk], proposalList: List[Proposal])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
 @main(person.data.name) {
     @header("person")
 
     <div class="container">
+        @flash()
         <h1>
             @helper.form(action=PersonCtrl.doDelete(person.id), 'class->"pull-right") {
                 <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i></button>
@@ -24,6 +28,14 @@
             <ul>
             @talkList.map { talk =>
                 <li><a href="@TalkCtrl.get(talk.id)">@talk.data.title</a> à ???</li>
+            }
+            </ul>
+        }
+        @if(proposalList.nonEmpty){
+            <h3>Proposals</h3>
+            <ul>
+            @proposalList.map { proposal =>
+                <li><a href="@ProposalCtrl.get(proposal.id)">@proposal.data.title</a></li>
             }
             </ul>
         }

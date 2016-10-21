@@ -2,6 +2,7 @@ package com.humantalks.internal.persons
 
 import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
+import com.humantalks.exposed.proposals.ProposalDbService
 import com.humantalks.internal.talks.TalkDbService
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
@@ -16,7 +17,8 @@ case class PersonCtrl(
     ctx: Contexts,
     silhouette: Silhouette[SilhouetteEnv],
     personDbService: PersonDbService,
-    talkDbService: TalkDbService
+    talkDbService: TalkDbService,
+    proposalDbService: ProposalDbService
 )(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.ctrlToEC
   import ctx._
@@ -49,7 +51,8 @@ case class PersonCtrl(
     CtrlHelper.withItem(personDbService)(id) { person =>
       for {
         talkList <- talkDbService.findForPerson(id)
-      } yield Ok(views.html.detail(person, talkList))
+        proposalList <- proposalDbService.findForPerson(id)
+      } yield Ok(views.html.detail(person, talkList, proposalList))
     }
   }
 
@@ -75,18 +78,24 @@ case class PersonCtrl(
   def doDelete(id: Person.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     personDbService.delete(id).map {
       _ match {
-        case Left(talks) => Redirect(routes.PersonCtrl.get(id))
-        case Right(res) => Redirect(routes.PersonCtrl.find())
+        case Left((talks, proposals)) => {
+          val references = List(
+            if (talks.nonEmpty) Some(talks.length + " talks") else None,
+            if (proposals.nonEmpty) Some(proposals.length + " proposals") else None
+          ).flatten.mkString(",")
+          Redirect(routes.PersonCtrl.get(id)).flashing("error" -> s"Unable to delete person, it's still referenced in $references, delete them first.")
+        }
+        case Right(res) => Redirect(routes.PersonCtrl.find()).flashing("success" -> "Person deleted")
       }
     }
   }
 
   def profil = silhouette.SecuredAction.async { implicit req =>
     implicit val user = Some(req.identity)
-    Future(Ok(views.html.profil(req.identity)))
+    Future.successful(Ok(views.html.profil(req.identity)))
   }
 
-  private def formView(status: Status, personForm: Form[Person.Data], personOpt: Option[Person])(implicit user: Option[Person]): Future[Result] = {
-    Future(status(views.html.form(personForm, personOpt)))
+  private def formView(status: Status, personForm: Form[Person.Data], personOpt: Option[Person])(implicit request: RequestHeader, user: Option[Person]): Future[Result] = {
+    Future.successful(status(views.html.form(personForm, personOpt)))
   }
 }

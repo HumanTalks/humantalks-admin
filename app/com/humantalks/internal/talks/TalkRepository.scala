@@ -36,7 +36,7 @@ case class TalkRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: EmbedS
     collection.get(Json.obj("id" -> id))
 
   def create(elt: Talk.Data, by: Person.Id): Future[(WriteResult, Talk.Id)] =
-    fillEmbedCode(Talk(Talk.Id.generate(), elt.trim, Meta(new DateTime(), by, new DateTime(), by))).flatMap { toCreate =>
+    fillEmbedCode(Talk(Talk.Id.generate(), elt.trim, Meta.from(by))).flatMap { toCreate =>
       collection.create(toCreate).map { res => (res, toCreate.id) }
     }
 
@@ -52,8 +52,8 @@ case class TalkRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: EmbedS
     collection.delete(Json.obj("id" -> id))
 
   private def fillEmbedCode(talk: Talk): Future[Talk] = {
-    val slidesEmbedFut = talk.data.slides.map(url => embedSrv.embedRemote(url)).getOrElse(Future(Left(ApiError.emtpy)))
-    val videoEmbedFut = talk.data.video.map(url => embedSrv.embedRemote(url)).getOrElse(Future(Left(ApiError.emtpy)))
+    val slidesEmbedFut = talk.data.slides.map(url => embedSrv.embedRemote(url)).getOrElse(Future.successful(Left(ApiError.emtpy)))
+    val videoEmbedFut = talk.data.video.map(url => embedSrv.embedRemote(url)).getOrElse(Future.successful(Left(ApiError.emtpy)))
     for {
       slidesEmbed <- slidesEmbedFut
       videoEmbed <- videoEmbedFut

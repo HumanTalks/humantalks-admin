@@ -40,7 +40,7 @@ object EmbedSrv {
 
   def embedRemote(ws: WSClient)(url: String, default: Either[ApiError, EmbedData] = default)(implicit ec: ExecutionContext): Future[Either[ApiError, EmbedData]] =
     embed(url) match {
-      case Right(embedData) => Future(Right(embedData))
+      case Right(embedData) => Future.successful(Right(embedData))
       case Left(err) => fetch(ws)(url) {
         _.body match {
           case SlideShare.isPresent(embedUrl) if SlideShare.url.findFirstIn(url).isDefined => Right(SlideShare.embed(url, EmbedUrl(embedUrl)))
@@ -55,7 +55,7 @@ object EmbedSrv {
   private val resolveCache = mutable.WeakHashMap.empty[String, String]
   def resolve(ws: WSClient)(url: String)(implicit ec: ExecutionContext): Future[String] = {
     def resolveRec(url: String, origin: String)(implicit ec: ExecutionContext): Future[String] = {
-      resolveCache.get(url).map(res => Future(res)).getOrElse {
+      resolveCache.get(url).map(res => Future.successful(res)).getOrElse {
         try {
           ws.url(url).withFollowRedirects(false).withRequestTimeout(timeout).head().flatMap { response =>
             response.header("Location").filter(_.startsWith("http")).map { redirect =>
@@ -63,13 +63,13 @@ object EmbedSrv {
               resolveRec(redirect, origin)
             }.getOrElse {
               resolveCache.put(origin, url)
-              Future(url)
+              Future.successful(url)
             }
           }.recover {
             case e: Throwable => resolveCache.put(origin, url); url
           }
         } catch {
-          case e: Throwable => resolveCache.put(origin, url); Future(url)
+          case e: Throwable => resolveCache.put(origin, url); Future.successful(url)
         }
       }
     }

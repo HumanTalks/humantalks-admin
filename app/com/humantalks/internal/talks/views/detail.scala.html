@@ -2,16 +2,18 @@
 @import com.humantalks.internal.talks.Talk
 @import com.humantalks.internal.meetups.Meetup
 @import global.views.html.format._
+@import global.views.html.partials._
 @import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.persons.routes.PersonCtrl
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @import com.humantalks.internal.meetups.routes.MeetupCtrl
-@(talk: Talk, personList: List[Person], meetupList: List[Meetup])(implicit user: Option[Person])
+@(talk: Talk, personList: List[Person], meetupList: List[Meetup])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
 @main(talk.data.title, talk.data.description.getOrElse("")) {
     @header("talk")
 
     <div class="container">
+        @flash()
         <h1>
             @helper.form(action=TalkCtrl.doDelete(talk.id), 'class->"pull-right") {
                 <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i></button>

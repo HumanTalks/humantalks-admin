@@ -28,11 +28,11 @@ object Venue {
       contacts: List[Person.Id],
       comment: Option[String] // information supplémentaires
   ) {
-    def trim: Data = this.copy(
-      name = this.name.trim,
-      twitter = this.twitter.map(TwitterSrv.toAccount),
-      logo = this.logo.map(_.trim),
-      comment = this.comment.map(_.trim)
+    def trim: Data = copy(
+      name = name.trim,
+      twitter = twitter.map(TwitterSrv.toAccount),
+      logo = logo.map(_.trim),
+      comment = comment.map(_.trim)
     )
   }
 

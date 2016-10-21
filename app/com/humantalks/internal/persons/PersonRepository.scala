@@ -85,7 +85,7 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
         val p = person.copy(loginInfo = None, role = None, activated = false)
         update(p).map(_ => Some(p))
       }.getOrElse {
-        Future(None)
+        Future.successful(None)
       }
     }
   }

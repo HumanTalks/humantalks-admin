@@ -6,7 +6,8 @@ import global.infrastructure.DbService
 import play.api.libs.json.{ Json, JsObject }
 import reactivemongo.api.commands.WriteResult
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 case class VenueDbService(meetupRepository: MeetupRepository, venueRepository: VenueRepository) extends DbService[Venue, Venue.Id, Venue.Data, Person.Id] {
   val name = venueRepository.name
@@ -17,12 +18,12 @@ case class VenueDbService(meetupRepository: MeetupRepository, venueRepository: V
   def create(elt: Venue.Data, by: Person.Id): Future[(WriteResult, Venue.Id)] = venueRepository.create(elt, by)
   def update(elt: Venue, data: Venue.Data, by: Person.Id): Future[WriteResult] = venueRepository.update(elt, data, by)
 
-  def delete(id: Venue.Id)(implicit ec: ExecutionContext): Future[Either[List[Meetup], WriteResult]] = {
+  def delete(id: Venue.Id): Future[Either[List[Meetup], WriteResult]] = {
     meetupRepository.findForVenue(id).flatMap { meetups =>
       if (meetups.isEmpty) {
         venueRepository.delete(id).map(r => Right(r))
       } else {
-        Future(Left(meetups))
+        Future.successful(Left(meetups))
       }
     }
   }

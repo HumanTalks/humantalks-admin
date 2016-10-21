@@ -27,11 +27,11 @@ object Talk {
       video: Option[String],
       videoEmbedCode: Option[String]
   ) {
-    def trim: Data = this.copy(
-      title = this.title.trim,
-      description = this.description.map(_.trim),
-      slides = this.slides.map(_.trim),
-      video = this.video.map(_.trim)
+    def trim: Data = copy(
+      title = title.trim,
+      description = description.map(_.trim),
+      slides = slides.map(_.trim),
+      video = video.map(_.trim)
     )
   }
 

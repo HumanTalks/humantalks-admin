@@ -12,7 +12,7 @@ object CtrlHelper {
       itemOpt.map { item =>
         block(item)
       }.getOrElse {
-        Future(notFound(srv.name, id))
+        Future.successful(notFound(srv.name, id))
       }
     }
   }
@@ -21,7 +21,7 @@ object CtrlHelper {
       itemOpt.map { item =>
         block(item)
       }.getOrElse {
-        Future(notFound(id))
+        Future.successful(notFound(id))
       }
     }
   }

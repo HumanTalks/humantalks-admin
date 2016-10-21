@@ -1,12 +1,14 @@
 @import com.humantalks.internal.persons.Person
+@import global.views.html.format._
+@import global.views.html.partials._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.persons.routes.PersonCtrl
-@import global.views.html.format._
-@(personList: List[Person])(implicit user: Option[Person])
+@(personList: List[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
 @main("Personnes") {
     @header("person")
 
     <div class="container">
+        @flash()
         <h1>
             <a href="@PersonCtrl.create" class="pull-right"><i class="fa fa-plus"></i></a>
             Liste des personnes (@personList.length)

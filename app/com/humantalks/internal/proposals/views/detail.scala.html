@@ -1,0 +1,21 @@
+@import com.humantalks.exposed.proposals.Proposal
+@import com.humantalks.internal.persons.Person
+@import global.views.html.format._
+@import com.humantalks.common.views.html.format._
+@import com.humantalks.internal.views.html.partials._
+@import com.humantalks.internal.persons.routes.PersonCtrl
+@(proposal: Proposal, personList: List[Person])(implicit user: Option[Person])
+@main(proposal.data.title) {
+    @header("proposal")
+
+    <div class="container">
+        <h1>@proposal.data.title</h1>
+        @proposal.data.description.map{d => <p>@multiline(d)</p>}
+        @if(proposal.data.speakers.nonEmpty){
+            <p>par @proposal.data.speakers.flatMap(id => personList.find(_.id == id)).map { speaker => <a href="@PersonCtrl.get(speaker.id)">@speaker.data.name</a> }</p>
+        }
+        @proposal.data.slidesEmbedCode.map{c => <p><b>Slides:</b><br>@Html(c)</p>}.getOrElse{
+            @proposal.data.slides.map{s => <p><b>Slides:</b><br>@embed(s)</p>}
+        }
+    </div>
+}

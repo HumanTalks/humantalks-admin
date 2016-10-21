@@ -2,107 +2,110 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /                                                   com.humantalks.exposed.Application.index
+GET     /                                                           com.humantalks.exposed.Application.index
 
-GET     /submit-talk                                        com.humantalks.exposed.proposals.ProposalCtrl.create
-POST    /submit-talk                                        com.humantalks.exposed.proposals.ProposalCtrl.doCreate
-GET     /submit-talk/$id<.{36}>/edit                        com.humantalks.exposed.proposals.ProposalCtrl.update(id: Proposal.Id)
-POST    /submit-talk/$id<.{36}>/edit                        com.humantalks.exposed.proposals.ProposalCtrl.doUpdate(id: Proposal.Id)
+GET     /submit-talk                                                com.humantalks.exposed.proposals.ProposalCtrl.create
+POST    /submit-talk                                                com.humantalks.exposed.proposals.ProposalCtrl.doCreate
+GET     /submit-talk/$id<.{36}>/edit                                com.humantalks.exposed.proposals.ProposalCtrl.update(id: Proposal.Id)
+POST    /submit-talk/$id<.{36}>/edit                                com.humantalks.exposed.proposals.ProposalCtrl.doUpdate(id: Proposal.Id)
 
-GET     /register                                           com.humantalks.auth.AuthCtrl.register
-POST    /register                                           com.humantalks.auth.AuthCtrl.doRegister
-GET     /login                                              com.humantalks.auth.AuthCtrl.login
-POST    /login                                              com.humantalks.auth.AuthCtrl.doLogin
-POST    /logout                                             com.humantalks.auth.AuthCtrl.doLogout
-POST    /sendActivationEmail                                com.humantalks.auth.AuthCtrl.sendActivationEmail(email: String)
-GET     /activateAccount/:id                                com.humantalks.auth.AuthCtrl.activateAccount(id: AuthToken.Id)
-GET     /forgotPassword                                     com.humantalks.auth.AuthCtrl.forgotPassword
-POST    /forgotPassword                                     com.humantalks.auth.AuthCtrl.doForgotPassword
-GET     /resetPassword/:id                                  com.humantalks.auth.AuthCtrl.resetPassword(id: AuthToken.Id)
-POST    /resetPassword/:id                                  com.humantalks.auth.AuthCtrl.doResetPassword(id: AuthToken.Id)
-#GET     /auth/debug                                         com.humantalks.auth.AuthCtrl.debug
-#GET     /auth/debug/removeUser/:id                          com.humantalks.auth.AuthCtrl.debugRemoveUser(id: Person.Id)
-#GET     /auth/debug/removeToken/:id                         com.humantalks.auth.AuthCtrl.debugRemoveToken(id: AuthToken.Id)
+GET     /register                                                   com.humantalks.auth.AuthCtrl.register
+POST    /register                                                   com.humantalks.auth.AuthCtrl.doRegister
+GET     /login                                                      com.humantalks.auth.AuthCtrl.login
+POST    /login                                                      com.humantalks.auth.AuthCtrl.doLogin
+POST    /logout                                                     com.humantalks.auth.AuthCtrl.doLogout
+POST    /sendActivationEmail                                        com.humantalks.auth.AuthCtrl.sendActivationEmail(email: String)
+GET     /activateAccount/:id                                        com.humantalks.auth.AuthCtrl.activateAccount(id: AuthToken.Id)
+GET     /forgotPassword                                             com.humantalks.auth.AuthCtrl.forgotPassword
+POST    /forgotPassword                                             com.humantalks.auth.AuthCtrl.doForgotPassword
+GET     /resetPassword/:id                                          com.humantalks.auth.AuthCtrl.resetPassword(id: AuthToken.Id)
+POST    /resetPassword/:id                                          com.humantalks.auth.AuthCtrl.doResetPassword(id: AuthToken.Id)
+#GET     /auth/debug                                                 com.humantalks.auth.AuthCtrl.debug
+#GET     /auth/debug/removeUser/:id                                  com.humantalks.auth.AuthCtrl.debugRemoveUser(id: Person.Id)
+#GET     /auth/debug/removeToken/:id                                 com.humantalks.auth.AuthCtrl.debugRemoveToken(id: AuthToken.Id)
 
-GET     /home                                               com.humantalks.internal.Application.index
+GET     /home                                                       com.humantalks.internal.Application.index
 
-GET     /venues                                             com.humantalks.internal.venues.VenueCtrl.find
-GET     /venues/create                                      com.humantalks.internal.venues.VenueCtrl.create
-POST    /venues/create                                      com.humantalks.internal.venues.VenueCtrl.doCreate
-GET     /venues/$id<.{36}>                                  com.humantalks.internal.venues.VenueCtrl.get(id: Venue.Id)
-GET     /venues/$id<.{36}>/edit                             com.humantalks.internal.venues.VenueCtrl.update(id: Venue.Id)
-POST    /venues/$id<.{36}>/edit                             com.humantalks.internal.venues.VenueCtrl.doUpdate(id: Venue.Id)
-POST    /venues/$id<.{36}>/delete                           com.humantalks.internal.venues.VenueCtrl.doDelete(id: Venue.Id)
+GET     /venues                                                     com.humantalks.internal.venues.VenueCtrl.find
+GET     /venues/create                                              com.humantalks.internal.venues.VenueCtrl.create
+POST    /venues/create                                              com.humantalks.internal.venues.VenueCtrl.doCreate
+GET     /venues/$id<.{36}>                                          com.humantalks.internal.venues.VenueCtrl.get(id: Venue.Id)
+GET     /venues/$id<.{36}>/edit                                     com.humantalks.internal.venues.VenueCtrl.update(id: Venue.Id)
+POST    /venues/$id<.{36}>/edit                                     com.humantalks.internal.venues.VenueCtrl.doUpdate(id: Venue.Id)
+POST    /venues/$id<.{36}>/delete                                   com.humantalks.internal.venues.VenueCtrl.doDelete(id: Venue.Id)
 
-GET     /persons                                            com.humantalks.internal.persons.PersonCtrl.find
-GET     /persons/create                                     com.humantalks.internal.persons.PersonCtrl.create
-POST    /persons/create                                     com.humantalks.internal.persons.PersonCtrl.doCreate
-GET     /persons/$id<.{36}>                                 com.humantalks.internal.persons.PersonCtrl.get(id: Person.Id)
-GET     /persons/$id<.{36}>/edit                            com.humantalks.internal.persons.PersonCtrl.update(id: Person.Id)
-POST    /persons/$id<.{36}>/edit                            com.humantalks.internal.persons.PersonCtrl.doUpdate(id: Person.Id)
-POST    /persons/$id<.{36}>/delete                          com.humantalks.internal.persons.PersonCtrl.doDelete(id: Person.Id)
-GET     /persons/me                                         com.humantalks.internal.persons.PersonCtrl.profil
+GET     /persons                                                    com.humantalks.internal.persons.PersonCtrl.find
+GET     /persons/create                                             com.humantalks.internal.persons.PersonCtrl.create
+POST    /persons/create                                             com.humantalks.internal.persons.PersonCtrl.doCreate
+GET     /persons/$id<.{36}>                                         com.humantalks.internal.persons.PersonCtrl.get(id: Person.Id)
+GET     /persons/$id<.{36}>/edit                                    com.humantalks.internal.persons.PersonCtrl.update(id: Person.Id)
+POST    /persons/$id<.{36}>/edit                                    com.humantalks.internal.persons.PersonCtrl.doUpdate(id: Person.Id)
+POST    /persons/$id<.{36}>/delete                                  com.humantalks.internal.persons.PersonCtrl.doDelete(id: Person.Id)
+GET     /persons/me                                                 com.humantalks.internal.persons.PersonCtrl.profil
 
-GET     /talks                                              com.humantalks.internal.talks.TalkCtrl.find
-GET     /talks/create                                       com.humantalks.internal.talks.TalkCtrl.create
-POST    /talks/create                                       com.humantalks.internal.talks.TalkCtrl.doCreate
-GET     /talks/$id<.{36}>                                   com.humantalks.internal.talks.TalkCtrl.get(id: Talk.Id)
-GET     /talks/$id<.{36}>/edit                              com.humantalks.internal.talks.TalkCtrl.update(id: Talk.Id)
-POST    /talks/$id<.{36}>/edit                              com.humantalks.internal.talks.TalkCtrl.doUpdate(id: Talk.Id)
-POST    /talks/$id<.{36}>/delete                            com.humantalks.internal.talks.TalkCtrl.doDelete(id: Talk.Id)
+GET     /talks                                                      com.humantalks.internal.talks.TalkCtrl.find
+GET     /talks/create                                               com.humantalks.internal.talks.TalkCtrl.create
+POST    /talks/create                                               com.humantalks.internal.talks.TalkCtrl.doCreate
+GET     /talks/$id<.{36}>                                           com.humantalks.internal.talks.TalkCtrl.get(id: Talk.Id)
+GET     /talks/$id<.{36}>/edit                                      com.humantalks.internal.talks.TalkCtrl.update(id: Talk.Id)
+POST    /talks/$id<.{36}>/edit                                      com.humantalks.internal.talks.TalkCtrl.doUpdate(id: Talk.Id)
+POST    /talks/$id<.{36}>/delete                                    com.humantalks.internal.talks.TalkCtrl.doDelete(id: Talk.Id)
 
-GET     /meetups                                            com.humantalks.internal.meetups.MeetupCtrl.find
-GET     /meetups/create                                     com.humantalks.internal.meetups.MeetupCtrl.create
-POST    /meetups/create                                     com.humantalks.internal.meetups.MeetupCtrl.doCreate
-GET     /meetups/$id<.{36}>                                 com.humantalks.internal.meetups.MeetupCtrl.get(id: Meetup.Id)
-GET     /meetups/$id<.{36}>/edit                            com.humantalks.internal.meetups.MeetupCtrl.update(id: Meetup.Id)
-POST    /meetups/$id<.{36}>/edit                            com.humantalks.internal.meetups.MeetupCtrl.doUpdate(id: Meetup.Id)
-GET     /meetups/$id<.{36}>/publish                         com.humantalks.internal.meetups.MeetupCtrl.publish(id: Meetup.Id)
-POST    /meetups/$id<.{36}>/publish                         com.humantalks.internal.meetups.MeetupCtrl.doPublish(id: Meetup.Id)
-POST    /meetups/$id<.{36}>/delete                          com.humantalks.internal.meetups.MeetupCtrl.doDelete(id: Meetup.Id)
-POST    /meetups/$id<.{36}>/talks                           com.humantalks.internal.meetups.MeetupCtrl.doCreateTalk(id: Meetup.Id)
-POST    /meetups/$id<.{36}>/talks/add                       com.humantalks.internal.meetups.MeetupCtrl.doAddTalkForm(id: Meetup.Id)
-POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/add        com.humantalks.internal.meetups.MeetupCtrl.doAddTalk(id: Meetup.Id, talkId: Talk.Id)
-POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/delete     com.humantalks.internal.meetups.MeetupCtrl.doRemoveTalk(id: Meetup.Id, talkId: Talk.Id)
+GET     /meetups                                                    com.humantalks.internal.meetups.MeetupCtrl.find
+GET     /meetups/create                                             com.humantalks.internal.meetups.MeetupCtrl.create
+POST    /meetups/create                                             com.humantalks.internal.meetups.MeetupCtrl.doCreate
+GET     /meetups/$id<.{36}>                                         com.humantalks.internal.meetups.MeetupCtrl.get(id: Meetup.Id)
+GET     /meetups/$id<.{36}>/edit                                    com.humantalks.internal.meetups.MeetupCtrl.update(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/edit                                    com.humantalks.internal.meetups.MeetupCtrl.doUpdate(id: Meetup.Id)
+GET     /meetups/$id<.{36}>/publish                                 com.humantalks.internal.meetups.MeetupCtrl.publish(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/publish                                 com.humantalks.internal.meetups.MeetupCtrl.doPublish(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/delete                                  com.humantalks.internal.meetups.MeetupCtrl.doDelete(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/talks                                   com.humantalks.internal.meetups.MeetupCtrl.doCreateTalk(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/talks/add                               com.humantalks.internal.meetups.MeetupCtrl.doAddTalkForm(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/add                com.humantalks.internal.meetups.MeetupCtrl.doAddTalk(id: Meetup.Id, talkId: Talk.Id)
+POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/delete             com.humantalks.internal.meetups.MeetupCtrl.doRemoveTalk(id: Meetup.Id, talkId: Talk.Id)
+POST    /meetups/$id<.{36}>/proposals/$proposalId<.{36}>/add        com.humantalks.internal.meetups.MeetupCtrl.doAddProposalForm(id: Meetup.Id, proposalId: Proposal.Id)
 
-GET     /admin/users                                        com.humantalks.internal.admin.AdminCtrl.users
-POST    /admin/users/$id<.{36}>/role                        com.humantalks.internal.admin.AdminCtrl.setRole(id: Person.Id)
-POST    /admin/users/deleteToken/:id                        com.humantalks.internal.admin.AdminCtrl.deleteToken(id: AuthToken.Id)
+GET     /proposals/$id<.{36}>                                       com.humantalks.internal.proposals.ProposalCtrl.get(id: Proposal.Id)
 
-GET     /api                                                com.humantalks.exposed.Application.apiRoot
-POST    /api/persons                                        com.humantalks.exposed.Application.createPerson
+GET     /admin/users                                                com.humantalks.internal.admin.AdminCtrl.users
+POST    /admin/users/$id<.{36}>/role                                com.humantalks.internal.admin.AdminCtrl.setRole(id: Person.Id)
+POST    /admin/users/deleteToken/:id                                com.humantalks.internal.admin.AdminCtrl.deleteToken(id: AuthToken.Id)
 
-GET     /api/internal                                       com.humantalks.internal.Application.apiRoot
+GET     /api                                                        com.humantalks.exposed.Application.apiRoot
+POST    /api/persons                                                com.humantalks.exposed.Application.createPerson
 
-GET     /api/internal/venues                                com.humantalks.internal.venues.VenueApi.find
-POST    /api/internal/venues                                com.humantalks.internal.venues.VenueApi.create
-GET     /api/internal/venues/$id<.{36}>                     com.humantalks.internal.venues.VenueApi.get(id: Venue.Id)
-PUT     /api/internal/venues/$id<.{36}>                     com.humantalks.internal.venues.VenueApi.update(id: Venue.Id)
-DELETE  /api/internal/venues/$id<.{36}>                     com.humantalks.internal.venues.VenueApi.delete(id: Venue.Id)
+GET     /api/internal                                               com.humantalks.internal.Application.apiRoot
 
-GET     /api/internal/persons                               com.humantalks.internal.persons.PersonApi.find
-POST    /api/internal/persons                               com.humantalks.internal.persons.PersonApi.create
-GET     /api/internal/persons/$id<.{36}>                    com.humantalks.internal.persons.PersonApi.get(id: Person.Id)
-PUT     /api/internal/persons/$id<.{36}>                    com.humantalks.internal.persons.PersonApi.update(id: Person.Id)
-DELETE  /api/internal/persons/$id<.{36}>                    com.humantalks.internal.persons.PersonApi.delete(id: Person.Id)
+GET     /api/internal/venues                                        com.humantalks.internal.venues.VenueApi.find
+POST    /api/internal/venues                                        com.humantalks.internal.venues.VenueApi.create
+GET     /api/internal/venues/$id<.{36}>                             com.humantalks.internal.venues.VenueApi.get(id: Venue.Id)
+PUT     /api/internal/venues/$id<.{36}>                             com.humantalks.internal.venues.VenueApi.update(id: Venue.Id)
+DELETE  /api/internal/venues/$id<.{36}>                             com.humantalks.internal.venues.VenueApi.delete(id: Venue.Id)
 
-GET     /api/internal/talks                                 com.humantalks.internal.talks.TalkApi.find
-POST    /api/internal/talks                                 com.humantalks.internal.talks.TalkApi.create
-GET     /api/internal/talks/$id<.{36}>                      com.humantalks.internal.talks.TalkApi.get(id: Talk.Id)
-PUT     /api/internal/talks/$id<.{36}>                      com.humantalks.internal.talks.TalkApi.update(id: Talk.Id)
-DELETE  /api/internal/talks/$id<.{36}>                      com.humantalks.internal.talks.TalkApi.delete(id: Talk.Id)
+GET     /api/internal/persons                                       com.humantalks.internal.persons.PersonApi.find
+POST    /api/internal/persons                                       com.humantalks.internal.persons.PersonApi.create
+GET     /api/internal/persons/$id<.{36}>                            com.humantalks.internal.persons.PersonApi.get(id: Person.Id)
+PUT     /api/internal/persons/$id<.{36}>                            com.humantalks.internal.persons.PersonApi.update(id: Person.Id)
+DELETE  /api/internal/persons/$id<.{36}>                            com.humantalks.internal.persons.PersonApi.delete(id: Person.Id)
 
-GET     /api/internal/meetups                               com.humantalks.internal.meetups.MeetupApi.find
-POST    /api/internal/meetups                               com.humantalks.internal.meetups.MeetupApi.create
-GET     /api/internal/meetups/$id<.{36}>                    com.humantalks.internal.meetups.MeetupApi.get(id: Meetup.Id)
-PUT     /api/internal/meetups/$id<.{36}>                    com.humantalks.internal.meetups.MeetupApi.update(id: Meetup.Id)
-DELETE  /api/internal/meetups/$id<.{36}>                    com.humantalks.internal.meetups.MeetupApi.delete(id: Meetup.Id)
+GET     /api/internal/talks                                         com.humantalks.internal.talks.TalkApi.find
+POST    /api/internal/talks                                         com.humantalks.internal.talks.TalkApi.create
+GET     /api/internal/talks/$id<.{36}>                              com.humantalks.internal.talks.TalkApi.get(id: Talk.Id)
+PUT     /api/internal/talks/$id<.{36}>                              com.humantalks.internal.talks.TalkApi.update(id: Talk.Id)
+DELETE  /api/internal/talks/$id<.{36}>                              com.humantalks.internal.talks.TalkApi.delete(id: Talk.Id)
 
-GET     /api/tools                                          com.humantalks.tools.Application.apiRoot
-GET     /api/tools/embed                                    com.humantalks.tools.EmbedCtrl.embed(url: String)
-GET     /api/tools/scrapers/twitter/profil                  com.humantalks.tools.scrapers.TwitterScraper.profil(account: String)
+GET     /api/internal/meetups                                       com.humantalks.internal.meetups.MeetupApi.find
+POST    /api/internal/meetups                                       com.humantalks.internal.meetups.MeetupApi.create
+GET     /api/internal/meetups/$id<.{36}>                            com.humantalks.internal.meetups.MeetupApi.get(id: Meetup.Id)
+PUT     /api/internal/meetups/$id<.{36}>                            com.humantalks.internal.meetups.MeetupApi.update(id: Meetup.Id)
+DELETE  /api/internal/meetups/$id<.{36}>                            com.humantalks.internal.meetups.MeetupApi.delete(id: Meetup.Id)
 
-GET     /status                                             global.controllers.Application.status
+GET     /api/tools                                                  com.humantalks.tools.Application.apiRoot
+GET     /api/tools/embed                                            com.humantalks.tools.EmbedCtrl.embed(url: String)
+GET     /api/tools/scrapers/twitter/profil                          com.humantalks.tools.scrapers.TwitterScraper.profil(account: String)
+
+GET     /status                                                     global.controllers.Application.status
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file                                       controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/*file                                               controllers.Assets.versioned(path="/public", file: Asset)

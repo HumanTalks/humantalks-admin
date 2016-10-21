@@ -12,6 +12,6 @@ case class Application(ctx: Contexts) extends Controller {
   import ctx._
 
   def apiRoot = Action.async { implicit req =>
-    ApiHelper.resultJson(Future(Right(Json.obj("api" -> "toolApi"))), Results.Ok, Results.InternalServerError)
+    ApiHelper.resultJson(Future.successful(Right(Json.obj("api" -> "toolApi"))), Results.Ok, Results.InternalServerError)
   }
 }

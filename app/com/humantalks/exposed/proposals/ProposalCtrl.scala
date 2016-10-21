@@ -3,11 +3,11 @@ package com.humantalks.exposed.proposals
 import com.humantalks.common.Conf
 import com.humantalks.common.services.sendgrid._
 import com.humantalks.internal.persons.{ Person, PersonDbService }
+import com.humantalks.internal.talks.TalkDbService
 import global.Contexts
 import global.helpers.CtrlHelper
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.libs.ws.WSResponse
 import play.api.mvc.{ RequestHeader, Action, Controller, Result }
 
 import scala.concurrent.Future
@@ -16,6 +16,7 @@ case class ProposalCtrl(
     conf: Conf,
     ctx: Contexts,
     personDbService: PersonDbService,
+    talkDbService: TalkDbService,
     proposalDbService: ProposalDbService,
     sendgridSrv: SendgridSrv
 )(implicit messageApi: MessagesApi) extends Controller {
@@ -32,9 +33,10 @@ case class ProposalCtrl(
     proposalForm.bindFromRequest.fold(
       formWithErrors => formView(BadRequest, formWithErrors, None),
       proposalData => for {
-        (_, proposal) <- proposalDbService.create(proposalData)
-        personOpt <- personDbService.get(proposal.data.speakers.head)
-        success <- sendSubmitedMail(proposal, personOpt.get)
+        (_, id) <- proposalDbService.create(proposalData, proposalData.speakers.head)
+        proposal <- proposalDbService.get(id).map(_.get)
+        person <- personDbService.get(proposal.data.speakers.head).map(_.get)
+        success <- sendSubmitedMail(proposal, person)
       } yield Ok(views.html.submited(proposal.id, proposalData))
     )
   }
@@ -49,8 +51,8 @@ case class ProposalCtrl(
     proposalForm.bindFromRequest.fold(
       formWithErrors => CtrlHelper.withItem(proposalDbService.get _)(id) { proposal => formView(BadRequest, formWithErrors, Some(proposal)) },
       proposalData => CtrlHelper.withItem(proposalDbService.get _)(id) { proposal =>
-        proposalDbService.update(proposal, proposalData).map {
-          case _ => Ok(views.html.submited(id, proposalData))
+        proposalDbService.update(proposal, proposalData, proposalData.speakers.head).map { _ =>
+          Ok(views.html.submited(id, proposalData))
         }
       }
     )

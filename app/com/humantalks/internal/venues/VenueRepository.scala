@@ -32,7 +32,7 @@ case class VenueRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposit
     collection.get(Json.obj("id" -> id))
 
   def create(elt: Venue.Data, by: Person.Id): Future[(WriteResult, Venue.Id)] = {
-    val toCreate = Venue(Venue.Id.generate(), elt.trim, Meta(new DateTime(), by, new DateTime(), by))
+    val toCreate = Venue(Venue.Id.generate(), elt.trim, Meta.from(by))
     collection.create(toCreate).map { res => (res, toCreate.id) }
   }
 

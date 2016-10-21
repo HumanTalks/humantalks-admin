@@ -1,11 +1,13 @@
 @import com.humantalks.internal.persons.Person
+@import global.views.html.partials._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.persons.routes.PersonCtrl
-@(personForm: Form[Person.Data], personOpt: Option[Person])(implicit messagesApi: MessagesApi, user: Option[Person])
+@(personForm: Form[Person.Data], personOpt: Option[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
 @main("Nouvelle personne") {
     @header("person")
 
-    <div class="container" role="main">
+    <div class="container">
+        @flash()
         <div class="page-header">
             <h1>@personOpt.map{ p => Modifier @p.data.name}.getOrElse{Ajouter une personne}</h1>
         </div>

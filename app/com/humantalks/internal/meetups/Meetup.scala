@@ -31,10 +31,10 @@ object Meetup {
       roti: Option[String],
       meetupUrl: Option[String]
   ) {
-    def trim: Data = this.copy(
-      title = this.title.trim,
-      description = this.description.map(_.trim),
-      roti = this.roti.map(_.trim)
+    def trim: Data = copy(
+      title = title.trim,
+      description = description.map(_.trim),
+      roti = roti.map(_.trim)
     )
   }
 

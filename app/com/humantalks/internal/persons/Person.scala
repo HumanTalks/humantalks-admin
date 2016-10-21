@@ -39,13 +39,13 @@ object Person {
       avatar: Option[String],
       description: Option[String]
   ) {
-    def trim: Data = this.copy(
-      name = this.name.trim,
-      twitter = this.twitter.map(TwitterSrv.toAccount),
-      email = this.email.map(_.trim),
-      phone = this.phone.map(_.trim),
-      avatar = this.avatar.map(_.trim),
-      description = this.description.map(_.trim)
+    def trim: Data = copy(
+      name = name.trim,
+      twitter = twitter.map(TwitterSrv.toAccount),
+      email = email.map(_.trim),
+      phone = phone.map(_.trim),
+      avatar = avatar.map(_.trim),
+      description = description.map(_.trim)
     )
   }
 

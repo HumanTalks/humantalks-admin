@@ -77,13 +77,13 @@ case class VenueCtrl(
   def doDelete(id: Venue.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     venueDbService.delete(id).map {
       _ match {
-        case Left(meetups) => Redirect(routes.VenueCtrl.get(id))
-        case Right(res) => Redirect(routes.VenueCtrl.find())
+        case Left(meetups) => Redirect(routes.VenueCtrl.get(id)).flashing("error" -> s"Unable to delete venue, it's still referenced in ${meetups.length} meetups, delete them first.")
+        case Right(res) => Redirect(routes.VenueCtrl.find()).flashing("success" -> "Venue deleted")
       }
     }
   }
 
-  private def formView(status: Status, venueForm: Form[Venue.Data], venueOpt: Option[Venue])(implicit user: Option[Person]): Future[Result] = {
+  private def formView(status: Status, venueForm: Form[Venue.Data], venueOpt: Option[Venue])(implicit request: RequestHeader, user: Option[Person]): Future[Result] = {
     personDbService.find().map { personList =>
       status(views.html.form(venueForm, venueOpt, personList))
     }

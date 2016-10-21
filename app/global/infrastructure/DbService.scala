@@ -11,5 +11,5 @@ trait DbService[T, Id, Data, User] {
   def get(id: Id): Future[Option[T]]
   def create(data: Data, by: User): Future[(WriteResult, Id)]
   def update(elt: T, data: Data, by: User): Future[WriteResult]
-  def delete(id: Id)(implicit ec: ExecutionContext): Future[Either[Any, WriteResult]]
+  def delete(id: Id): Future[Either[Any, WriteResult]]
 }
