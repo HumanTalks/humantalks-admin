@@ -20,6 +20,7 @@ case class MeetupDbService(talkRepository: TalkRepository, meetupRepository: Mee
   def findForTalks(ids: Seq[Talk.Id], sort: JsObject = meetupRepository.defaultSort): Future[List[Meetup]] = meetupRepository.findForTalks(ids, sort)
   def findForVenue(id: Venue.Id, sort: JsObject = meetupRepository.defaultSort): Future[List[Meetup]] = meetupRepository.findForVenue(id, sort)
   def get(id: Meetup.Id): Future[Option[Meetup]] = meetupRepository.get(id)
+  def getLast: Future[Option[Meetup]] = meetupRepository.getLast
   def create(data: Meetup.Data, by: Person.Id): Future[(WriteResult, Meetup.Id)] = meetupRepository.create(data, by)
   def update(elt: Meetup, data: Meetup.Data, by: Person.Id): Future[WriteResult] = meetupRepository.update(elt, data, by)
   def addTalk(id: Meetup.Id, talkId: Talk.Id, by: Person.Id): Future[WriteResult] = meetupRepository.addTalk(id, talkId, by)

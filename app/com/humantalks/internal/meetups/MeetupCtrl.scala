@@ -9,6 +9,7 @@ import com.humantalks.internal.venues.VenueDbService
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
 import global.helpers.CtrlHelper
+import org.joda.time.{ LocalTime, DateTimeConstants, DateTime }
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc._
@@ -40,7 +41,12 @@ case class MeetupCtrl(
 
   def create = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     implicit val user = Some(req.identity)
-    formView(Ok, meetupForm, None)
+    meetupDbService.getLast.flatMap { meetupOpt =>
+      val nextDate = Meetup.nextDate(meetupOpt.map(_.data.date).getOrElse(new DateTime()), 2, DateTimeConstants.TUESDAY, new LocalTime(19, 0))
+      val nextTitle = Meetup.title(nextDate)
+      val nextMeetup = Meetup.Data(nextTitle, nextDate, None, List(), None, None, None)
+      formView(Ok, meetupForm.fill(nextMeetup), None)
+    }
   }
 
   def doCreate() = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>

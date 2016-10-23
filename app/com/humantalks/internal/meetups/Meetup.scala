@@ -5,7 +5,7 @@ import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
 import com.humantalks.internal.venues.Venue
 import global.values.{ TypedId, TypedIdHelper }
-import org.joda.time.DateTime
+import org.joda.time.{ LocalTime, LocalDate, DateTime }
 import play.api.data.Forms._
 import play.api.libs.json.Json
 
@@ -21,6 +21,14 @@ object Meetup {
     def from(value: String): Either[String, Id] = TypedId.from(value, "Meetup.Id").right.map(Id(_))
     def generate(): Id = Id(TypedId.generate())
   }
+
+  def nextDate(start: DateTime, nthOfMonth: Int, dayOfWeek: Int, time: LocalTime): DateTime = {
+    def getNthDayOfMonth(start: DateTime, nth: Int, dayOfWeek: Int): LocalDate = new LocalDate(start.getYear, start.getMonthOfYear, 1).withDayOfWeek(dayOfWeek).plusWeeks(nth)
+    val thisMonth = getNthDayOfMonth(start, nthOfMonth, dayOfWeek).toDateTime(time)
+    val nextMonth = getNthDayOfMonth(start.plusMonths(1), nthOfMonth, dayOfWeek).toDateTime(time)
+    if (thisMonth.isAfter(start)) thisMonth else nextMonth
+  }
+  def title(date: DateTime): String = "HumanTalks Paris " + date.toString("MMMM YYYY")
 
   case class Data(
       title: String,

@@ -48,6 +48,8 @@ case class MongoRepository[T](ctx: Contexts, reactiveMongoApi: ReactiveMongoApi,
     }
   def get(filter: JsObject)(implicit r: Reads[T]): Future[Option[T]] =
     jsonCollection().flatMap { _.find(filter).one[T] }
+  def getOne(filter: JsObject = Json.obj(), sort: JsObject = Json.obj())(implicit r: Reads[T]): Future[Option[T]] =
+    jsonCollection().flatMap { _.find(filter).sort(sort).one[T] }
   def create(elt: T)(implicit w: OWrites[T]): Future[WriteResult] =
     jsonCollection().flatMap { _.insert(elt) }
   def upsert(filter: JsObject, elt: T)(implicit w: OWrites[T]): Future[UpdateWriteResult] =
