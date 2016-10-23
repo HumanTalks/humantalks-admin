@@ -117,6 +117,12 @@ case class MeetupCtrl(
     }
   }
 
+  def doMoveTalk(id: Meetup.Id, talkId: Talk.Id, up: Boolean) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    meetupDbService.moveTalk(id, talkId, up, req.identity.id).map { _ =>
+      Redirect(routes.MeetupCtrl.get(id))
+    }
+  }
+
   def doRemoveTalk(id: Meetup.Id, talkId: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     meetupDbService.removeTalk(id, talkId, req.identity.id).map { _ =>
       Redirect(routes.MeetupCtrl.get(id))

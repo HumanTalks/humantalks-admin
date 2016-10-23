@@ -17,7 +17,7 @@
             Listes des meetups (@meetupList.length)
         </h1>
         @meetupList.map { meetup =>
-            <div class="media card">
+            <div class="media card @if(meetup.data.date.isAfterNow){highlight}">
                 <div class="media-body">
                     <h4 class="media-heading">
                         <a href="@MeetupCtrl.get(meetup.id)">@meetup.data.title</a>

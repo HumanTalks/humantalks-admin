@@ -15,8 +15,8 @@
         @flash()
         <h1>
             <span class="pull-right">
-                <a href="@PersonCtrl.update(person.id)" class="btn btn-default"><i class="fa fa-pencil-square-o"></i></a>
-                @helper.form(action=PersonCtrl.doDelete(person.id), 'class->"inline") { <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i></button> }
+                <a href="@PersonCtrl.update(person.id)" class="btn btn-default" title="Modifier cette personnes"><i class="fa fa-pencil-square-o"></i></a>
+                @helper.form(action=PersonCtrl.doDelete(person.id), 'class->"inline") { <button type="submit" class="btn btn-danger" title="Supprimer cette personne" confirm><i class="fa fa-trash"></i></button> }
             </span>
             @person.data.name
         </h1>

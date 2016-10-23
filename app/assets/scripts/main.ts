@@ -25,6 +25,16 @@ class Utils {
     });
 })();
 
+// confirm actions
+(function(){
+    $('[confirm]').click( function(e){
+        const text = ($(this).attr('title') || 'Confirm')+' ?';
+        if(!confirm(text)) {
+            e.preventDefault();
+        }
+    });
+})();
+
 // https://select2.github.io/
 function buildSelect2CreateModal(modalSelector: string, mainInputName: string, createUrl: string, getLabel: (any) => string){
     return function($select, evt){

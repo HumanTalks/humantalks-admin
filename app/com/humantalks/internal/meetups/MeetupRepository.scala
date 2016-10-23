@@ -59,6 +59,22 @@ case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   def addTalk(id: Meetup.Id, talkId: Talk.Id, by: Person.Id): Future[WriteResult] =
     partialUpdate(id, Json.obj("data.talks" -> talkId), by, "$addToSet")
 
+  def moveTalk(id: Meetup.Id, talkId: Talk.Id, up: Boolean, by: Person.Id): Future[Option[WriteResult]] = {
+    def swap[T](list: List[T], elt: T, before: Boolean): List[T] = list match {
+      case Nil => Nil
+      case prev :: `elt` :: tail if before => elt :: prev :: tail
+      case `elt` :: next :: tail if !before => next :: elt :: tail
+      case head :: tail => head :: swap(tail, elt, before)
+    }
+    get(id).flatMap {
+      _.map { meetup =>
+        update(meetup, meetup.data.copy(talks = swap(meetup.data.talks, talkId, up)), by).map(Some(_))
+      }.getOrElse {
+        Future.successful(None)
+      }
+    }
+  }
+
   def removeTalk(id: Meetup.Id, talkId: Talk.Id, by: Person.Id): Future[WriteResult] =
     partialUpdate(id, Json.obj("data.talks" -> talkId), by, "$pull")
 

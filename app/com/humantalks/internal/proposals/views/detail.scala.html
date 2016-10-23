@@ -12,7 +12,7 @@
     <div class="container">
         <h1>
             <span class="pull-right">
-            @if(proposal.status == Proposal.Status.Proposed) { @helper.form(action=ProposalCtrl.doReject(proposal.id), 'class->"inline") { <button type="submit" class="btn btn-warning" title="Rejeter ce talk"><i class="fa fa-times"></i></button> } }
+                @if(proposal.status == Proposal.Status.Proposed) { @helper.form(action=ProposalCtrl.doReject(proposal.id), 'class->"inline") { <button type="submit" class="btn btn-warning" title="Rejeter ce talk" confirm><i class="fa fa-times"></i></button> } }
             </span>
             @proposal.data.title
             @partials.status(proposal)

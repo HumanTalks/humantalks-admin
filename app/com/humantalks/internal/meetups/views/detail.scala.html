@@ -19,8 +19,8 @@
         @flash()
         <h1>
             <span class="pull-right">
-                <a href="@MeetupCtrl.update(meetup.id)" class="btn btn-default"><i class="fa fa-pencil-square-o"></i></a>
-                @helper.form(action=MeetupCtrl.doDelete(meetup.id), 'class->"inline") {<button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i></button> }
+                <a href="@MeetupCtrl.update(meetup.id)" class="btn btn-default" title="Modifier ce meetup"><i class="fa fa-pencil-square-o"></i></a>
+                @helper.form(action=MeetupCtrl.doDelete(meetup.id), 'class->"inline") {<button type="submit" class="btn btn-danger" title="Supprimer ce meetup" confirm><i class="fa fa-trash"></i></button> }
             </span>
             @meetup.data.title
             @meetup.data.meetupUrl.map{url => <a href="@url" target="_blank"><i class="fa fa-external-link"></i></a>}
@@ -36,7 +36,9 @@
             <ol>
             @meetup.data.talks.flatMap(id => allTalks.find(_.id == id)).map { talk =>
                 <li>
-                    @helper.form(action=MeetupCtrl.doRemoveTalk(meetup.id, talk.id), 'class->"inline") { <button type="submit" class="btn btn-clear" title="Remove this talk from the meetup"><i class="fa fa-trash"></i></button> }
+                    @helper.form(action=MeetupCtrl.doRemoveTalk(meetup.id, talk.id), 'class->"inline") { <button type="submit" class="btn btn-clear" title="Remove this talk from the meetup" confirm><i class="fa fa-trash"></i></button> }
+                    @helper.form(action=MeetupCtrl.doMoveTalk(meetup.id, talk.id, true), 'class->"inline") { <button type="submit" class="btn btn-clear" title="Monter le talk dans la liste"><i class="fa fa-arrow-up"></i></button> }
+                    @helper.form(action=MeetupCtrl.doMoveTalk(meetup.id, talk.id, false), 'class->"inline") { <button type="submit" class="btn btn-clear" title="Descendre le talk dans la liste"><i class="fa fa-arrow-down"></i></button> }
                     @if(talk.status != Talk.Status.Accepted){ @helper.form(action=TalkCtrl.doAccept(talk.id), 'class->"inline") { <button type="submit" class="btn btn-success" title="Confirm this talk"><i class="fa fa-check"></i></button> } }
                     @com.humantalks.internal.talks.views.html.partials.status(talk)
                     <a href="@TalkCtrl.get(talk.id)">@talk.data.title</a>

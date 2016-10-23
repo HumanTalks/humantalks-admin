@@ -23,6 +23,7 @@ case class MeetupDbService(talkRepository: TalkRepository, meetupRepository: Mee
   def create(data: Meetup.Data, by: Person.Id): Future[(WriteResult, Meetup.Id)] = meetupRepository.create(data, by)
   def update(elt: Meetup, data: Meetup.Data, by: Person.Id): Future[WriteResult] = meetupRepository.update(elt, data, by)
   def addTalk(id: Meetup.Id, talkId: Talk.Id, by: Person.Id): Future[WriteResult] = meetupRepository.addTalk(id, talkId, by)
+  def moveTalk(id: Meetup.Id, talkId: Talk.Id, up: Boolean, by: Person.Id): Future[Option[WriteResult]] = meetupRepository.moveTalk(id, talkId, up, by)
   def removeTalk(id: Meetup.Id, talkId: Talk.Id, by: Person.Id): Future[WriteResult] =
     meetupRepository.removeTalk(id, talkId, by).map { res =>
       talkRepository.get(talkId).map {

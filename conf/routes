@@ -65,6 +65,7 @@ POST    /meetups/$id<.{36}>/delete                                  com.humantal
 POST    /meetups/$id<.{36}>/talks                                   com.humantalks.internal.meetups.MeetupCtrl.doCreateTalk(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/talks/add                               com.humantalks.internal.meetups.MeetupCtrl.doAddTalkForm(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/add                com.humantalks.internal.meetups.MeetupCtrl.doAddTalk(id: Meetup.Id, talkId: Talk.Id)
+POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/move               com.humantalks.internal.meetups.MeetupCtrl.doMoveTalk(id: Meetup.Id, talkId: Talk.Id, up: Boolean)
 POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/delete             com.humantalks.internal.meetups.MeetupCtrl.doRemoveTalk(id: Meetup.Id, talkId: Talk.Id)
 POST    /meetups/$id<.{36}>/proposals/$proposalId<.{36}>/add        com.humantalks.internal.meetups.MeetupCtrl.doAddProposal(id: Meetup.Id, proposalId: Proposal.Id)
 
