@@ -39,8 +39,8 @@ case class VenueRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposit
   def update(elt: Venue, data: Venue.Data, by: Person.Id): Future[WriteResult] =
     collection.update(Json.obj("id" -> elt.id), elt.copy(data = data.trim, meta = elt.meta.update(by)))
 
-  /*def partialUpdate(id: Venue.Id, patch: JsObject): Future[WriteResult] =
-    collection.update(Json.obj("id" -> id), Json.obj("$set" -> (patch - "id")))*/
+  /*private def partialUpdate(id: Venue.Id, patch: JsObject, by: Person.Id, op: String = "$set"): Future[WriteResult] =
+    collection.partialUpdate(Json.obj("id" -> id), Json.obj(op -> (patch - "id" - "meta")).deepMerge(Json.obj("$set" -> Json.obj("meta.updated" -> new DateTime(), "meta.updatedBy" -> by))))*/
 
   def delete(id: Venue.Id): Future[WriteResult] =
     collection.delete(Json.obj("id" -> id))

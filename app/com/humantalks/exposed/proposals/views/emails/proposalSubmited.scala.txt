@@ -4,5 +4,5 @@
 Hello @person.data.name,
 
 Thanks for submitting your proposal. We will come back to you soon.
-If you have any question, feel free to reach us at @adminEmail.
+If you have any question, feel free to reach us at @adminEmail
 Note that you can edit your proposal whenever you want using this link : @url

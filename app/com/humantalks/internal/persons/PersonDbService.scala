@@ -18,7 +18,7 @@ case class PersonDbService(personRepository: PersonRepository, talkRepository: T
   def get(id: Person.Id): Future[Option[Person]] = personRepository.get(id)
   def create(elt: Person.Data, by: Person.Id): Future[(WriteResult, Person.Id)] = personRepository.create(elt, by)
   def update(elt: Person, data: Person.Data, by: Person.Id): Future[WriteResult] = personRepository.update(elt, data, by)
-  def setRole(id: Person.Id, role: Option[Person.Role.Value]): Future[WriteResult] = personRepository.setRole(id, role)
+  def setRole(id: Person.Id, role: Option[Person.Role.Value], by: Person.Id): Future[WriteResult] = personRepository.setRole(id, role, by)
 
   def delete(id: Person.Id): Future[Either[(List[Talk], List[Proposal]), WriteResult]] = {
     (for {

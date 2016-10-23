@@ -58,14 +58,16 @@ case class MeetupCtrl(
     CtrlHelper.withItem(meetupDbService)(id) { meetup =>
       val venueListFut = venueDbService.findByIds(meetup.data.venue.toSeq)
       val allTalksFut = talkDbService.find()
+      val pendingTalksFut = talkDbService.findPending()
       val allPersonsFut = personDbService.find()
-      val allProposalsFut = proposalDbService.find()
+      val pendingProposalsFut = proposalDbService.findPending()
       for {
         venueList <- venueListFut
         allTalks <- allTalksFut
+        pendingTalks <- pendingTalksFut
         allPersons <- allPersonsFut
-        allProposals <- allProposalsFut
-      } yield Ok(views.html.detail(meetup, talkForm, personForm, allTalks, allPersons, venueList, allProposals))
+        pendingProposals <- pendingProposalsFut
+      } yield Ok(views.html.detail(meetup, talkForm, personForm, pendingTalks, allTalks, allPersons, venueList, pendingProposals))
     }
   }
 
@@ -92,7 +94,7 @@ case class MeetupCtrl(
     talkForm.bindFromRequest.fold(
       formWithErrors => Future.successful(Redirect(routes.MeetupCtrl.get(id)).flashing("error" -> "Incorrect form values")),
       talkData => talkDbService.create(talkData, req.identity.id).flatMap {
-        case (_, talkId) => meetupDbService.addTalk(id, talkId).map { _ =>
+        case (_, talkId) => meetupDbService.addTalk(id, talkId, req.identity.id).map { _ =>
           Redirect(routes.MeetupCtrl.get(id))
         }
       }
@@ -101,7 +103,7 @@ case class MeetupCtrl(
 
   def doAddTalkForm(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     req.body.asFormUrlEncoded.get("talkId").headOption.flatMap(p => Talk.Id.from(p).right.toOption).map { talkId =>
-      meetupDbService.addTalk(id, talkId).map { _ =>
+      meetupDbService.addTalk(id, talkId, req.identity.id).map { _ =>
         Redirect(routes.MeetupCtrl.get(id))
       }
     }.getOrElse {
@@ -110,23 +112,23 @@ case class MeetupCtrl(
   }
 
   def doAddTalk(id: Meetup.Id, talkId: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    meetupDbService.addTalk(id, talkId).map { _ =>
+    meetupDbService.addTalk(id, talkId, req.identity.id).map { _ =>
       Redirect(routes.MeetupCtrl.get(id))
     }
   }
 
   def doRemoveTalk(id: Meetup.Id, talkId: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    meetupDbService.removeTalk(id, talkId).map { _ =>
+    meetupDbService.removeTalk(id, talkId, req.identity.id).map { _ =>
       Redirect(routes.MeetupCtrl.get(id))
     }
   }
 
-  def doAddProposalForm(id: Meetup.Id, proposalId: Proposal.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+  def doAddProposal(id: Meetup.Id, proposalId: Proposal.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     proposalDbService.get(proposalId).flatMap { proposalOpt =>
       proposalOpt.map { proposal =>
         talkDbService.create(proposal, req.identity.id).flatMap {
           case Left(err) => Future.successful(Redirect(routes.MeetupCtrl.get(id)).flashing("error" -> err))
-          case Right(talkId) => meetupDbService.addTalk(id, talkId).map { _ =>
+          case Right(talkId) => meetupDbService.addTalk(id, talkId, req.identity.id).map { _ =>
             Redirect(routes.MeetupCtrl.get(id)).flashing("success" -> "Proposal transformed into a talk and added to meetup :)")
           }
         }
@@ -150,7 +152,7 @@ case class MeetupCtrl(
   }
 
   def doPublish(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    meetupDbService.setPublished(id).map { _ =>
+    meetupDbService.setPublished(id, req.identity.id).map { _ =>
       Redirect(routes.MeetupCtrl.get(id))
     }
   }

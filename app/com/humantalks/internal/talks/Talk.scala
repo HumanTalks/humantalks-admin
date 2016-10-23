@@ -2,12 +2,14 @@ package com.humantalks.internal.talks
 
 import com.humantalks.common.values.Meta
 import com.humantalks.internal.persons.Person
+import global.helpers.EnumerationHelper
 import global.values.{ TypedId, TypedIdHelper }
 import play.api.data.Forms._
 import play.api.libs.json.Json
 
 case class Talk(
   id: Talk.Id,
+  status: Talk.Status.Value,
   data: Talk.Data,
   meta: Meta
 )
@@ -16,6 +18,10 @@ object Talk {
   object Id extends TypedIdHelper[Id] {
     def from(value: String): Either[String, Id] = TypedId.from(value, "Talk.Id").right.map(Id(_))
     def generate(): Id = Id(TypedId.generate())
+  }
+
+  object Status extends Enumeration {
+    val Suggested, Proposed, Accepted, Rejected = Value
   }
 
   case class Data(
@@ -35,6 +41,7 @@ object Talk {
     )
   }
 
+  implicit val formatStatus = EnumerationHelper.enumFormat(Status)
   implicit val formatData = Json.format[Talk.Data]
   implicit val format = Json.format[Talk]
   val fields = mapping(

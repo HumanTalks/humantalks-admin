@@ -1,0 +1,7 @@
+@import com.humantalks.exposed.proposals.Proposal
+@(proposal: Proposal)
+@proposal.status match {
+    case Proposal.Status.Proposed => {<span class="label label-primary" title="Proposition en attente de validation">Proposé</span>}
+    case Proposal.Status.Accepted => {<span class="label label-success" title="Proposition acceptée et transformée en talk">Accepté</span>}
+    case Proposal.Status.Rejected => {<span class="label label-danger" title="Proposition refusée, ne sera pas donnée à un meetup">Refusé</span>}
+}

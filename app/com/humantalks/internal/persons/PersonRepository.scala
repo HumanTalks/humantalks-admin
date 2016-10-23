@@ -8,6 +8,7 @@ import com.mohiva.play.silhouette.api.services.IdentityService
 import global.Contexts
 import global.infrastructure.{ Mongo, Repository }
 import global.values.Page
+import org.joda.time.DateTime
 import play.api.libs.json.{ JsObject, Json }
 import reactivemongo.api.commands.WriteResult
 
@@ -46,6 +47,9 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
 
   def update(elt: Person, data: Person.Data, by: Person.Id): Future[WriteResult] =
     update(elt.copy(data = data.trim, meta = elt.meta.update(by)))
+
+  private def partialUpdate(id: Person.Id, patch: JsObject, by: Person.Id, op: String = "$set"): Future[WriteResult] =
+    collection.partialUpdate(Json.obj("id" -> id), Json.obj(op -> (patch - "id" - "meta")).deepMerge(Json.obj("$set" -> Json.obj("meta.updated" -> new DateTime(), "meta.updatedBy" -> by))))
 
   def delete(id: Person.Id): Future[WriteResult] =
     collection.delete(Json.obj("id" -> id))
@@ -91,8 +95,8 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   }
 
   def activate(id: Person.Id): Future[WriteResult] =
-    collection.partialUpdate(Json.obj("id" -> id), Json.obj("$set" -> Json.obj("activated" -> true)))
+    partialUpdate(id, Json.obj("activated" -> true), id)
 
-  def setRole(id: Person.Id, role: Option[Person.Role.Value]): Future[WriteResult] =
-    collection.partialUpdate(Json.obj("id" -> id), Json.obj("$set" -> Json.obj("role" -> role)))
+  def setRole(id: Person.Id, role: Option[Person.Role.Value], by: Person.Id): Future[WriteResult] =
+    partialUpdate(id, Json.obj("role" -> role), by)
 }

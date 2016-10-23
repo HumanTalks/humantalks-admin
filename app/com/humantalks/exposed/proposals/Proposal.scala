@@ -3,12 +3,14 @@ package com.humantalks.exposed.proposals
 import com.humantalks.common.values.Meta
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
+import global.helpers.EnumerationHelper
 import global.values.{ TypedId, TypedIdHelper }
 import play.api.data.Forms._
 import play.api.libs.json.Json
 
 case class Proposal(
   id: Proposal.Id,
+  status: Proposal.Status.Value,
   data: Proposal.Data,
   talk: Option[Talk.Id],
   meta: Meta
@@ -18,6 +20,10 @@ object Proposal {
   object Id extends TypedIdHelper[Id] {
     def from(value: String): Either[String, Id] = TypedId.from(value, "Proposal.Id").right.map(Id(_))
     def generate(): Id = Id(TypedId.generate())
+  }
+
+  object Status extends Enumeration {
+    val Proposed, Accepted, Rejected = Value
   }
 
   case class Data(
@@ -35,6 +41,7 @@ object Proposal {
     def toTalk: Talk.Data = Talk.Data(title, description, speakers, slides, slidesEmbedCode, None, None)
   }
 
+  implicit val formatStatus = EnumerationHelper.enumFormat(Status)
   implicit val formatData = Json.format[Proposal.Data]
   implicit val format = Json.format[Proposal]
   val fields = mapping(

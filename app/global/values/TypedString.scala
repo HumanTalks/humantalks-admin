@@ -28,7 +28,7 @@ class TypedString(val underlying: String, requireTest: => Boolean = true, requir
 trait TypedStringHelper[T <: TypedString] {
   def from(value: String): Either[String, T]
   def to(value: T): String = value.underlying
-  implicit def extract(t: T): String = t.underlying
+  //implicit def extract(t: T): String = t.underlying
   protected val buildErrKey = "error.wrongFormat"
   protected def buildErrMsg(value: String) = s"Wrong TypedString format <$value>"
 

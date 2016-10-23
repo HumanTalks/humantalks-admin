@@ -4,12 +4,19 @@
 @import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.persons.routes.PersonCtrl
+@import com.humantalks.internal.proposals.routes.ProposalCtrl
 @(proposal: Proposal, personList: List[Person])(implicit user: Option[Person])
 @main(proposal.data.title) {
     @header("proposal")
 
     <div class="container">
-        <h1>@proposal.data.title</h1>
+        <h1>
+            <span class="pull-right">
+            @if(proposal.status == Proposal.Status.Proposed) { @helper.form(action=ProposalCtrl.doReject(proposal.id), 'class->"inline") { <button type="submit" class="btn btn-warning" title="Rejeter ce talk"><i class="fa fa-times"></i></button> } }
+            </span>
+            @proposal.data.title
+            @partials.status(proposal)
+        </h1>
         @proposal.data.description.map{d => <p>@multiline(d)</p>}
         @if(proposal.data.speakers.nonEmpty){
             <p>par @proposal.data.speakers.flatMap(id => personList.find(_.id == id)).map { speaker => <a href="@PersonCtrl.get(speaker.id)">@speaker.data.name</a> }</p>

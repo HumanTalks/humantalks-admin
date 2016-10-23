@@ -27,4 +27,10 @@ case class ProposalCtrl(
       }
     }
   }
+
+  def doReject(id: Proposal.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    proposalDbService.reject(id, req.identity.id).map { _ =>
+      Redirect(req.headers.get("Referer").orElse(req.headers.get("Host")).getOrElse(routes.ProposalCtrl.get(id).toString))
+    }
+  }
 }

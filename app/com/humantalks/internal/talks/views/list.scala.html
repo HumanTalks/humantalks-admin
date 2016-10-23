@@ -19,6 +19,7 @@
             <div class="media card">
                 <div class="media-body">
                     <h4 class="media-heading">
+                        @partials.status(talk)
                         <a href="@TalkCtrl.get(talk.id)">@talk.data.title</a>
                         @talk.data.slides.map{s => <a href="@s" target="_blank" title="slides"><span class="fa fa-slideshare"></span></a>}
                         @talk.data.video.map{v => <a href="@v" target="_blank" title="vidéo"><span class="fa fa-youtube"></span></a>}

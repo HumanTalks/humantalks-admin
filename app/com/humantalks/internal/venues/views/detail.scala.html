@@ -13,10 +13,10 @@
     <div class="container">
         @flash()
         <h1>
-            @helper.form(action=VenueCtrl.doDelete(venue.id), 'class->"pull-right") {
-                <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i></button>
-            }
-            <a href="@VenueCtrl.update(venue.id)" class="btn btn-default pull-right"><i class="fa fa-pencil-square-o"></i></a>
+            <span class="pull-right">
+                <a href="@VenueCtrl.update(venue.id)" class="btn btn-default"><i class="fa fa-pencil-square-o"></i></a>
+                @helper.form(action=VenueCtrl.doDelete(venue.id), 'class->"inline") { <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i></button> }
+            </span>
             @venue.data.name
         </h1>
         @venue.data.location.map{loc => <p>@loc.formatted</p>}

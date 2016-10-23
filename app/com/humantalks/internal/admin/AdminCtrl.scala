@@ -31,7 +31,7 @@ case class AdminCtrl(
 
   def setRole(id: Person.Id) = silhouette.SecuredAction(WithRole(Person.Role.Admin)).async { implicit req =>
     val role = req.body.asFormUrlEncoded.get("role").headOption.filter(_.length > 0).map(Person.Role.withName)
-    personDbService.setRole(id, role).map { _ =>
+    personDbService.setRole(id, role, req.identity.id).map { _ =>
       Redirect(routes.AdminCtrl.users())
     }
   }

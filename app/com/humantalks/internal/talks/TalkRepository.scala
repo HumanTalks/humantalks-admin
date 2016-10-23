@@ -3,6 +3,7 @@ package com.humantalks.internal.talks
 import com.humantalks.common.Conf
 import com.humantalks.common.values.Meta
 import com.humantalks.common.services.EmbedSrv
+import com.humantalks.exposed.proposals.Proposal
 import com.humantalks.internal.persons.Person
 import global.Contexts
 import global.infrastructure.{ Mongo, Repository }
@@ -26,6 +27,9 @@ case class TalkRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: EmbedS
   def findPage(index: Page.Index, size: Page.Size, filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[Page[Talk]] =
     collection.findPage(index, size, filter, sort)
 
+  def findPending(sort: JsObject = defaultSort): Future[List[Talk]] =
+    collection.find(Json.obj("status" -> Json.obj("$in" -> Json.arr(Talk.Status.Suggested, Talk.Status.Proposed))), sort)
+
   def findByIds(ids: Seq[Talk.Id], sort: JsObject = defaultSort): Future[List[Talk]] =
     collection.find(Json.obj("id" -> Json.obj("$in" -> ids.distinct)), sort)
 
@@ -36,7 +40,12 @@ case class TalkRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: EmbedS
     collection.get(Json.obj("id" -> id))
 
   def create(elt: Talk.Data, by: Person.Id): Future[(WriteResult, Talk.Id)] =
-    fillEmbedCode(Talk(Talk.Id.generate(), elt.trim, Meta.from(by))).flatMap { toCreate =>
+    fillEmbedCode(Talk(Talk.Id.generate(), Talk.Status.Suggested, elt.trim, Meta.from(by))).flatMap { toCreate =>
+      collection.create(toCreate).map { res => (res, toCreate.id) }
+    }
+
+  def create(elt: Proposal.Data, by: Person.Id): Future[(WriteResult, Talk.Id)] =
+    fillEmbedCode(Talk(Talk.Id.generate(), Talk.Status.Proposed, elt.toTalk.trim, Meta.from(by))).flatMap { toCreate =>
       collection.create(toCreate).map { res => (res, toCreate.id) }
     }
 
@@ -45,8 +54,11 @@ case class TalkRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: EmbedS
       collection.update(Json.obj("id" -> elt.id), toUpdate)
     }
 
-  /*def partialUpdate(id: Talk.Id, patch: JsObject): Future[WriteResult] =
-    collection.update(Json.obj("id" -> id), Json.obj("$set" -> (patch - "id")))*/
+  private def partialUpdate(id: Talk.Id, patch: JsObject, by: Person.Id, op: String = "$set"): Future[WriteResult] =
+    collection.partialUpdate(Json.obj("id" -> id), Json.obj(op -> (patch - "id" - "meta")).deepMerge(Json.obj("$set" -> Json.obj("meta.updated" -> new DateTime(), "meta.updatedBy" -> by))))
+
+  def setStatus(id: Talk.Id, status: Talk.Status.Value, by: Person.Id): Future[WriteResult] =
+    partialUpdate(id, Json.obj("status" -> status), by)
 
   def delete(id: Talk.Id): Future[WriteResult] =
     collection.delete(Json.obj("id" -> id))

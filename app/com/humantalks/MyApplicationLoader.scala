@@ -60,10 +60,10 @@ class MyComponents(context: ApplicationLoader.Context)
   val meetupRepository = MeetupRepository(conf, ctx, mongo)
   val proposalRepository = ProposalRepository(conf, ctx, mongo, embedSrv)
 
-  val venueDbService = VenueDbService(meetupRepository, venueRepository)
+  val venueDbService = VenueDbService(venueRepository, meetupRepository)
   val personDbService = PersonDbService(personRepository, talkRepository, proposalRepository)
-  val talkDbService = TalkDbService(meetupRepository, talkRepository, proposalRepository)
-  val meetupDbService = MeetupDbService(meetupRepository)
+  val talkDbService = TalkDbService(talkRepository, meetupRepository, proposalRepository)
+  val meetupDbService = MeetupDbService(talkRepository, meetupRepository)
   val proposalDbService = ProposalDbService(talkRepository, proposalRepository)
 
   val authSrv = AuthSrv(passwordHasherRegistry, credentialsProvider, authInfoRepository)

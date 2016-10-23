@@ -13,6 +13,7 @@ case class ProposalDbService(talkRepository: TalkRepository, proposalRepository:
   val name = proposalRepository.name
 
   def find(filter: JsObject = Json.obj(), sort: JsObject = proposalRepository.defaultSort): Future[List[Proposal]] = proposalRepository.find(filter, sort)
+  def findPending(sort: JsObject = talkRepository.defaultSort): Future[List[Proposal]] = proposalRepository.findPending(sort)
   def findByIds(ids: Seq[Proposal.Id], sort: JsObject = proposalRepository.defaultSort): Future[List[Proposal]] = proposalRepository.findByIds(ids, sort)
   def findForPerson(id: Person.Id, sort: JsObject = proposalRepository.defaultSort): Future[List[Proposal]] = proposalRepository.findForPerson(id, sort)
   def get(id: Proposal.Id): Future[Option[Proposal]] = proposalRepository.get(id)
@@ -27,5 +28,6 @@ case class ProposalDbService(talkRepository: TalkRepository, proposalRepository:
       }
       res
     }
+  def reject(id: Proposal.Id, by: Person.Id): Future[WriteResult] = proposalRepository.setStatus(id, Proposal.Status.Rejected, by)
   def delete(id: Proposal.Id): Future[Either[Nothing, WriteResult]] = proposalRepository.delete(id).map(r => Right(r))
 }

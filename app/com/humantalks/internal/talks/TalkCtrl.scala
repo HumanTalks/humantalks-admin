@@ -77,6 +77,18 @@ case class TalkCtrl(
     )
   }
 
+  def doAccept(id: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    talkDbService.accept(id, req.identity.id).map { _ =>
+      Redirect(req.headers.get("Referer").orElse(req.headers.get("Host")).getOrElse(routes.TalkCtrl.get(id).toString))
+    }
+  }
+
+  def doReject(id: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    talkDbService.reject(id, req.identity.id).map { _ =>
+      Redirect(req.headers.get("Referer").orElse(req.headers.get("Host")).getOrElse(routes.TalkCtrl.get(id).toString))
+    }
+  }
+
   def doDelete(id: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     talkDbService.delete(id).map {
       _ match {

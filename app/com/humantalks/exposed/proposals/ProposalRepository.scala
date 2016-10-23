@@ -8,6 +8,7 @@ import com.humantalks.internal.talks.Talk
 import global.Contexts
 import global.infrastructure.{ Repository, Mongo }
 import global.values.{ ApiError, Page }
+import org.joda.time.DateTime
 import play.api.libs.json.{ JsObject, Json }
 import reactivemongo.api.commands.WriteResult
 
@@ -19,25 +20,27 @@ case class ProposalRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: Em
   private val collection = db.getCollection(conf.Repositories.proposal)
   val defaultSort = Json.obj("created" -> 1)
   val name = collection.name
-  private val hasNoTalk = Json.obj("talk" -> Json.obj("$exists" -> false))
 
   def find(filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[List[Proposal]] =
-    collection.find(filter ++ hasNoTalk, sort)
+    collection.find(filter, sort)
 
   def findPage(index: Page.Index, size: Page.Size, filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[Page[Proposal]] =
-    collection.findPage(index, size, filter ++ hasNoTalk, sort)
+    collection.findPage(index, size, filter, sort)
+
+  def findPending(sort: JsObject = defaultSort): Future[List[Proposal]] =
+    collection.find(Json.obj("status" -> Proposal.Status.Proposed), sort)
 
   def findByIds(ids: Seq[Proposal.Id], sort: JsObject = defaultSort): Future[List[Proposal]] =
     collection.find(Json.obj("id" -> Json.obj("$in" -> ids.distinct)), sort)
 
   def findForPerson(id: Person.Id, sort: JsObject = defaultSort): Future[List[Proposal]] =
-    collection.find(Json.obj("data.speakers" -> id) ++ hasNoTalk, sort)
+    collection.find(Json.obj("data.speakers" -> id), sort)
 
   def get(id: Proposal.Id): Future[Option[Proposal]] =
     collection.get(Json.obj("id" -> id))
 
   def create(elt: Proposal.Data, by: Person.Id): Future[(WriteResult, Proposal.Id)] =
-    fillEmbedCode(Proposal(Proposal.Id.generate(), elt.trim, None, Meta.from(by))).flatMap { toCreate =>
+    fillEmbedCode(Proposal(Proposal.Id.generate(), Proposal.Status.Proposed, elt.trim, None, Meta.from(by))).flatMap { toCreate =>
       collection.create(toCreate).map { res => (res, toCreate.id) }
     }
 
@@ -46,11 +49,14 @@ case class ProposalRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: Em
       collection.update(Json.obj("id" -> elt.id), toUpdate)
     }
 
-  private def partialUpdate(id: Proposal.Id, patch: JsObject): Future[WriteResult] =
-    collection.partialUpdate(Json.obj("id" -> id), Json.obj("$set" -> (patch - "id")))
+  private def partialUpdate(id: Proposal.Id, patch: JsObject, by: Person.Id, op: String = "$set"): Future[WriteResult] =
+    collection.partialUpdate(Json.obj("id" -> id), Json.obj(op -> (patch - "id" - "meta")).deepMerge(Json.obj("$set" -> Json.obj("meta.updated" -> new DateTime(), "meta.updatedBy" -> by))))
 
-  def setTalk(id: Proposal.Id, talkId: Talk.Id): Future[WriteResult] =
-    partialUpdate(id, Json.obj("talk" -> talkId))
+  def setStatus(id: Proposal.Id, status: Proposal.Status.Value, by: Person.Id): Future[WriteResult] =
+    partialUpdate(id, Json.obj("status" -> status), by)
+
+  def setTalk(id: Proposal.Id, talkId: Talk.Id, by: Person.Id): Future[WriteResult] =
+    partialUpdate(id, Json.obj("talk" -> talkId, "status" -> Proposal.Status.Accepted), by)
 
   def delete(id: Proposal.Id): Future[WriteResult] =
     collection.delete(Json.obj("id" -> id))

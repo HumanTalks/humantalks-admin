@@ -53,17 +53,17 @@ case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   def update(elt: Meetup, data: Meetup.Data, by: Person.Id): Future[WriteResult] =
     collection.update(Json.obj("id" -> elt.id), elt.copy(data = data.trim, meta = elt.meta.update(by)))
 
-  private def partialUpdate(id: Meetup.Id, patch: JsObject): Future[WriteResult] =
-    collection.partialUpdate(Json.obj("id" -> id), Json.obj("$set" -> (patch - "id")))
+  private def partialUpdate(id: Meetup.Id, patch: JsObject, by: Person.Id, op: String = "$set"): Future[WriteResult] =
+    collection.partialUpdate(Json.obj("id" -> id), Json.obj(op -> (patch - "id" - "meta")).deepMerge(Json.obj("$set" -> Json.obj("meta.updated" -> new DateTime(), "meta.updatedBy" -> by))))
 
-  def addTalk(id: Meetup.Id, talkId: Talk.Id): Future[WriteResult] =
-    collection.partialUpdate(Json.obj("id" -> id), Json.obj("$addToSet" -> Json.obj("data.talks" -> talkId)))
+  def addTalk(id: Meetup.Id, talkId: Talk.Id, by: Person.Id): Future[WriteResult] =
+    partialUpdate(id, Json.obj("data.talks" -> talkId), by, "$addToSet")
 
-  def removeTalk(id: Meetup.Id, talkId: Talk.Id): Future[WriteResult] =
-    collection.partialUpdate(Json.obj("id" -> id), Json.obj("$pull" -> Json.obj("data.talks" -> talkId)))
+  def removeTalk(id: Meetup.Id, talkId: Talk.Id, by: Person.Id): Future[WriteResult] =
+    partialUpdate(id, Json.obj("data.talks" -> talkId), by, "$pull")
 
-  def setPublished(id: Meetup.Id): Future[WriteResult] =
-    partialUpdate(id, Json.obj("published" -> true))
+  def setPublished(id: Meetup.Id, by: Person.Id): Future[WriteResult] =
+    partialUpdate(id, Json.obj("published" -> true), by)
 
   def delete(id: Meetup.Id): Future[WriteResult] =
     collection.delete(Json.obj("id" -> id))
