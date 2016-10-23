@@ -16,6 +16,34 @@ class Utils {
             return Utils.setSafe(newObj, newPath, value);
         }
     }
+    static formInputs($form) {
+        return $form.find('[name]');
+    }
+    static formModel($form) {
+        if($form.length === 0){ console.error('Invalid form element :(', $form); }
+        var model = {};
+        Utils.formInputs($form).each(function(){
+            var value = $(this).attr('type') === 'checkbox' ? $(this).prop('checked') : $(this).val();
+            if(value !== ''){
+                Utils.setSafe(model, $(this).attr('name').replace('[]', ''), value);
+            }
+        });
+        return model;
+    }
+    static formLabels($form) {
+        if($form.length === 0){ console.error('Invalid form element :(', $form); }
+        var labels = {};
+        Utils.formInputs($form).each(function(){
+            const id = $(this).attr('id');
+            labels[id] = $form.find('[for='+id+']').text();
+        });
+        return labels;
+    }
+    static cleanForm($form): void {
+        Utils.formInputs($form).each(function(){
+            $(this).val('').change();
+        });
+    }
 }
 
 // autofocus when a modal opens
@@ -45,7 +73,7 @@ function buildSelect2CreateModal(modalSelector: string, mainInputName: string, c
             $form.off('submit');
             $form.one('submit', function(e){
                 e.preventDefault();
-                var model = readForm($form);
+                var model = Utils.formModel($form);
                 apiCall(model).then(function(created){
                     addToSelect($select, created);
                     closeModal($modal);
@@ -59,33 +87,13 @@ function buildSelect2CreateModal(modalSelector: string, mainInputName: string, c
     };
 
     function openModal($modal, text){
-        cleanForm($modal.find('form'));
+        Utils.cleanForm($modal.find('form'));
         $modal.find('input[name='+mainInputName+']').val(text);
         $modal.modal('show');
     }
     function closeModal($modal){
         $modal.modal('hide');
-        cleanForm($modal.find('form'));
-    }
-    function cleanForm($form){
-        getInputs($form).each(function(){
-            $(this).val('').change();
-        });
-    }
-    function readForm($form){
-        if($form.length === 0){ alert('Unable to find form element :('); } // no form in modal ? nested forms (invalid) ?
-        var model = {};
-        getInputs($form).each(function(){
-            var value = $(this).attr('type') === 'checkbox' ? $(this).prop('checked') : $(this).val();
-            if(value !== ''){
-                Utils.setSafe(model, $(this).attr('name').replace('[]', ''), value);
-            }
-        });
-        return model;
-    }
-    function getInputs($form) {
-        return $form.find('[name]');
-        //return $form.find('input').add($form.find('textarea')).add($form.find('select'));
+        Utils.cleanForm($modal.find('form'));
     }
     function apiCall(model){
         return $.ajax({
@@ -250,6 +258,59 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
 })();
 
 // TODO : emailToImageUrl using gravatar
+
+// Look for duplicates
+(function(){
+    $('form[duplicates]').each(function(){
+        const $form = $(this);
+        const duplicatesUrl = $form.attr('duplicates');
+        const labels = Utils.formLabels($form);
+        Utils.formInputs($form).on('change', function(){
+            const model = Utils.formModel($form);
+            fetchDuplicates(duplicatesUrl, model).then(function(duplicates){
+                renderDuplicates($form, duplicates, labels);
+            });
+        });
+    });
+    function fetchDuplicates(url, model) {
+        return $.ajax({
+            url: url,
+            type: 'post',
+            data: JSON.stringify(model),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(function(data){
+            return data ? data.data : undefined;
+        });
+    }
+    function renderDuplicates($form, duplicates: any[], labels) {
+        $form.find('.duplicates-alert').remove();
+        if(duplicates.length > 0) {
+            const items = duplicates.map((d: any) => renderName(d) + renderSimilarities(d.similarities, labels));
+            $form.prepend(renderAlert(items));
+        }
+    }
+    function renderName(duplicate): string {
+        return duplicate.url ? `<a href="${duplicate.url}" target="_blank">${duplicate.name}</a>` : duplicate.name;
+    }
+    function renderSimilarities(similarities: string[], labels): string {
+        if(Array.isArray(similarities) && similarities.length > 0) {
+            return  ' (' + similarities.map(s => (labels[s] || s).toLowerCase()).join(', ') + ' similaire'+(similarities.length > 1 ? 's' : '')+')';
+        } else {
+            return '';
+        }
+    }
+    function renderAlert(items: string[]): string {
+        return `<div class="alert alert-warning duplicates-alert" role="alert">
+                <strong>Attention!</strong> Merci de vérifier que vous n'êtes pas en train de créer un doublon.<br>
+                Entrées similaires :
+                <ul>
+                    ${items.map(i => '<li>'+i+'</li>').join('')}
+                </ul>
+            </div>`;
+    }
+})();
 
 // GMapPlace picker (https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete?hl=fr)
 var GMapPlacePicker = (function(){

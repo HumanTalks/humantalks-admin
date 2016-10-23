@@ -6,6 +6,7 @@ import com.humantalks.internal.persons.Person
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
 import global.helpers.ApiHelper
+import play.api.libs.json.Json
 import play.api.mvc.Controller
 
 case class MeetupApi(
@@ -21,4 +22,15 @@ case class MeetupApi(
   def create = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async(parse.json) { implicit req => ApiHelper.create(meetupDbService, req.identity.id, req.body) }
   def update(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async(parse.json) { implicit req => ApiHelper.update(meetupDbService, req.identity.id, id, req.body) }
   def delete(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req => ApiHelper.delete(meetupDbService, id) }
+
+  def duplicates = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async(parse.json) { implicit req =>
+    ApiHelper.duplicates[Meetup](
+      query => meetupDbService.find(query),
+      req.body,
+      List("title", "date", "meetupUrl"),
+      elt => elt.data.title,
+      elt => Json.toJson(elt.data),
+      elt => routes.MeetupCtrl.get(elt.id).toString
+    )
+  }
 }

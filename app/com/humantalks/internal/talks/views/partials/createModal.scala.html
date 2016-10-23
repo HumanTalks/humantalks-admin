@@ -6,7 +6,7 @@
 <div class="modal fade" id="create-talk-modal" tabindex="-1" role="dialog" aria-labelledby="createTalkModal">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            @helper.form(action=action.getOrElse(routes.TalkCtrl.doCreate()), 'class->"form-horizontal talk-form") {
+            @helper.form(action=action.getOrElse(routes.TalkCtrl.doCreate()), 'duplicates -> com.humantalks.internal.talks.routes.TalkApi.duplicates.toString, 'class->"form-horizontal talk-form") {
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="createTalkModal">Ajouter un talk</h4>

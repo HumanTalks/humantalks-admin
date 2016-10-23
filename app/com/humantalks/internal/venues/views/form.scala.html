@@ -15,7 +15,7 @@
 
         <div class="row">
             <div class="col-md-12">
-            @helper.form(action=venueOpt.map(p => VenueCtrl.doUpdate(p.id)).getOrElse(VenueCtrl.doCreate()), 'class->"form-horizontal venue-form") {
+            @helper.form(action=venueOpt.map(p => VenueCtrl.doUpdate(p.id)).getOrElse(VenueCtrl.doCreate()), 'duplicates -> com.humantalks.internal.venues.routes.VenueApi.duplicates.toString, 'class->"form-horizontal venue-form") {
                 @partials.fields(venueForm, personList)
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">

@@ -17,7 +17,7 @@
 
         <div class="row">
             <div class="col-md-12">
-            @helper.form(action=meetupOpt.map(p => MeetupCtrl.doUpdate(p.id)).getOrElse(MeetupCtrl.doCreate()), 'class->"form-horizontal meetup-form") {
+            @helper.form(action=meetupOpt.map(p => MeetupCtrl.doUpdate(p.id)).getOrElse(MeetupCtrl.doCreate()), 'duplicates -> com.humantalks.internal.meetups.routes.MeetupApi.duplicates.toString, 'class->"form-horizontal meetup-form") {
                 @partials.fields(meetupForm, allTalks, allPersons, allVenues)
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">

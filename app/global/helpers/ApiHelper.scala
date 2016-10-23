@@ -59,6 +59,33 @@ object ApiHelper {
     }, Ok, InternalServerError)
   }
 
+  def duplicates[T](find: JsObject => Future[List[T]], body: JsValue, fields: List[String], name: T => String, data: T => JsValue, url: T => String)(implicit ec: ExecutionContext, req: RequestHeader): Future[Result] = {
+    def fieldToQuery(body: JsValue, field: String): Option[JsObject] = (body \ field).asOpt[String].map(v => Json.obj("data." + field -> v.trim))
+    def $or(queries: List[JsObject]): Option[JsObject] =
+      if (queries.length > 1) Some(Json.obj("$or" -> queries))
+      else if (queries.length == 1) Some(queries.head)
+      else None
+    def matching(js1: JsValue, js2: JsValue, fields: List[String]): List[String] = fields.filter { field =>
+      (js1 \ field).asOpt[String].isDefined && (js1 \ field).asOpt[String] == (js2 \ field).asOpt[String]
+    }
+
+    resultJson({
+      $or(fields.flatMap(field => fieldToQuery(body, field))).map { query =>
+        find(query).map { elts =>
+          Right(Json.toJson(elts.map { elt =>
+            Json.obj(
+              "name" -> name(elt),
+              "similarities" -> matching(body, data(elt), fields),
+              "url" -> url(elt)
+            )
+          }))
+        }
+      }.getOrElse {
+        Future.successful(Right(Json.arr()))
+      }
+    })
+  }
+
   /* Helper utils */
 
   private def returnItemOnSuccess[T](res: WriteResult, get: => Future[Option[T]])(implicit ec: ExecutionContext): Future[Either[ApiError, T]] = {
@@ -95,7 +122,7 @@ object ApiHelper {
   def resultList[T](exec: Future[Either[ApiError, List[T]]], success: Status = Ok, error: Status = NotFound)(implicit ec: ExecutionContext, w: OWrites[T], req: RequestHeader): Future[Result] = {
     resultJson(exec.map(e => e.right.map(d => Json.toJson(d))), success, error)
   }
-  def resultJson(exec: Future[Either[ApiError, JsValue]], success: Status, error: Status)(implicit ec: ExecutionContext, req: RequestHeader): Future[Result] = {
+  def resultJson(exec: Future[Either[ApiError, JsValue]], success: Status = Ok, error: Status = NotFound)(implicit ec: ExecutionContext, req: RequestHeader): Future[Result] = {
     val start = new DateTime()
     exec.map {
       _ match {

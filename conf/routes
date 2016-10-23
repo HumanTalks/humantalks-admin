@@ -94,24 +94,28 @@ POST    /api/internal/venues                                        com.humantal
 GET     /api/internal/venues/$id<.{36}>                             com.humantalks.internal.venues.VenueApi.get(id: Venue.Id)
 PUT     /api/internal/venues/$id<.{36}>                             com.humantalks.internal.venues.VenueApi.update(id: Venue.Id)
 DELETE  /api/internal/venues/$id<.{36}>                             com.humantalks.internal.venues.VenueApi.delete(id: Venue.Id)
+POST    /api/internal/venues/duplicates                             com.humantalks.internal.venues.VenueApi.duplicates
 
 GET     /api/internal/persons                                       com.humantalks.internal.persons.PersonApi.find
 POST    /api/internal/persons                                       com.humantalks.internal.persons.PersonApi.create
 GET     /api/internal/persons/$id<.{36}>                            com.humantalks.internal.persons.PersonApi.get(id: Person.Id)
 PUT     /api/internal/persons/$id<.{36}>                            com.humantalks.internal.persons.PersonApi.update(id: Person.Id)
 DELETE  /api/internal/persons/$id<.{36}>                            com.humantalks.internal.persons.PersonApi.delete(id: Person.Id)
+POST    /api/internal/persons/duplicates                            com.humantalks.internal.persons.PersonApi.duplicates
 
 GET     /api/internal/talks                                         com.humantalks.internal.talks.TalkApi.find
 POST    /api/internal/talks                                         com.humantalks.internal.talks.TalkApi.create
 GET     /api/internal/talks/$id<.{36}>                              com.humantalks.internal.talks.TalkApi.get(id: Talk.Id)
 PUT     /api/internal/talks/$id<.{36}>                              com.humantalks.internal.talks.TalkApi.update(id: Talk.Id)
 DELETE  /api/internal/talks/$id<.{36}>                              com.humantalks.internal.talks.TalkApi.delete(id: Talk.Id)
+POST    /api/internal/talks/duplicates                              com.humantalks.internal.talks.TalkApi.duplicates
 
 GET     /api/internal/meetups                                       com.humantalks.internal.meetups.MeetupApi.find
 POST    /api/internal/meetups                                       com.humantalks.internal.meetups.MeetupApi.create
 GET     /api/internal/meetups/$id<.{36}>                            com.humantalks.internal.meetups.MeetupApi.get(id: Meetup.Id)
 PUT     /api/internal/meetups/$id<.{36}>                            com.humantalks.internal.meetups.MeetupApi.update(id: Meetup.Id)
 DELETE  /api/internal/meetups/$id<.{36}>                            com.humantalks.internal.meetups.MeetupApi.delete(id: Meetup.Id)
+POST    /api/internal/meetups/duplicates                            com.humantalks.internal.meetups.MeetupApi.duplicates
 
 GET     /api/tools                                                  com.humantalks.tools.Application.apiRoot
 GET     /api/tools/embed                                            com.humantalks.tools.EmbedCtrl.embed(url: String)

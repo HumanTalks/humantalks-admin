@@ -15,7 +15,7 @@
 
         <div class="row">
             <div class="col-md-12">
-            @helper.form(action=talkOpt.map(p => TalkCtrl.doUpdate(p.id)).getOrElse(TalkCtrl.doCreate()), 'class->"form-horizontal talk-form") {
+            @helper.form(action=talkOpt.map(p => TalkCtrl.doUpdate(p.id)).getOrElse(TalkCtrl.doCreate()), 'duplicates -> com.humantalks.internal.talks.routes.TalkApi.duplicates.toString, 'class->"form-horizontal talk-form") {
                 @partials.fields(talkForm, personList)
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">

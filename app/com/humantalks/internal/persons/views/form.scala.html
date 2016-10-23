@@ -14,7 +14,7 @@
 
         <div class="row">
             <div class="col-md-12">
-            @helper.form(action=personOpt.map(p => PersonCtrl.doUpdate(p.id)).getOrElse(PersonCtrl.doCreate()), 'class->"form-horizontal person-form") {
+            @helper.form(action=personOpt.map(p => PersonCtrl.doUpdate(p.id)).getOrElse(PersonCtrl.doCreate()), 'duplicates -> com.humantalks.internal.persons.routes.PersonApi.duplicates.toString, 'class->"form-horizontal person-form") {
                 @partials.fields(personForm)
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
