@@ -33,18 +33,20 @@ git push heroku-prod master
 heroku config:unset SBT_CLEAN --app humantalksparis
 ```
 
-## Tech
+## Public Api
 
-### Auth with silhouette
+This backend has a public Api allowing to retrieve some data.
+Here are the endpoints :
 
-exemples :
+- `/meetups` : allow to retrieve published meetups
+- `/meetups/:id` : allow to retrieve a meetup with its id
+- `/talks` : allow to retrieve published talks
+- `/talks/:id` : allow to retrieve a talk with its id
+- `/speakers` : allow to retrieve published speakers
+- `/speakers/:id` : allow to retrieve a speaker with its id
+- `/venues` : allow to retrieve published venues
+- `/venues/:id` : allow to retrieve a venue with its id
 
-- https://github.com/mohiva/play-silhouette-seed
-- https://github.com/adrianhurt/play-silhouette-credentials-seed
-- https://github.com/ezzahraoui/play-silhouette-reactivemongo-seed
-- https://github.com/pariksheet/dribble
+All endpoints can take an `include` query parameter that embeds required data directly inside the response.
 
-Sources :
-
-- https://github.com/mohiva/play-silhouette-persistence-reactivemongo
-- http://www.ibm.com/developerworks/library/wa-playful-web-dev-1-trs-bluemix/index.html
+Ex: `/talks?include=speaker,meetup,venue`

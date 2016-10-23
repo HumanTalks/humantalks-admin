@@ -14,7 +14,10 @@ case class MeetupDbService(meetupRepository: MeetupRepository) extends DbService
   val name = meetupRepository.name
 
   def find(filter: JsObject = Json.obj(), sort: JsObject = meetupRepository.defaultSort): Future[List[Meetup]] = meetupRepository.find(filter, sort)
+  def findPublished(sort: JsObject = meetupRepository.defaultSort): Future[List[Meetup]] = meetupRepository.find(Json.obj("published" -> true), sort)
+  def findByIds(ids: Seq[Meetup.Id], sort: JsObject = meetupRepository.defaultSort): Future[List[Meetup]] = meetupRepository.findByIds(ids, sort)
   def findForTalk(id: Talk.Id, sort: JsObject = meetupRepository.defaultSort): Future[List[Meetup]] = meetupRepository.findForTalk(id, sort)
+  def findForTalks(ids: Seq[Talk.Id], sort: JsObject = meetupRepository.defaultSort): Future[List[Meetup]] = meetupRepository.findForTalks(ids, sort)
   def findForVenue(id: Venue.Id, sort: JsObject = meetupRepository.defaultSort): Future[List[Meetup]] = meetupRepository.findForVenue(id, sort)
   def get(id: Meetup.Id): Future[Option[Meetup]] = meetupRepository.get(id)
   def create(data: Meetup.Data, by: Person.Id): Future[(WriteResult, Meetup.Id)] = meetupRepository.create(data, by)

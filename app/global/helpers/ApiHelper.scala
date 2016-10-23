@@ -89,7 +89,7 @@ object ApiHelper {
 
   /* Api results */
 
-  def result[T](exec: Future[Either[ApiError, T]], success: Status, error: Status)(implicit ec: ExecutionContext, w: OWrites[T], req: RequestHeader): Future[Result] = {
+  def result[T](exec: Future[Either[ApiError, T]], success: Status = Ok, error: Status = NotFound)(implicit ec: ExecutionContext, w: OWrites[T], req: RequestHeader): Future[Result] = {
     resultJson(exec.map(e => e.right.map(d => Json.toJson(d))), success, error)
   }
   def resultList[T](exec: Future[Either[ApiError, List[T]]], success: Status = Ok, error: Status = NotFound)(implicit ec: ExecutionContext, w: OWrites[T], req: RequestHeader): Future[Result] = {

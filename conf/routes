@@ -72,8 +72,16 @@ GET     /admin/users                                                com.humantal
 POST    /admin/users/$id<.{36}>/role                                com.humantalks.internal.admin.AdminCtrl.setRole(id: Person.Id)
 POST    /admin/users/deleteToken/:id                                com.humantalks.internal.admin.AdminCtrl.deleteToken(id: AuthToken.Id)
 
-GET     /api                                                        com.humantalks.exposed.Application.apiRoot
-POST    /api/persons                                                com.humantalks.exposed.Application.createPerson
+GET     /api                                                        com.humantalks.exposed.PublicApi.apiRoot
+GET     /api/meetups                                                com.humantalks.exposed.PublicApi.findMeetups(include: Option[String] ?= None)
+GET     /api/meetups/$id<.{36}>                                     com.humantalks.exposed.PublicApi.findMeetup(id: Meetup.Id, include: Option[String] ?= None)
+GET     /api/talks                                                  com.humantalks.exposed.PublicApi.findTalks(include: Option[String] ?= None)
+GET     /api/talks/$id<.{36}>                                       com.humantalks.exposed.PublicApi.findTalk(id: Talk.Id, include: Option[String] ?= None)
+GET     /api/speakers                                               com.humantalks.exposed.PublicApi.findSpeakers(include: Option[String] ?= None)
+GET     /api/speakers/$id<.{36}>                                    com.humantalks.exposed.PublicApi.findSpeaker(id: Person.Id, include: Option[String] ?= None)
+GET     /api/venues                                                 com.humantalks.exposed.PublicApi.findVenues(include: Option[String] ?= None)
+GET     /api/venues/$id<.{36}>                                      com.humantalks.exposed.PublicApi.findVenue(id: Venue.Id, include: Option[String] ?= None)
+POST    /api/persons                                                com.humantalks.exposed.PublicApi.createPerson
 
 GET     /api/internal                                               com.humantalks.internal.Application.apiRoot
 

@@ -36,6 +36,9 @@ case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   def findForTalk(id: Talk.Id, sort: JsObject = defaultSort): Future[List[Meetup]] =
     collection.find(Json.obj("data.talks" -> id), sort)
 
+  def findForTalks(ids: Seq[Talk.Id], sort: JsObject = defaultSort): Future[List[Meetup]] =
+    collection.find(Json.obj("data.talks" -> Json.obj("$in" -> ids.distinct)), sort)
+
   def findForVenue(id: Venue.Id, sort: JsObject = defaultSort): Future[List[Meetup]] =
     collection.find(Json.obj("data.venue" -> id), sort)
 

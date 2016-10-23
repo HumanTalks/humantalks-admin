@@ -6,6 +6,7 @@ import com.humantalks.auth.silhouette._
 import com.humantalks.common.Conf
 import com.humantalks.common.services.EmbedSrv
 import com.humantalks.common.services.sendgrid.SendgridSrv
+import com.humantalks.exposed.PublicApi
 import com.humantalks.exposed.proposals.{ ProposalRepository, ProposalDbService }
 import com.humantalks.internal.admin.AdminCtrl
 import com.humantalks.internal.meetups.{ MeetupDbService, MeetupRepository, MeetupCtrl, MeetupApi }
@@ -72,7 +73,7 @@ class MyComponents(context: ApplicationLoader.Context)
   implicit val messagesApiImp = messagesApi
   val router: Router = new Routes(
     httpErrorHandler,
-    com.humantalks.exposed.Application(ctx, personDbService),
+    com.humantalks.exposed.Application(ctx),
     com.humantalks.exposed.proposals.ProposalCtrl(conf, ctx, personDbService, talkDbService, proposalDbService, sendgridSrv),
     com.humantalks.auth.AuthCtrl(ctx, silhouette, conf, authSrv, personRepository, credentialsRepository, authTokenRepository, avatarService, mailerSrv),
     com.humantalks.internal.Application(ctx, silhouette),
@@ -82,6 +83,7 @@ class MyComponents(context: ApplicationLoader.Context)
     MeetupCtrl(ctx, silhouette, venueDbService, personDbService, talkDbService, meetupDbService, proposalDbService),
     ProposalCtrl(ctx, silhouette, personDbService, proposalDbService),
     AdminCtrl(ctx, silhouette, personDbService, credentialsRepository, authTokenRepository),
+    PublicApi(ctx, venueDbService, personDbService, talkDbService, meetupDbService),
     VenueApi(ctx, silhouette, venueDbService),
     PersonApi(ctx, silhouette, personDbService),
     TalkApi(ctx, silhouette, talkDbService),
