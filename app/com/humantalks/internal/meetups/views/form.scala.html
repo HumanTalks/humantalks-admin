@@ -5,6 +5,7 @@
 @import global.views.html.partials._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.meetups.routes.MeetupCtrl
+@import com.humantalks.internal.meetups.routes.MeetupApi
 @(meetupForm: Form[Meetup.Data], talkForm: Form[Talk.Data], personForm: Form[Person.Data], meetupOpt: Option[Meetup], allTalks: List[Talk], allPersons: List[Person], allVenues: List[Venue])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
 @main("Nouveau meetup") {
     @header("meetup")
@@ -17,7 +18,7 @@
 
         <div class="row">
             <div class="col-md-12">
-            @helper.form(action=meetupOpt.map(p => MeetupCtrl.doUpdate(p.id)).getOrElse(MeetupCtrl.doCreate()), 'duplicates -> com.humantalks.internal.meetups.routes.MeetupApi.duplicates.toString, 'class->"form-horizontal meetup-form") {
+            @helper.form(action=meetupOpt.map(p => MeetupCtrl.doUpdate(p.id)).getOrElse(MeetupCtrl.doCreate()), 'duplicates -> MeetupApi.duplicates(meetupOpt.map(_.id.toString)).toString, 'class->"form-horizontal meetup-form") {
                 @partials.fields(meetupForm, allTalks, allPersons, allVenues)
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">

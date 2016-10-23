@@ -59,10 +59,15 @@ object ApiHelper {
     }, Ok, InternalServerError)
   }
 
-  def duplicates[T](find: JsObject => Future[List[T]], body: JsValue, fields: List[String], name: T => String, data: T => JsValue, url: T => String)(implicit ec: ExecutionContext, req: RequestHeader): Future[Result] = {
-    def fieldToQuery(body: JsValue, field: String): Option[JsObject] = (body \ field).asOpt[String].map(v => Json.obj("data." + field -> v.trim))
+  def duplicates[T](idOpt: Option[String], find: JsObject => Future[List[T]], body: JsValue, fields: List[String], name: T => String, data: T => JsValue, url: T => String)(implicit ec: ExecutionContext, req: RequestHeader): Future[Result] = {
+    def fieldToQuery(body: JsValue, field: String): Option[JsObject] =
+      (body \ field).asOpt[String].map(v => Json.obj("data." + field -> v.trim))
     def $or(queries: List[JsObject]): Option[JsObject] =
       if (queries.length > 1) Some(Json.obj("$or" -> queries))
+      else if (queries.length == 1) Some(queries.head)
+      else None
+    def $and(queries: List[JsObject]): Option[JsObject] =
+      if (queries.length > 1) Some(Json.obj("$and" -> queries))
       else if (queries.length == 1) Some(queries.head)
       else None
     def matching(js1: JsValue, js2: JsValue, fields: List[String]): List[String] = fields.filter { field =>
@@ -70,7 +75,7 @@ object ApiHelper {
     }
 
     resultJson({
-      $or(fields.flatMap(field => fieldToQuery(body, field))).map { query =>
+      $and(List($or(fields.flatMap(field => fieldToQuery(body, field))), idOpt.map(id => Json.obj("id" -> Json.obj("$ne" -> id)))).flatten).map { query =>
         find(query).map { elts =>
           Right(Json.toJson(elts.map { elt =>
             Json.obj(

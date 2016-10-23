@@ -1,11 +1,12 @@
 @import com.humantalks.internal.persons.Person
-@import com.humantalks.internal.persons.routes
 @import play.api.mvc.Call
+@import com.humantalks.internal.persons.routes.PersonCtrl
+@import com.humantalks.internal.persons.routes.PersonApi
 @(personForm: Form[Person.Data], action: Option[Call] = None)(implicit messagesApi: MessagesApi)
 <div class="modal fade" id="create-person-modal" tabindex="-1" role="dialog" aria-labelledby="createPersonModal">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            @helper.form(action=action.getOrElse(routes.PersonCtrl.doCreate()), 'duplicates -> com.humantalks.internal.persons.routes.PersonApi.duplicates.toString, 'class->"form-horizontal person-form") {
+            @helper.form(action=action.getOrElse(PersonCtrl.doCreate()), 'duplicates -> PersonApi.duplicates().toString, 'class->"form-horizontal person-form") {
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="createPersonModal">Ajouter une personne</h4>

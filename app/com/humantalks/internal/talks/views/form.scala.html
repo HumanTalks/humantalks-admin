@@ -3,6 +3,7 @@
 @import global.views.html.partials._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.talks.routes.TalkCtrl
+@import com.humantalks.internal.talks.routes.TalkApi
 @(talkForm: Form[Talk.Data], talkOpt: Option[Talk], personList: List[Person], personForm: Form[Person.Data])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
 @main("Nouveau talk") {
     @header("talk")
@@ -15,7 +16,7 @@
 
         <div class="row">
             <div class="col-md-12">
-            @helper.form(action=talkOpt.map(p => TalkCtrl.doUpdate(p.id)).getOrElse(TalkCtrl.doCreate()), 'duplicates -> com.humantalks.internal.talks.routes.TalkApi.duplicates.toString, 'class->"form-horizontal talk-form") {
+            @helper.form(action=talkOpt.map(p => TalkCtrl.doUpdate(p.id)).getOrElse(TalkCtrl.doCreate()), 'duplicates -> TalkApi.duplicates(talkOpt.map(_.id.toString)).toString, 'class->"form-horizontal talk-form") {
                 @partials.fields(talkForm, personList)
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">

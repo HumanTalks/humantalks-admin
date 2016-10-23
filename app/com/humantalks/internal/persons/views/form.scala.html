@@ -2,6 +2,7 @@
 @import global.views.html.partials._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.persons.routes.PersonCtrl
+@import com.humantalks.internal.persons.routes.PersonApi
 @(personForm: Form[Person.Data], personOpt: Option[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
 @main("Nouvelle personne") {
     @header("person")
@@ -14,7 +15,7 @@
 
         <div class="row">
             <div class="col-md-12">
-            @helper.form(action=personOpt.map(p => PersonCtrl.doUpdate(p.id)).getOrElse(PersonCtrl.doCreate()), 'duplicates -> com.humantalks.internal.persons.routes.PersonApi.duplicates.toString, 'class->"form-horizontal person-form") {
+            @helper.form(action=personOpt.map(p => PersonCtrl.doUpdate(p.id)).getOrElse(PersonCtrl.doCreate()), 'duplicates -> PersonApi.duplicates(personOpt.map(_.id.toString)).toString, 'class->"form-horizontal person-form") {
                 @partials.fields(personForm)
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">

@@ -23,8 +23,9 @@ case class TalkApi(
   def update(id: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async(parse.json) { implicit req => ApiHelper.update(talkDbService, req.identity.id, id, req.body) }
   def delete(id: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req => ApiHelper.delete(talkDbService, id) }
 
-  def duplicates = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async(parse.json) { implicit req =>
+  def duplicates(id: Option[String]) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async(parse.json) { implicit req =>
     ApiHelper.duplicates[Talk](
+      id,
       query => talkDbService.find(query),
       req.body,
       List("title"),
