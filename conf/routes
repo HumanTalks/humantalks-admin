@@ -120,6 +120,7 @@ POST    /api/internal/meetups/duplicates                            com.humantal
 GET     /api/tools                                                  com.humantalks.tools.Application.apiRoot
 GET     /api/tools/embed                                            com.humantalks.tools.EmbedCtrl.embed(url: String)
 GET     /api/tools/scrapers/twitter/profil                          com.humantalks.tools.scrapers.TwitterScraper.profil(account: String)
+GET     /api/tools/scrapers/email/profil                            com.humantalks.tools.scrapers.EmailScraper.profil(email: String)
 
 GET     /status                                                     global.controllers.Application.status
 

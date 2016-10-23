@@ -219,24 +219,39 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
     }
 })();
 
-// fill img url with twitter account (input having twitterToImg attribute pointing to imgUrl field id)
+// fill form with remotely fetched data
 (function(){
-    $('input[twitterScraper]').each(function(){
-        var $twitterAccountField = $(this);
-        update($twitterAccountField); // run on page load
-        $twitterAccountField.on('change', function () {
-            update($twitterAccountField);
+    scraper('twitterScraper', (account: string) => {
+        return $.get(config.api.tools+'/scrapers/twitter/profil?account='+account).then(function(res){
+            return res.data;
         });
     });
-    function update($field){
+    scraper('emailScraper', (email: string) => {
+        return $.get(config.api.tools+'/scrapers/email/profil?email='+email).then(function(res){
+            return res.data;
+        });
+    });
+
+    function scraper(attr: string, fetch) {
+        $('input['+attr+']').each(function(){
+            var $input = $(this);
+            update($input, fetch); // run on page load
+            $input.on('change', function () {
+                update($input, fetch);
+            });
+        });
+    }
+    function update($field, getInfos){
         if ($field.val() !== '') {
-            getTwitterAccount($field.val()).then(function(account){
-                if(account){
-                    attrToField($field, 'avatar', account.avatar);
-                    attrToField($field, 'background', account.backgroundImage);
-                    attrToField($field, 'fullname', account.name);
-                    attrToField($field, 'bio', account.bio);
-                    attrToField($field, 'site', account.url);
+            getInfos($field.val()).then((data: any) => {
+                if(data){
+                    attrToField($field, 'fullname', data.name);
+                    attrToField($field, 'avatar', data.avatar);
+                    attrToField($field, 'bio', data.bio);
+                    attrToField($field, 'background', data.backgroundImage);
+                    attrToField($field, 'site', data.url);
+                    attrToField($field, 'twitter', data.twitter);
+                    attrToField($field, 'linkedin', data.linkedin);
                 }
             });
         }
@@ -250,14 +265,7 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
             }
         }
     }
-    function getTwitterAccount(account: string){
-        return $.get(config.api.tools+'/scrapers/twitter/profil?account='+account).then(function(res){
-            return res.data;
-        });
-    }
 })();
-
-// TODO : emailToImageUrl using gravatar
 
 // Look for duplicates
 (function(){

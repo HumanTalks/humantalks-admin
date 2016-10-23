@@ -14,7 +14,7 @@ import com.humantalks.internal.persons.{ PersonDbService, PersonRepository, Pers
 import com.humantalks.internal.proposals.ProposalCtrl
 import com.humantalks.internal.talks.{ TalkDbService, TalkRepository, TalkCtrl, TalkApi }
 import com.humantalks.tools.EmbedCtrl
-import com.humantalks.tools.scrapers.TwitterScraper
+import com.humantalks.tools.scrapers.{ EmailScraper, TwitterScraper }
 import com.humantalks.internal.venues.{ VenueDbService, VenueRepository, VenueCtrl, VenueApi }
 import global.Contexts
 import global.infrastructure.Mongo
@@ -91,6 +91,7 @@ class MyComponents(context: ApplicationLoader.Context)
     com.humantalks.tools.Application(ctx),
     EmbedCtrl(ctx, embedSrv),
     TwitterScraper(ctx, wsClient),
+    EmailScraper(ctx, wsClient),
     _root_.global.controllers.Application(ctx, mongo),
     new _root_.controllers.Assets(httpErrorHandler)
   )
