@@ -1,8 +1,9 @@
+@import org.joda.time.LocalDate
 @import com.humantalks.internal.persons.Person
 @import com.humantalks.exposed.proposals.Proposal
 @import com.humantalks.exposed.views.html.partials._
 @import com.humantalks.exposed.proposals.routes.ProposalCtrl
-@(proposalForm: Form[Proposal.Data], proposalOpt: Option[Proposal], personList: List[Person], personForm: Form[Person.Data])(implicit messagesApi: MessagesApi)
+@(proposalForm: Form[Proposal.Data], proposalOpt: Option[Proposal], personList: List[Person], nextDates: List[LocalDate], personForm: Form[Person.Data])(implicit messagesApi: MessagesApi)
 @main("Nouvelle proposition de talk") {
     <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
@@ -28,7 +29,7 @@
         <div class="row">
             <div class="col-md-12">
             @helper.form(action=proposalOpt.map(p => ProposalCtrl.doUpdate(p.id)).getOrElse(ProposalCtrl.doCreate()), 'class->"form-horizontal proposal-form") {
-                @partials.fields(proposalForm, personList)
+                @partials.fields(proposalForm, personList, nextDates)
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
                         <button type="submit" class="btn btn-primary btn-lg">@proposalOpt.map{ p => Modifier @p.data.title}.getOrElse{Proposer ce talk aux HumanTalks Paris}</button>

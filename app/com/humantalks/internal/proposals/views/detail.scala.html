@@ -24,5 +24,11 @@
         @proposal.data.slidesEmbedCode.map{c => <p><b>Slides:</b><br>@Html(c)</p>}.getOrElse{
             @proposal.data.slides.map{s => <p><b>Slides:</b><br>@embed(s)</p>}
         }
+        @if(proposal.data.availabilities.length > 0){
+            <h3>Disponibilités</h3>
+            <ul>
+                @proposal.data.availabilities.map { d => <li>@date(d, Some("dd MMMM yyyy"))</li> }
+            </ul>
+        }
     </div>
 }
