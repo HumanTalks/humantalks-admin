@@ -27,6 +27,7 @@ libraryDependencies ++= Seq(
   "org.webjars.npm" % "select2" % "4.0.3",
   "org.webjars.npm" % "select2-bootstrap-theme" % "0.1.0-beta.9",
   "org.webjars" % "bootstrap-datetimepicker" % "2.3.8",
+  "org.webjars" % "jquery-throttle-debounce-plugin" % "1.1",
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
   "com.github.simplyscala" %% "scalatest-embedmongo" % "0.2.2" % Test,
   "com.mohiva" %% "play-silhouette-testkit" % "4.0.0" % Test
