@@ -30,7 +30,7 @@ case class Select2Ctrl(
   def venues = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     ApiHelper.resultList({
       venueDbService.find().map { venues =>
-        Right(venues.map(v => Select2Option(v.id.value, v.data.name+v.data.location.map(l => " ("+l.formatted+")").getOrElse(""))))
+        Right(venues.map(v => Select2Option(v.id.value, v.data.name + v.data.location.map(l => " (" + l.formatted + ")").getOrElse(""))))
       }
     })
   }

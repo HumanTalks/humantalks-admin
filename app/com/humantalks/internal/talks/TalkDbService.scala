@@ -34,6 +34,8 @@ case class TalkDbService(talkRepository: TalkRepository, meetupRepository: Meetu
     }
   }
   def update(elt: Talk, data: Talk.Data, by: Person.Id): Future[WriteResult] = talkRepository.update(elt, data, by)
+  def setSlides(id: Talk.Id, slides: String, by: Person.Id): Future[WriteResult] = talkRepository.setSlides(id, slides, by)
+  def setVideo(id: Talk.Id, video: String, by: Person.Id): Future[WriteResult] = talkRepository.setVideo(id, video, by)
   def accept(id: Talk.Id, by: Person.Id): Future[WriteResult] = talkRepository.setStatus(id, Talk.Status.Accepted, by)
   def reject(id: Talk.Id, by: Person.Id): Future[WriteResult] = talkRepository.setStatus(id, Talk.Status.Rejected, by)
 

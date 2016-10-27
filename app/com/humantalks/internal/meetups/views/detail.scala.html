@@ -42,30 +42,34 @@
                     @if(talk.status != Talk.Status.Accepted){ @helper.form(action=TalkCtrl.doAccept(talk.id), 'class->"inline") { <button type="submit" class="btn btn-success" title="Confirm this talk"><i class="fa fa-check"></i></button> } }
                     @com.humantalks.internal.talks.views.html.partials.status(talk)
                     <a href="@TalkCtrl.get(talk.id)">@talk.data.title</a>
-                    par @talk.data.speakers.flatMap(id => allPersons.find(_.id == id)).map { speaker => <a href="@PersonCtrl.get(speaker.id)">@speaker.data.name</a> }
+                    @if(talk.data.speakers.nonEmpty){
+                        par @talk.data.speakers.flatMap(id => allPersons.find(_.id == id)).map { speaker => <a href="@PersonCtrl.get(speaker.id)">@speaker.data.name</a> }
+                    }
                     @talk.data.slides.map{s => <a href="@s" target="_blank" title="slides"><span class="fa fa-slideshare"></span></a>}
                     @talk.data.video.map{v => <a href="@v" target="_blank" title="vidéo"><span class="fa fa-youtube"></span></a>}
+                    @if(talk.data.slides.isEmpty) {
+                        @helper.form(action=TalkCtrl.setSlides(talk.id), 'class->"form-inline") {
+                            <div class="form-group">
+                                <label class="sr-only" for="slides">Slides</label>
+                                <input type="text" class="form-control" name="slides" id="slides" placeholder="Ajouter les slides">
+                            </div>
+                            <button type="submit" class="btn btn-default">Ajouter</button>
+                        }
+                    }
+                    @if(talk.data.video.isEmpty) {
+                        @helper.form(action=TalkCtrl.setVideo(talk.id), 'class->"form-inline") {
+                            <div class="form-group">
+                                <label class="sr-only" for="video">Video</label>
+                                <input type="text" class="form-control" name="video" id="video" placeholder="Ajouter la video">
+                            </div>
+                            <button type="submit" class="btn btn-default">Ajouter</button>
+                        }
+                    }
                 </li>
             }
             </ol>
         }
         @meetup.data.roti.map{r => <p><img src="@r" style="width: 100%;"></p>}
-
-        @helper.form(action=MeetupCtrl.doAddTalkForm(meetup.id), 'class->"form-inline") {
-            <div class="row">
-                <div class="col-md-8">
-                    <select class="form-control select2" id="talkId" name="talkId" placeholder="Sélectionner un talk">
-                        <option></option>
-                        @allTalks.filter(t => !meetup.data.talks.contains(t.id)).map { talk =>
-                            <option value="@talk.id">@talk.data.title @talk.data.speakers.flatMap(id => allPersons.find(_.id == id)).map(_.data.name).mkString(" (", ", ", ")")</option>
-                        }
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-default">Ajouter</button>
-                </div>
-            </div>
-        }
 
         <br>
         <button class="btn btn-default btn-lg" data-toggle="modal" data-target="#create-talk-modal">Créer un talk</button>
@@ -97,11 +101,28 @@
                         <button type="submit" class="btn btn-link" title="Create a talk from this proposal and add it to this meetup"><i class="fa fa-plus"></i></button>
                     }
                     @com.humantalks.internal.proposals.views.html.partials.status(proposal)
-                <a href="@ProposalCtrl.get(proposal.id)">@proposal.data.title</a>
-                    par @proposal.data.speakers.flatMap(id => allPersons.find(_.id == id)).map { speaker => <a href="@PersonCtrl.get(speaker.id)">@speaker.data.name</a> }
+                    <a href="@ProposalCtrl.get(proposal.id)">@proposal.data.title</a>
+                    @if(proposal.data.speakers.nonEmpty) {
+                        par @proposal.data.speakers.flatMap(id => allPersons.find(_.id == id)).map { speaker => <a href="@PersonCtrl.get(speaker.id)">@speaker.data.name</a> }
+                    }
                 </li>
             }
             </ul>
+        }
+        @helper.form(action=MeetupCtrl.doAddTalkForm(meetup.id), 'class->"form-inline") {
+            <div class="row">
+                <div class="col-md-8">
+                    <select class="form-control select2" id="talkId" name="talkId" placeholder="Sélectionner un talk">
+                        <option></option>
+                        @allTalks.filter(t => !meetup.data.talks.contains(t.id)).map { talk =>
+                            <option value="@talk.id">@talk.data.title @talk.data.speakers.flatMap(id => allPersons.find(_.id == id)).map(_.data.name).mkString(" (", ", ", ")")</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-default">Ajouter au meetup</button>
+                </div>
+            </div>
         }
     </div>
 
