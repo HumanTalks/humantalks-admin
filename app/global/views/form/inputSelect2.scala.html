@@ -4,6 +4,7 @@
     class="form-control select2 @Helpers.getArg(args, "class")"
     id="@Helpers.fieldId(field, args)"
     name="@Helpers.fieldName(field, args)"
+    value="@Helpers.fieldValue(field, args)"
     @Helpers.toHtml(args)
     @if(Helpers.isRequired(field, args)){required}>
     @if(Helpers.getArg(args, "placeholder").length > 0){ <option></option> }

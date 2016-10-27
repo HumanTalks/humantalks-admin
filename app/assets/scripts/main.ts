@@ -124,8 +124,14 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
         };
         var remote = $select.attr('remote');
         if(remote) {
+            var value = $select.attr('value');
             $.get(remote).then(res => {
                 opts.data = res.data;
+                for(let i in opts.data){
+                    if(opts.data[i].id === value){
+                        opts.data[i].selected = true;
+                    }
+                }
                 $select.select2(opts);
             })
         } else {
@@ -155,8 +161,14 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
         }
         var remote = $select.attr('remote');
         if(remote) {
+            var values = $select.attr('value').split(',');
             $.get(remote).then(res => {
                 opts.data = res.data;
+                for(let i in opts.data){
+                    if(values.find(v => v === opts.data[i].id) !== undefined){
+                        opts.data[i].selected = true;
+                    }
+                }
                 $select.select2(opts);
             })
         } else {
