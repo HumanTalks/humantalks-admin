@@ -99,8 +99,6 @@ case class TalkCtrl(
   }
 
   private def formView(status: Status, talkForm: Form[Talk.Data], talkOpt: Option[Talk])(implicit request: RequestHeader, user: Option[Person]): Future[Result] = {
-    personDbService.find().map { personList =>
-      status(views.html.form(talkForm, talkOpt, personList, personForm))
-    }
+    Future.successful(status(views.html.form(talkForm, talkOpt, personForm)))
   }
 }

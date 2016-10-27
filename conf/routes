@@ -87,6 +87,11 @@ GET     /api/venues                                                 com.humantal
 GET     /api/venues/$id<.{36}>                                      com.humantalks.exposed.PublicApi.findVenue(id: Venue.Id, include: Option[String] ?= None)
 POST    /api/persons                                                com.humantalks.exposed.PublicApi.createPerson
 
+GET     /api/select2/venues                                         com.humantalks.common.controllers.Select2Ctrl.venues
+GET     /api/select2/persons                                        com.humantalks.common.controllers.Select2Ctrl.persons
+GET     /api/select2/talks                                          com.humantalks.common.controllers.Select2Ctrl.talks
+GET     /api/select2/meetups                                        com.humantalks.common.controllers.Select2Ctrl.meetups
+
 GET     /api/internal                                               com.humantalks.internal.Application.apiRoot
 
 GET     /api/internal/venues                                        com.humantalks.internal.venues.VenueApi.find

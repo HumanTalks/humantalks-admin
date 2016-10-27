@@ -105,6 +105,6 @@
         }
     </div>
 
-    @com.humantalks.internal.talks.views.html.partials.createModal(talkForm, allPersons, Some(MeetupCtrl.doCreateTalk(meetup.id)))
+    @com.humantalks.internal.talks.views.html.partials.createModal(talkForm, Some(MeetupCtrl.doCreateTalk(meetup.id)))
     @com.humantalks.internal.persons.views.html.partials.createModal(personForm)
 }

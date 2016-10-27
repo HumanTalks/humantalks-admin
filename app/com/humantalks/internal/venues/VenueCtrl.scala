@@ -84,8 +84,6 @@ case class VenueCtrl(
   }
 
   private def formView(status: Status, venueForm: Form[Venue.Data], venueOpt: Option[Venue])(implicit request: RequestHeader, user: Option[Person]): Future[Result] = {
-    personDbService.find().map { personList =>
-      status(views.html.form(venueForm, venueOpt, personList))
-    }
+    Future.successful(status(views.html.form(venueForm, venueOpt)))
   }
 }

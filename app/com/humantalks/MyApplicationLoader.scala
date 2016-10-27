@@ -1,21 +1,22 @@
 package com.humantalks
 
-import com.humantalks.auth.infrastructure.{ CredentialsRepository, AuthTokenRepository }
+import com.humantalks.auth.infrastructure.{ AuthTokenRepository, CredentialsRepository }
 import com.humantalks.auth.services.{ AuthSrv, MailerSrv }
 import com.humantalks.auth.silhouette._
 import com.humantalks.common.Conf
+import com.humantalks.common.controllers.Select2Ctrl
 import com.humantalks.common.services.EmbedSrv
 import com.humantalks.common.services.sendgrid.SendgridSrv
 import com.humantalks.exposed.PublicApi
-import com.humantalks.exposed.proposals.{ ProposalRepository, ProposalDbService }
+import com.humantalks.exposed.proposals.{ ProposalDbService, ProposalRepository }
 import com.humantalks.internal.admin.AdminCtrl
-import com.humantalks.internal.meetups.{ MeetupDbService, MeetupRepository, MeetupCtrl, MeetupApi }
-import com.humantalks.internal.persons.{ PersonDbService, PersonRepository, PersonCtrl, PersonApi }
+import com.humantalks.internal.meetups.{ MeetupApi, MeetupCtrl, MeetupDbService, MeetupRepository }
+import com.humantalks.internal.persons.{ PersonApi, PersonCtrl, PersonDbService, PersonRepository }
 import com.humantalks.internal.proposals.ProposalCtrl
-import com.humantalks.internal.talks.{ TalkDbService, TalkRepository, TalkCtrl, TalkApi }
+import com.humantalks.internal.talks.{ TalkApi, TalkCtrl, TalkDbService, TalkRepository }
 import com.humantalks.tools.EmbedCtrl
 import com.humantalks.tools.scrapers.{ EmailScraper, TwitterScraper }
-import com.humantalks.internal.venues.{ VenueDbService, VenueRepository, VenueCtrl, VenueApi }
+import com.humantalks.internal.venues.{ VenueApi, VenueCtrl, VenueDbService, VenueRepository }
 import global.Contexts
 import global.infrastructure.Mongo
 import play.api.cache.EhCacheComponents
@@ -84,6 +85,7 @@ class MyComponents(context: ApplicationLoader.Context)
     ProposalCtrl(ctx, silhouette, personDbService, proposalDbService),
     AdminCtrl(ctx, silhouette, personDbService, credentialsRepository, authTokenRepository),
     PublicApi(ctx, venueDbService, personDbService, talkDbService, meetupDbService),
+    Select2Ctrl(ctx, silhouette, venueDbService, personDbService, talkDbService, meetupDbService),
     VenueApi(ctx, silhouette, venueDbService),
     PersonApi(ctx, silhouette, personDbService),
     TalkApi(ctx, silhouette, talkDbService),

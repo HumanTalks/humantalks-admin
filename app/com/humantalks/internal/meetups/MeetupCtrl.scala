@@ -179,13 +179,6 @@ case class MeetupCtrl(
   }
 
   private def formView(status: Status, meetupForm: Form[Meetup.Data], meetupOpt: Option[Meetup])(implicit request: RequestHeader, user: Option[Person]): Future[Result] = {
-    val allTalksFut = talkDbService.find()
-    val allPersonsFut = personDbService.find()
-    val allVenuesFut = venueDbService.find()
-    for {
-      allTalks <- allTalksFut
-      allPersons <- allPersonsFut
-      allVenues <- allVenuesFut
-    } yield status(views.html.form(meetupForm, talkForm, personForm, meetupOpt, allTalks, allPersons, allVenues))
+    Future.successful(status(views.html.form(meetupForm, talkForm, personForm, meetupOpt)))
   }
 }

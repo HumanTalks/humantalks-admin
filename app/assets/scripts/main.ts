@@ -116,12 +116,21 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
 (function(){
     $('.select2').each(function(){
         var $select = $(this);
-        $select.select2({
+        var opts: any = {
             width: '100%',
             theme: 'bootstrap',
             placeholder: $select.attr('placeholder'),
             allowClear: $select.attr('placeholder') !== undefined
-        });
+        };
+        var remote = $select.attr('remote');
+        if(remote) {
+            $.get(remote).then(res => {
+                opts.data = res.data;
+                $select.select2(opts);
+            })
+        } else {
+            $select.select2(opts);
+        }
     });
 
     $('.select2-multi').each(function(){
@@ -144,7 +153,15 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
                 }
             });
         }
-        $select.select2(opts);
+        var remote = $select.attr('remote');
+        if(remote) {
+            $.get(remote).then(res => {
+                opts.data = res.data;
+                $select.select2(opts);
+            })
+        } else {
+            $select.select2(opts);
+        }
     });
 
     function buildTemplate(text){
