@@ -1,6 +1,7 @@
 @import com.humantalks.internal.persons.Person
 @import com.humantalks.internal.talks.Talk
 @import com.humantalks.internal.meetups.Meetup
+@import com.humantalks.exposed.proposals.Proposal
 @import global.views.html.format._
 @import global.views.html.partials._
 @import com.humantalks.common.views.html.format._
@@ -8,7 +9,8 @@
 @import com.humantalks.internal.persons.routes.PersonCtrl
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @import com.humantalks.internal.meetups.routes.MeetupCtrl
-@(talk: Talk, personList: List[Person], meetupList: List[Meetup])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
+@import com.humantalks.internal.proposals.routes.ProposalCtrl
+@(talk: Talk, proposalOpt: Option[Proposal], personList: List[Person], meetupList: List[Meetup])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
 @main(talk.data.title, talk.data.description.getOrElse("")) {
     @header("talk")
 
@@ -23,10 +25,14 @@
             @talk.data.title
             @partials.status(talk)
         </h1>
+        <p>
+            @if(talk.data.speakers.nonEmpty){
+                par @talk.data.speakers.flatMap(id => personList.find(_.id == id)).map { speaker => <a href="@PersonCtrl.get(speaker.id)">@speaker.data.name</a> }
+            }
+            le @date(talk.meta.created.toLocalDate)
+        </p>
+        @proposalOpt.map{proposal => <p><b>Proposition associée : <a href="@ProposalCtrl.get(proposal.id)">@proposal.data.title</a></b> @com.humantalks.internal.proposals.views.html.partials.status(proposal)</p>}
         @talk.data.description.map{d => <p>@multiline(d)</p>}
-        @if(talk.data.speakers.nonEmpty){
-            <p>par @talk.data.speakers.flatMap(id => personList.find(_.id == id)).map { speaker => <a href="@PersonCtrl.get(speaker.id)">@speaker.data.name</a> }</p>
-        }
         @talk.data.slidesEmbedCode.map{c => <p><b>Slides:</b><br>@Html(c)</p>}.getOrElse{
             @talk.data.slides.map{s => <p><b>Slides:</b><br>@embed(s)</p>}
         }

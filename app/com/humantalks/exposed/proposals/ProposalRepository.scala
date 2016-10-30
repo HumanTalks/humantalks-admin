@@ -18,7 +18,7 @@ case class ProposalRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: Em
   import Contexts.dbToEC
   import ctx._
   private val collection = db.getCollection(conf.Repositories.proposal)
-  val defaultSort = Json.obj("created" -> 1)
+  val defaultSort = Json.obj("meta.created" -> -1)
   val name = collection.name
 
   def find(filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[List[Proposal]] =
@@ -38,6 +38,9 @@ case class ProposalRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: Em
 
   def get(id: Proposal.Id): Future[Option[Proposal]] =
     collection.get(Json.obj("id" -> id))
+
+  def getForTalk(id: Talk.Id): Future[Option[Proposal]] =
+    collection.get(Json.obj("talk" -> id))
 
   def create(elt: Proposal.Data, by: Person.Id): Future[(WriteResult, Proposal.Id)] =
     fillEmbedCode(Proposal(Proposal.Id.generate(), Proposal.Status.Proposed, elt.trim, None, Meta.from(by))).flatMap { toCreate =>

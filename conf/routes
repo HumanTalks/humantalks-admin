@@ -71,7 +71,9 @@ POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/move               com.humantal
 POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/delete             com.humantalks.internal.meetups.MeetupCtrl.doRemoveTalk(id: Meetup.Id, talkId: Talk.Id)
 POST    /meetups/$id<.{36}>/proposals/$proposalId<.{36}>/add        com.humantalks.internal.meetups.MeetupCtrl.doAddProposal(id: Meetup.Id, proposalId: Proposal.Id)
 
+GET     /proposals                                                  com.humantalks.internal.proposals.ProposalCtrl.find
 GET     /proposals/$id<.{36}>                                       com.humantalks.internal.proposals.ProposalCtrl.get(id: Proposal.Id)
+POST    /proposals/$id<.{36}>/accept                                com.humantalks.internal.proposals.ProposalCtrl.doAccept(id: Proposal.Id)
 POST    /proposals/$id<.{36}>/reject                                com.humantalks.internal.proposals.ProposalCtrl.doReject(id: Proposal.Id)
 
 GET     /admin/users                                                com.humantalks.internal.admin.AdminCtrl.users

@@ -19,20 +19,6 @@ case class TalkDbService(talkRepository: TalkRepository, meetupRepository: Meetu
   def findForPerson(id: Person.Id, sort: JsObject = talkRepository.defaultSort): Future[List[Talk]] = talkRepository.findForPerson(id, sort)
   def get(id: Talk.Id): Future[Option[Talk]] = talkRepository.get(id)
   def create(elt: Talk.Data, by: Person.Id): Future[(WriteResult, Talk.Id)] = talkRepository.create(elt, by)
-  def create(proposal: Proposal, by: Person.Id): Future[Either[String, Talk.Id]] = {
-    proposal.talk.map { talkId =>
-      Future.successful(Left("This proposal already has a talk !"))
-    }.getOrElse {
-      talkRepository.create(proposal.data, by).flatMap {
-        case (res, talkId) =>
-          if (res.ok) {
-            proposalRepository.setTalk(proposal.id, talkId, by).map(r => Right(talkId))
-          } else {
-            Future.successful(Left("Unable to create talk !"))
-          }
-      }
-    }
-  }
   def update(elt: Talk, data: Talk.Data, by: Person.Id): Future[WriteResult] = talkRepository.update(elt, data, by)
   def setSlides(id: Talk.Id, slides: String, by: Person.Id): Future[WriteResult] = talkRepository.setSlides(id, slides, by)
   def setVideo(id: Talk.Id, video: String, by: Person.Id): Future[WriteResult] = talkRepository.setVideo(id, video, by)

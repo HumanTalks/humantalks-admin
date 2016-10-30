@@ -2,8 +2,9 @@ package com.humantalks.internal.talks
 
 import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
+import com.humantalks.exposed.proposals.ProposalDbService
 import com.humantalks.internal.meetups.MeetupDbService
-import com.humantalks.internal.persons.{ PersonDbService, Person }
+import com.humantalks.internal.persons.{ Person, PersonDbService }
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
 import global.helpers.CtrlHelper
@@ -18,7 +19,8 @@ case class TalkCtrl(
     silhouette: Silhouette[SilhouetteEnv],
     personDbService: PersonDbService,
     talkDbService: TalkDbService,
-    meetupDbService: MeetupDbService
+    meetupDbService: MeetupDbService,
+    proposalDbService: ProposalDbService
 )(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.ctrlToEC
   import ctx._
@@ -52,9 +54,10 @@ case class TalkCtrl(
     implicit val user = Some(req.identity)
     CtrlHelper.withItem(talkDbService)(id) { talk =>
       for {
+        proposalOpt <- proposalDbService.getForTalk(id)
         personList <- personDbService.findByIds(talk.data.speakers)
         meetupList <- meetupDbService.findForTalk(id)
-      } yield Ok(views.html.detail(talk, personList, meetupList))
+      } yield Ok(views.html.detail(talk, proposalOpt, personList, meetupList))
     }
   }
 

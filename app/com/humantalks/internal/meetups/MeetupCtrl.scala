@@ -136,17 +136,11 @@ case class MeetupCtrl(
   }
 
   def doAddProposal(id: Meetup.Id, proposalId: Proposal.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    proposalDbService.get(proposalId).flatMap { proposalOpt =>
-      proposalOpt.map { proposal =>
-        talkDbService.create(proposal, req.identity.id).flatMap {
-          case Left(err) => Future.successful(Redirect(routes.MeetupCtrl.get(id)).flashing("error" -> err))
-          case Right(talkId) => meetupDbService.addTalk(id, talkId, req.identity.id).map { _ =>
-            Redirect(routes.MeetupCtrl.get(id)).flashing("success" -> "Proposal transformed into a talk and added to meetup :)")
-          }
-        }
-      }.getOrElse {
-        Future.successful(Redirect(routes.MeetupCtrl.get(id)).flashing("error" -> "Unable to find proposal :("))
+    proposalDbService.accept(proposalId, req.identity.id).flatMap {
+      case Right(talkId) => meetupDbService.addTalk(id, talkId, req.identity.id).map { _ =>
+        Redirect(routes.MeetupCtrl.get(id)).flashing("success" -> "Proposal transformed into a talk and added to meetup :)")
       }
+      case Left(err) => Future.successful(Redirect(routes.MeetupCtrl.get(id)).flashing("error" -> err))
     }
   }
 
