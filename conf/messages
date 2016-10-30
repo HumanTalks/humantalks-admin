@@ -1,12 +1,92 @@
-constraint.email=Email
-constraint.required=Required
-error.date=Valid date required
-error.email = Valid email required
-error.required = This field is required
+# Global texts: gbl
 
-google=Google
-facebook=Facebook
-twitter=Twitter
-vk=VK
-xing=Xing
-yahoo=Yahoo
+constraint.email=Email
+constraint.required=Obligatoire
+error.date=Date invalide
+error.email=Email invalide
+error.required=Ce champ est obligatoire
+
+gbl.form.name.label=Nom
+gbl.form.name.placeholder=ex: John Doe
+gbl.form.email.label=Email
+gbl.form.email.placeholder=ex: john@doe.com
+gbl.form.password.label=Mot de passe
+
+
+# Auth texts: auth
+
+auth.email.register.subject=Bienvenue
+auth.email.register.html=\
+  <p>Bonjour {0},</p>\
+  <p>Merci de cliquer sur <a href="{1}">ce lien</a> pour activer votre compte.</p>
+auth.email.register.text=\
+  Bonjour {0},\
+  \
+  Merci de cliquer sur ce lient pour activer votre compte: {1}
+auth.email.already_registered.subject=Bienvenue
+auth.email.already_registered.html=\
+  <p>Bonjour {0},</p>\
+  <p>Vous avez déjà un compte enregistré. Cliquez sur <a href="{1}">ce lien</a> pour vous connecter.</p>
+auth.email.already_registered.text=\
+  Bonjour {0},\
+  \
+  Vous avez déjà un compte enregistré. Cliquez sur ce lien pour vous connecter : {1}
+auth.email.activate_account.subject=Activation du compte
+auth.email.activate_account.html=\
+  <p>Bonjour {0},</p>\
+  <p>Merci de cliquer sur <a href="{1}">ce lien</a> pour activer votre compte.</p>
+auth.email.activate_account.text=\
+  Bonjour {0},\
+  \
+  Merci de cliquer sur ce lient pour activer votre compte: {1}
+auth.email.reset_password.subject=Réinitialisation du mot de passe
+auth.email.reset_password.html=\
+  <p>Bonjour {0},</p>\
+  <p>Merci de cliquer sur <a href="{1}">ce lien</a> pour réinitialiser votre mot de passe.</p>
+auth.email.reset_password.text=\
+  Bonjour {0},\
+  \
+  Merci de cliquer sur ce lient réinitialiser votre mot de passe: {1}
+
+auth.register.head=S''enregistrer
+auth.register.title=Créer un compte
+auth.register.form.submit=S''inscrire
+auth.register.already_member=Vous avez un compte ?
+auth.register.login_now=Connectez-vous maintenant
+auth.register.submit.success=Inscription presque terminée!<br>Veillez simplement suivre les instructions du mail d''activation que nous vous avons envoyé à <b>{0}</b> pour finaliser l''inscription.<br>S''il n''arrive pas, vérifiez vos spams et demandez un nouveau mail d''activation.
+auth.register.activate.success=Votre compte est maintenant activé. Merci de vous connecter pour l''utiliser.
+auth.register.activate.error.expired_token=Le lien n''est plus valide! Merci de vous connecter et de renvoyer un mail de validation.
+auth.register.activate.error.no_matching_user=Le lien n''est plus valide! Merci de vous connecter et de renvoyer un mail de validation.
+auth.register.activate.error.invalid_provider=Le lien n''est plus valide! Merci de vous connecter et de renvoyer un mail de validation.
+
+auth.login.head=Connexion
+auth.login.title=Utilisez vos identifiants pour vous connecter
+auth.login.form.rememberme.label=Rester connecter
+auth.login.form.submit=Se connecter
+auth.login.not_member=Pas de compte ?
+auth.login.register_now=Inscrivez-vous maintenant
+auth.login.forgot_password=Mot de passe oublié ?
+auth.login.submit.error.config_error=Erreur de configuration. Merci de contacter un administrateur.
+auth.login.submit.error.no_credentials=Mauvais login/mot de passe
+auth.login.submit.error.invalid_password=Mauvais login/mot de passe
+auth.login.submit.error.no_matching_user=Vos identifiants ne correspondent à aucun utilisateur.
+
+auth.not_activated.head=Compte non activé
+auth.not_activated.title=Compte pas encore activé
+auth.not_activated.message=Activez votre compte à l''aide du mail d''activation.
+auth.not_activated.button=Renvoyer un mail d''activation à <b>{0}</b>
+auth.not_activated.submit.success=Un nouveau mail d''activation vient d''être envoyé à {0}. Il peut prendre quelques minutes; merci de vérifier dans votre dossier spam.
+
+auth.forgot_password.head=Mot de passe oublié
+auth.forgot_password.title=Mot de passe oublié
+auth.forgot_password.form.submit=Réinitialiser mon mot de passe
+auth.forgot_password.submit.success=Nous venons de vous envoyer un email avec les instructions pour réinitialiser votre mot de passe.
+
+auth.reset_password.head=Réinitialisation du mot de passe
+auth.reset_password.title=Réinitialiser son mot de passe
+auth.reset_password.form.password.label=Nouveau mot de passe
+auth.reset_password.form.submit=Modifier mon mot de passe
+auth.reset_password.reset.success=Mot de passe réinitialisé!
+auth.reset_password.reset.error.expired_token=Le lien n''est plus valide! Merci de recommencer la procédure de réinitialisation du mot de passe.
+auth.reset_password.reset.error.invalid_provider=Le lien n''est plus valide! Merci de recommencer la procédure de réinitialisation du mot de passe.
+auth.reset_password.reset.error.no_matching_user=Le lien n''est plus valide! Merci de recommencer la procédure de réinitialisation du mot de passe.

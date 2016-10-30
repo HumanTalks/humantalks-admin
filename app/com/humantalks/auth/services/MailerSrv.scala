@@ -19,7 +19,7 @@ case class MailerSrv(conf: Conf, sendgridSrv: SendgridSrv) {
     sendgridSrv.send(Email(
       personalizations = Recipient.single(email),
       from = from,
-      subject = "Welcome",
+      subject = messagesApi("auth.email.register.subject"),
       content = Seq(
         Content.text(views.txt.emails.register(person, url).body),
         Content.html(views.html.emails.register(person, url).body)
@@ -32,7 +32,7 @@ case class MailerSrv(conf: Conf, sendgridSrv: SendgridSrv) {
     sendgridSrv.send(Email(
       personalizations = Recipient.single(email),
       from = from,
-      subject = "Welcome",
+      subject = messagesApi("auth.email.already_registered.subject"),
       content = Seq(
         Content.text(views.txt.emails.alreadyRegistered(person, url).body),
         Content.html(views.html.emails.alreadyRegistered(person, url).body)
@@ -45,7 +45,7 @@ case class MailerSrv(conf: Conf, sendgridSrv: SendgridSrv) {
     sendgridSrv.send(Email(
       personalizations = Recipient.single(email),
       from = from,
-      subject = "Activate account",
+      subject = messagesApi("auth.email.activate_account.subject"),
       content = Seq(
         Content.text(views.txt.emails.activateAccount(person, url).body),
         Content.html(views.html.emails.activateAccount(person, url).body)
@@ -58,7 +58,7 @@ case class MailerSrv(conf: Conf, sendgridSrv: SendgridSrv) {
     sendgridSrv.send(Email(
       personalizations = Recipient.single(email),
       from = from,
-      subject = "Reset password",
+      subject = messagesApi("auth.email.reset_password.subject"),
       content = Seq(
         Content.text(views.txt.emails.resetPassword(person, url).body),
         Content.html(views.html.emails.resetPassword(person, url).body)

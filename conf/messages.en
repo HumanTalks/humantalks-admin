@@ -1,0 +1,13 @@
+# Global texts: gbl
+
+constraint.email=Email
+constraint.required=Required
+error.date=Valid date required
+error.email=Valid email required
+error.required=This field is required
+
+gbl.form.name.label=Name
+gbl.form.name.placeholder=ex: John Doe
+gbl.form.email.label=Email
+gbl.form.email.placeholder=ex: john@doe.com
+gbl.form.password.label=Password

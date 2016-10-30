@@ -1,24 +1,24 @@
 @import com.humantalks.auth.forms.RegisterForm
-@import com.humantalks.internal.views.html.partials._
+@import com.humantalks.exposed.views.html.partials._
 @import global.views.html.form._
 @import global.views.html.partials._
 @import com.humantalks.auth.routes.AuthCtrl
 @(registerForm: Form[RegisterForm])(implicit request: RequestHeader, messagesApi: MessagesApi)
-@main("Register") {
+@main(messagesApi("auth.register.head")) {
     @flash()
     <fieldset class="col-md-6 col-md-offset-3">
-        <legend>Register for a new account</legend>
-        @helper.form(action = AuthCtrl.doRegister()) {
-            @fieldHorizontal(registerForm("name"), 'label -> "Name") { field => @inputText(field, 'placeholder -> "ex: John Doe") }
-            @fieldHorizontal(registerForm("email"), 'label -> "Email") { field => @inputEmail(field, 'placeholder -> "ex: john@doe.com") }
-            @fieldHorizontal(registerForm("password"), 'label -> "Password") { field => @inputText(field, 'type -> "password") }
+        <legend>@messagesApi("auth.register.title")</legend>
+        @helper.form(action=AuthCtrl.doRegister(), 'class -> "form-horizontal") {
+            @fieldHorizontal(registerForm("name"), 'label -> messagesApi("gbl.form.name.label")) { field => @inputText(field, 'placeholder -> messagesApi("gbl.form.name.placeholder")) }
+            @fieldHorizontal(registerForm("email"), 'label -> messagesApi("gbl.form.email.label")) { field => @inputEmail(field, 'placeholder -> messagesApi("gbl.form.email.placeholder")) }
+            @fieldHorizontal(registerForm("password"), 'label -> messagesApi("gbl.form.password.label")) { field => @inputText(field, 'type -> "password") }
             <div class="form-group">
                 <div>
-                    <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">Register</button>
+                    <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">@messagesApi("auth.register.form.submit")</button>
                 </div>
             </div>
             <div class="sign-in-now">
-                <p>Already a member? <a href="@AuthCtrl.login">Login now</a></p>
+                <p>@messagesApi("auth.register.already_member") <a href="@AuthCtrl.login">@messagesApi("auth.register.login_now")</a></p>
             </div>
         }
     </fieldset>

@@ -2,7 +2,6 @@
 @(person: Person, url: String)(implicit messagesApi: MessagesApi)
 <html>
     <body>
-        <p>Hello @person.data.name,</p>
-        <p>You already have an account registered. Please follow <a href="@url">this link</a> to login into your account.</p>
+        @Html(messagesApi("auth.email.already_registered.html", person.data.name, url))
     </body>
 </html>

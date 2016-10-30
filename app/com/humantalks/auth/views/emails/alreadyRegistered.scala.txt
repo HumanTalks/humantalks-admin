@@ -1,5 +1,3 @@
 @import com.humantalks.internal.persons.Person
 @(person: Person, url: String)(implicit messagesApi: MessagesApi)
-Hello @person.data.name,
-
-You already have an account registered. Please follow the link to login into your account: @url
+@messagesApi("auth.email.already_registered.text", person.data.name, url)

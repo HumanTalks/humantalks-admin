@@ -1,33 +1,31 @@
 @import com.humantalks.auth.forms.LoginForm
-@import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 @import com.humantalks.exposed.views.html.partials._
 @import global.views.html.form._
 @import global.views.html.partials._
 @import com.humantalks.auth.routes.AuthCtrl
 @(loginForm: Form[LoginForm])(implicit request: RequestHeader, messagesApi: MessagesApi)
-@main("Login") {
+@main(messagesApi("auth.login.head")) {
     @flash()
     <fieldset class="col-md-6 col-md-offset-3">
-        <legend>Sign in with your credentials</legend>
-        @helper.form(action = AuthCtrl.doLogin()) {
-            @fieldHorizontal(loginForm("email"), 'label -> "Email") { field => @inputEmail(field, 'placeholder -> "ex: john@doe.com") }
-            @fieldHorizontal(loginForm("password"), 'label -> "Password") { field => @inputText(field, 'type -> "password") }
+        <legend>@messagesApi("auth.login.title")</legend>
+        @helper.form(action=AuthCtrl.doLogin(), 'class -> "form-horizontal") {
+            @fieldHorizontal(loginForm("email"), 'label -> messagesApi("gbl.form.email.label")) { field => @inputEmail(field, 'placeholder -> messagesApi("gbl.form.email.placeholder")) }
+            @fieldHorizontal(loginForm("password"), 'label -> messagesApi("gbl.form.password.label")) { field => @inputText(field, 'type -> "password") }
             <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">@fieldCheckbox(loginForm("rememberMe"), 'label -> "Remember me", 'value -> "true")</div>
+                <div class="col-md-offset-2 col-md-10">@fieldCheckbox(loginForm("rememberMe"), 'label -> messagesApi("auth.login.form.rememberme.label"), 'value -> "true")</div>
             </div>
             <div class="form-group">
                 <div>
-                    <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">Login</button>
+                    <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">@messagesApi("auth.login.form.submit")</button>
                 </div>
             </div>
         }
 
         <div>
             <p class="not-a-member">
-                Not a member? <a href="@AuthCtrl.register">Register now</a>
-                | <a href="@AuthCtrl.forgotPassword()" title="Forgot your password?">Forgot your password?</a>
+                @messagesApi("auth.login.not_member") <a href="@AuthCtrl.register">@messagesApi("auth.login.register_now")</a>
+                | <a href="@AuthCtrl.forgotPassword()" title="Forgot your password?">@messagesApi("auth.login.forgot_password")</a>
             </p>
         </div>
-
     </fieldset>
 }

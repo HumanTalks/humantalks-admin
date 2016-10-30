@@ -1,0 +1,16 @@
+@import global.views.html.partials._
+@import com.humantalks.exposed.views.html.partials._
+@import com.humantalks.auth.routes.AuthCtrl
+@(email: String)(implicit request: RequestHeader, messagesApi: MessagesApi)
+@main(messagesApi("auth.not_activated.head")) {
+    <div class="container">
+        @flash()
+        <h1>@messagesApi("auth.not_activated.title")</h1>
+        <p>@messagesApi("auth.not_activated.message")</p>
+        <p>
+            @helper.form(action=AuthCtrl.sendActivationEmail(email), 'class->"inline") {
+                <button type="submit" class="btn btn-primary" confirm>@Html(messagesApi("auth.not_activated.button", email))</button>
+            }
+        </p>
+    </div>
+}

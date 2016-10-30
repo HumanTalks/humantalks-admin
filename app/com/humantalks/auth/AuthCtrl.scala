@@ -54,7 +54,7 @@ case class AuthCtrl(
     registerForm.bindFromRequest.fold(
       formWithErrors => Future.successful(BadRequest(views.html.register(formWithErrors))),
       formData => {
-        val result = Redirect(routes.AuthCtrl.register()).flashing("info" -> s"You're almost done! We sent an activation mail to <b>${formData.email}</b>. Please follow the instructions in the email to activate your account. If it doesn't arrive, check your spam folder, or try to log in again to send another activation mail.")
+        val result = Redirect(routes.AuthCtrl.register()).flashing("info" -> messagesApi("auth.register.submit.success", formData.email))
         val loginInfo = LoginInfo(CredentialsProvider.ID, formData.email)
         personRepository.retrieve(loginInfo).flatMap {
           case Some(user) =>
@@ -90,7 +90,7 @@ case class AuthCtrl(
       formData => {
         authSrv.authenticate(formData.email, formData.password).flatMap { loginInfo =>
           personRepository.retrieve(loginInfo).flatMap {
-            case Some(person) if !person.activated => Future.successful(Ok(views.html.activateAccount(formData.email)))
+            case Some(person) if !person.activated => Future.successful(Ok(views.html.notActivated(formData.email)))
             case Some(person) =>
               silhouette.env.authenticatorService.create(loginInfo).map {
                 case authenticator: CookieAuthenticator if formData.rememberMe =>
@@ -108,13 +108,13 @@ case class AuthCtrl(
               }
             case None =>
               credentialsRepository.remove(loginInfo).map { _ =>
-                Redirect(routes.AuthCtrl.login()).flashing("error" -> "Unable to find corresponding person, credentials removed")
+                Redirect(routes.AuthCtrl.login()).flashing("error" -> messagesApi("auth.login.submit.error.no_matching_user"))
               }
           }
         } recover {
-          case e: InvalidPasswordException => Redirect(routes.AuthCtrl.login()).flashing("error" -> "Invalid password")
-          case e: ConfigurationException => Redirect(routes.AuthCtrl.login()).flashing("error" -> "ConfigurationException")
-          case e: IdentityNotFoundException => Redirect(routes.AuthCtrl.login()).flashing("error" -> "Unable to find credentials")
+          case e: ConfigurationException => Redirect(routes.AuthCtrl.login()).flashing("error" -> messagesApi("auth.login.submit.error.config_error"))
+          case e: IdentityNotFoundException => Redirect(routes.AuthCtrl.login()).flashing("error" -> messagesApi("auth.login.submit.error.no_credentials"))
+          case e: InvalidPasswordException => Redirect(routes.AuthCtrl.login()).flashing("error" -> messagesApi("auth.login.submit.error.invalid_password"))
         }
       }
     )
@@ -129,11 +129,10 @@ case class AuthCtrl(
     }
   }
 
-  // TODO : use it & refactor
   def sendActivationEmail(email: String) = silhouette.UnsecuredAction.async { implicit req =>
     val decodedEmail = URLDecoder.decode(email, "UTF-8")
     val loginInfo = LoginInfo(CredentialsProvider.ID, decodedEmail)
-    val result = Redirect(routes.AuthCtrl.login()).flashing("info" -> s"We sent another activation email to you at <b>$decodedEmail</b>. It might take a few minutes for it to arrive; be sure to check your spam folder.")
+    val result = Redirect(routes.AuthCtrl.login()).flashing("info" -> messagesApi("auth.not_activated.submit.success", decodedEmail))
     personRepository.retrieve(loginInfo).flatMap {
       case Some(person) if !person.activated =>
         authTokenRepository.create(person.id).map { authToken =>
@@ -149,11 +148,12 @@ case class AuthCtrl(
       case Some(authToken) => personRepository.get(authToken.person).flatMap {
         case Some(person) if person.hasProvider(CredentialsProvider.ID) =>
           personRepository.activate(person.id).map { _ =>
-            Redirect(routes.AuthCtrl.login()).flashing("success" -> "Your account is now activated! Please login to use your new account.")
+            Redirect(routes.AuthCtrl.login()).flashing("success" -> messagesApi("auth.register.activate.success"))
           }
-        case _ => Future.successful(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please login to send the activation email again."))
+        case None => Future.successful(Redirect(routes.AuthCtrl.login()).flashing("error" -> messagesApi("auth.register.activate.error.no_matching_user")))
+        case _ => Future.successful(Redirect(routes.AuthCtrl.login()).flashing("error" -> messagesApi("auth.register.activate.error.invalid_provider")))
       }
-      case None => Future.successful(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please login to send the activation email again."))
+      case None => Future.successful(Redirect(routes.AuthCtrl.login()).flashing("error" -> messagesApi("auth.register.activate.error.expired_token")))
     }
   }
 
@@ -165,12 +165,12 @@ case class AuthCtrl(
     forgotPasswordForm.bindFromRequest.fold(
       formWithErrors => Future.successful(BadRequest(views.html.forgotPassword(formWithErrors))),
       formData => {
-        val result = Redirect(routes.AuthCtrl.login()).flashing("info" -> "We have sent you an email with further instructions to reset your password, on condition that the address was found in our system. If you do not receive an email within the next 5 minutes, then please recheck your entered email address and try it again.")
+        val result = Redirect(routes.AuthCtrl.login()).flashing("info" -> messagesApi("auth.forgot_password.submit.success"))
         val loginInfo = LoginInfo(CredentialsProvider.ID, formData.email)
         personRepository.retrieve(loginInfo).flatMap {
-          case Some(person) if person.data.email.isDefined =>
+          case Some(person) =>
             authTokenRepository.create(person.id).flatMap { authToken =>
-              mailerSrv.sentResetPassword(formData.email, person, authToken).map { res =>
+              mailerSrv.sentResetPassword(person.data.email.get, person, authToken).map { res =>
                 if (res.status == 202) {
                   result
                 } else {
@@ -188,7 +188,7 @@ case class AuthCtrl(
   def resetPassword(token: AuthToken.Id) = silhouette.UnsecuredAction.async { implicit req =>
     authTokenRepository.get(token).map {
       case Some(authToken) => Ok(views.html.resetPassword(resetPasswordForm, token))
-      case None => Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please request a new link to reset your password.")
+      case None => Redirect(routes.AuthCtrl.login()).flashing("error" -> messagesApi("auth.reset_password.reset.error.expired_token"))
     }
   }
 
@@ -201,12 +201,13 @@ case class AuthCtrl(
             case Some(person) if person.hasProvider(CredentialsProvider.ID) =>
               val passwordInfo = authSrv.hashPassword(formData.password)
               authSrv.updateAuthInfo(person.loginInfo.get, passwordInfo).map { _ =>
-                Redirect(routes.AuthCtrl.login()).flashing("success" -> "Mot de passe réinitialisé")
+                Redirect(routes.AuthCtrl.login()).flashing("success" -> messagesApi("auth.reset_password.reset.success"))
               }
-            case _ => Future.successful(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please request a new link to reset your password. (no user)"))
+            case None => Future.successful(Redirect(routes.AuthCtrl.login()).flashing("error" -> messagesApi("auth.reset_password.reset.error.no_matching_user")))
+            case _ => Future.successful(Redirect(routes.AuthCtrl.login()).flashing("error" -> messagesApi("auth.reset_password.reset.error.invalid_provider")))
           }
         )
-      case None => Future.successful(Redirect(routes.AuthCtrl.login()).flashing("error" -> "The link isn't valid anymore! Please request a new link to reset your password. (no token)"))
+      case None => Future.successful(Redirect(routes.AuthCtrl.login()).flashing("error" -> messagesApi("auth.reset_password.reset.error.expired_token")))
     }
   }
 

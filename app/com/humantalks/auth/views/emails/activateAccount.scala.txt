@@ -1,5 +1,3 @@
 @import com.humantalks.internal.persons.Person
 @(person: Person, url: String)(implicit messagesApi: MessagesApi)
-Hello @person.data.name,
-
-Please follow the link to confirm and activate your new account: @url
+@messagesApi("auth.email.activate_account.text", person.data.name, url)

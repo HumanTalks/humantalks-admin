@@ -14,15 +14,15 @@ POST    /register                                                   com.humantal
 GET     /login                                                      com.humantalks.auth.AuthCtrl.login
 POST    /login                                                      com.humantalks.auth.AuthCtrl.doLogin
 POST    /logout                                                     com.humantalks.auth.AuthCtrl.doLogout
-POST    /sendActivationEmail                                        com.humantalks.auth.AuthCtrl.sendActivationEmail(email: String)
-GET     /activateAccount/:id                                        com.humantalks.auth.AuthCtrl.activateAccount(id: AuthToken.Id)
-GET     /forgotPassword                                             com.humantalks.auth.AuthCtrl.forgotPassword
-POST    /forgotPassword                                             com.humantalks.auth.AuthCtrl.doForgotPassword
-GET     /resetPassword/:id                                          com.humantalks.auth.AuthCtrl.resetPassword(id: AuthToken.Id)
-POST    /resetPassword/:id                                          com.humantalks.auth.AuthCtrl.doResetPassword(id: AuthToken.Id)
+POST    /send-activation-email                                      com.humantalks.auth.AuthCtrl.sendActivationEmail(email: String)
+GET     /activate-account/:id                                       com.humantalks.auth.AuthCtrl.activateAccount(id: AuthToken.Id)
+GET     /forgot-password                                            com.humantalks.auth.AuthCtrl.forgotPassword
+POST    /forgot-password                                            com.humantalks.auth.AuthCtrl.doForgotPassword
+GET     /reset-password/:id                                         com.humantalks.auth.AuthCtrl.resetPassword(id: AuthToken.Id)
+POST    /reset-password/:id                                         com.humantalks.auth.AuthCtrl.doResetPassword(id: AuthToken.Id)
 #GET     /auth/debug                                                 com.humantalks.auth.AuthCtrl.debug
-#GET     /auth/debug/removeUser/:id                                  com.humantalks.auth.AuthCtrl.debugRemoveUser(id: Person.Id)
-#GET     /auth/debug/removeToken/:id                                 com.humantalks.auth.AuthCtrl.debugRemoveToken(id: AuthToken.Id)
+#GET     /auth/debug/remove-user/:id                                 com.humantalks.auth.AuthCtrl.debugRemoveUser(id: Person.Id)
+#GET     /auth/debug/remove-token/:id                                com.humantalks.auth.AuthCtrl.debugRemoveToken(id: AuthToken.Id)
 
 GET     /home                                                       com.humantalks.internal.Application.index
 
