@@ -1,0 +1,4 @@
+@(embedCode: Option[String], embedUrl: Option[String])
+@embedCode.map{code => <p><b>Slides:</b><br>@Html(code)</p>}.getOrElse{
+    @embedUrl.map{url => <p><b>Slides:</b><br>@embed(url)</p>}
+}

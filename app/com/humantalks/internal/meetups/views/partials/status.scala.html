@@ -1,0 +1,6 @@
+@import com.humantalks.internal.meetups.Meetup
+@(meetup: Meetup)
+@meetup.published match {
+    case true => {<span class="label label-success">Publié</span>}
+    case tfalse => {<span class="label label-danger">Brouillon</span>}
+}

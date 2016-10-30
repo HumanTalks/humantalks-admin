@@ -3,6 +3,7 @@
 @import com.humantalks.exposed.proposals.Proposal
 @import global.views.html.format._
 @import global.views.html.partials._
+@import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.persons.routes.PersonCtrl
 @import com.humantalks.internal.talks.routes.TalkCtrl
@@ -21,8 +22,8 @@
             @person.data.name
         </h1>
         @person.data.description.map{d => <p>@multiline(d)</p>}
-        @person.data.email.map{email => <a href="mailto:@email" target="_blank">@email</a>}
-        @person.data.twitter.map{account => <a href="https://twitter.com/@account" target="_blank">@@@account</a>}
+        @email(person.data.email)
+        @twitter(person.data.twitter)
         @if(talkList.nonEmpty){
             <h3>Talks</h3>
             <ul>

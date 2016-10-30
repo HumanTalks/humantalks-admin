@@ -3,6 +3,7 @@
 @import com.humantalks.internal.meetups.Meetup
 @import global.views.html.format._
 @import global.views.html.partials._
+@import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.venues.routes.VenueCtrl
 @import com.humantalks.internal.meetups.routes.MeetupCtrl
@@ -21,7 +22,7 @@
         </h1>
         @venue.data.location.map{loc => <p>@loc.formatted</p>}
         @venue.data.comment.map{c => <p>@multiline(c)</p>}
-        @venue.data.twitter.map{account => <a href="https://twitter.com/@account" target="_blank">@@@account</a>}
+        @twitter(venue.data.twitter)
         @if(meetupList.nonEmpty){
             <h3>Meetups</h3>
             <ul>

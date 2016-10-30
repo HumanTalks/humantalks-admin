@@ -1,0 +1,6 @@
+@import com.humantalks.internal.persons.Person
+@import com.humantalks.internal.persons.routes.PersonCtrl
+@(speakers: List[Person.Id], personList: List[Person])
+@if(speakers.nonEmpty){
+    par @speakers.flatMap(id => personList.find(_.id == id)).map { speaker => <a href="@PersonCtrl.get(speaker.id)">@speaker.data.name</a> }
+}

@@ -4,7 +4,6 @@
 @import global.views.html.format._
 @import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
-@import com.humantalks.internal.persons.routes.PersonCtrl
 @import com.humantalks.internal.proposals.routes.ProposalCtrl
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @(proposal: Proposal, talkOpt: Option[Talk], personList: List[Person])(implicit user: Option[Person])
@@ -16,17 +15,10 @@
             @proposal.data.title
             @partials.status(proposal)
         </h1>
-        <p>
-            @if(proposal.data.speakers.nonEmpty){
-                par @proposal.data.speakers.flatMap(id => personList.find(_.id == id)).map { speaker => <a href="@PersonCtrl.get(speaker.id)">@speaker.data.name</a> }
-            }
-            le @date(proposal.meta.created.toLocalDate)
-        </p>
+        <p>@speakers(proposal.data.speakers, personList) @created(proposal.meta.created)</p>
         @talkOpt.map{talk => <p><b>Talk associé : <a href="@TalkCtrl.get(talk.id)">@talk.data.title</a></b> @com.humantalks.internal.talks.views.html.partials.status(talk)</p>}
         @proposal.data.description.map{d => <p>@multiline(d)</p>}
-        @proposal.data.slidesEmbedCode.map{c => <p><b>Slides:</b><br>@Html(c)</p>}.getOrElse{
-            @proposal.data.slides.map{s => <p><b>Slides:</b><br>@embed(s)</p>}
-        }
+        @slidesEmbed(proposal.data.slidesEmbedCode, proposal.data.slides)
         @if(proposal.status == Proposal.Status.Proposed) {
             @helper.form(action=ProposalCtrl.doReject(proposal.id), 'class->"inline") { <button type="submit" class="btn btn-danger" title="Rejeter cette proposition" confirm>Rejeter</button> }
             @helper.form(action=ProposalCtrl.doAccept(proposal.id), 'class->"inline") { <button type="submit" class="btn btn-success" title="Accepter cette proposition" confirm>Accepter</button> }

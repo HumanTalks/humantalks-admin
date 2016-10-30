@@ -1,0 +1,2 @@
+@(emailOpt: Option[String])
+@emailOpt.map{email => <a href="mailto:@email" target="_blank">@email</a>}

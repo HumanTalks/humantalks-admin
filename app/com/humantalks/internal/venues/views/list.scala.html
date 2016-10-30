@@ -2,6 +2,7 @@
 @import com.humantalks.internal.persons.Person
 @import global.views.html.format._
 @import global.views.html.partials._
+@import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.venues.routes.VenueCtrl
 @(venueList: List[Venue])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
@@ -20,7 +21,7 @@
                     <h4 class="media-heading"><a href="@VenueCtrl.get(venue.id)">@venue.data.name</a></h4>
                     @venue.data.location.map{loc => <p>@loc.formatted</p>}
                     @venue.data.comment.map{c => <p>@multiline(c)</p>}
-                    @venue.data.twitter.map{account => <a href="https://twitter.com/@account" target="_blank">@@@account</a>}
+                    @twitter(venue.data.twitter)
                 </div>
                 @venue.data.logo.map { logo =>
                     <div class="media-right">

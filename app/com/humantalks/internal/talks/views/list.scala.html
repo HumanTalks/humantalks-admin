@@ -2,8 +2,8 @@
 @import com.humantalks.internal.talks.Talk
 @import global.views.html.format._
 @import global.views.html.partials._
+@import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
-@import com.humantalks.internal.persons.routes.PersonCtrl
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @(talkList: List[Talk], personList: List[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
 @main("Talks") {
@@ -21,13 +21,11 @@
                     <h4 class="media-heading">
                         @partials.status(talk)
                         <a href="@TalkCtrl.get(talk.id)">@talk.data.title</a>
-                        @talk.data.slides.map{s => <a href="@s" target="_blank" title="slides"><span class="fa fa-slideshare"></span></a>}
-                        @talk.data.video.map{v => <a href="@v" target="_blank" title="vidéo"><span class="fa fa-youtube"></span></a>}
+                        @slidesLink(talk.data.slides)
+                        @videoLink(talk.data.video)
                     </h4>
                     @talk.data.description.map{d => <p>@multiline(d)</p>}
-                    @if(talk.data.speakers.nonEmpty) {
-                        <p>par @talk.data.speakers.flatMap(id => personList.find(_.id == id)).map { s => <a href="@PersonCtrl.get(s.id)">@s.data.name</a> }</p>
-                    }
+                    <p>@speakers(talk.data.speakers, personList) le @date(talk.meta.created.toLocalDate)</p>
                 </div>
             </div>
         }

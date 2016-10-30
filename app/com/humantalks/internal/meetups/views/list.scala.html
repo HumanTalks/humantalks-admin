@@ -3,6 +3,7 @@
 @import com.humantalks.internal.meetups.Meetup
 @import global.views.html.format._
 @import global.views.html.partials._
+@import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.venues.routes.VenueCtrl
 @import com.humantalks.internal.meetups.routes.MeetupCtrl
@@ -24,8 +25,8 @@
                         @meetup.data.meetupUrl.map{url => <a href="@url" target="_blank"><i class="fa fa-external-link"></i></a>}
                     </h4>
                     <p>
-                        @if(meetup.published){ <span class="label label-success">Publié</span> } else { <span class="label label-danger">Brouillon</span> }
-                        @meetup.data.venue.flatMap(id => venueList.find(_.id == id)).map{v => chez <a href="@VenueCtrl.get(v.id)">@v.data.name</a>}
+                        @partials.status(meetup)
+                        @venue(meetup.data.venue, venueList)
                         le @date(meetup.data.date.toLocalDate),
                         @meetup.data.talks.length talks planifiés
                         @meetup.data.roti.map{r => <i class="fa fa-picture-o" title="ROTI added"></i>}

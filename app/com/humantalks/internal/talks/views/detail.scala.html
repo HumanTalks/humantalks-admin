@@ -6,7 +6,6 @@
 @import global.views.html.partials._
 @import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
-@import com.humantalks.internal.persons.routes.PersonCtrl
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @import com.humantalks.internal.meetups.routes.MeetupCtrl
 @import com.humantalks.internal.proposals.routes.ProposalCtrl
@@ -25,20 +24,11 @@
             @talk.data.title
             @partials.status(talk)
         </h1>
-        <p>
-            @if(talk.data.speakers.nonEmpty){
-                par @talk.data.speakers.flatMap(id => personList.find(_.id == id)).map { speaker => <a href="@PersonCtrl.get(speaker.id)">@speaker.data.name</a> }
-            }
-            le @date(talk.meta.created.toLocalDate)
-        </p>
+        <p>@speakers(talk.data.speakers, personList) @created(talk.meta.created)</p>
         @proposalOpt.map{proposal => <p><b>Proposition associée : <a href="@ProposalCtrl.get(proposal.id)">@proposal.data.title</a></b> @com.humantalks.internal.proposals.views.html.partials.status(proposal)</p>}
         @talk.data.description.map{d => <p>@multiline(d)</p>}
-        @talk.data.slidesEmbedCode.map{c => <p><b>Slides:</b><br>@Html(c)</p>}.getOrElse{
-            @talk.data.slides.map{s => <p><b>Slides:</b><br>@embed(s)</p>}
-        }
-        @talk.data.videoEmbedCode.map{c => <p><b>Vidéo:</b><br>@Html(c)</p>}.getOrElse{
-            @talk.data.video.map{v => <p><b>Vidéo:</b><br>@embed(v)</p>}
-        }
+        @slidesEmbed(talk.data.slidesEmbedCode, talk.data.slides)
+        @videoEmbed(talk.data.videoEmbedCode, talk.data.video)
         @if(meetupList.nonEmpty){
             <h3>Meetups</h3>
             <ul>
