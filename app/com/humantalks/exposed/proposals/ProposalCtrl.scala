@@ -1,11 +1,13 @@
 package com.humantalks.exposed.proposals
 
 import com.humantalks.common.Conf
+import com.humantalks.common.services.DateSrv
 import com.humantalks.common.services.sendgrid._
 import com.humantalks.internal.persons.{ Person, PersonDbService }
 import com.humantalks.internal.talks.TalkDbService
 import global.Contexts
 import global.helpers.CtrlHelper
+import org.joda.time.{ DateTimeConstants, DateTime }
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{ RequestHeader, Action, Controller, Result }
@@ -60,7 +62,9 @@ case class ProposalCtrl(
 
   private def formView(status: Status, proposalForm: Form[Proposal.Data], proposalOpt: Option[Proposal]): Future[Result] = {
     personDbService.find().map { personList =>
-      status(views.html.form(proposalForm, proposalOpt, personList, personForm))
+      val now = new DateTime()
+      val nextDates = (1 to 7).map(i => now.plusMonths(i)).map(d => DateSrv.getNthDayOfMonth(d, 2, DateTimeConstants.TUESDAY)).filter(_.toDateTimeAtCurrentTime.isAfterNow).toList
+      status(views.html.form(proposalForm, proposalOpt, personList, nextDates, personForm))
     }
   }
   private def sendSubmitedMail(proposal: Proposal, person: Person)(implicit request: RequestHeader): Future[Boolean] = {

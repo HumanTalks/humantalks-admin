@@ -22,12 +22,6 @@ object Meetup {
     def generate(): Id = Id(TypedId.generate())
   }
 
-  def nextDate(start: DateTime, nthOfMonth: Int, dayOfWeek: Int, time: LocalTime): DateTime = {
-    def getNthDayOfMonth(start: DateTime, nth: Int, dayOfWeek: Int): LocalDate = new LocalDate(start.getYear, start.getMonthOfYear, 1).withDayOfWeek(dayOfWeek).plusWeeks(nth)
-    val thisMonth = getNthDayOfMonth(start, nthOfMonth, dayOfWeek).toDateTime(time)
-    val nextMonth = getNthDayOfMonth(start.plusMonths(1), nthOfMonth, dayOfWeek).toDateTime(time)
-    if (thisMonth.isAfter(start)) thisMonth else nextMonth
-  }
   def title(date: DateTime): String = "HumanTalks Paris " + date.toString("MMMM YYYY")
 
   case class Data(

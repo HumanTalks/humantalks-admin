@@ -2,6 +2,7 @@ package com.humantalks.internal.meetups
 
 import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
+import com.humantalks.common.services.DateSrv
 import com.humantalks.exposed.proposals.{ Proposal, ProposalDbService }
 import com.humantalks.internal.persons.{ PersonDbService, Person }
 import com.humantalks.internal.talks.{ TalkDbService, Talk }
@@ -42,7 +43,7 @@ case class MeetupCtrl(
   def create = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     implicit val user = Some(req.identity)
     meetupDbService.getLast.flatMap { meetupOpt =>
-      val nextDate = Meetup.nextDate(meetupOpt.map(_.data.date).getOrElse(new DateTime()), 2, DateTimeConstants.TUESDAY, new LocalTime(19, 0))
+      val nextDate = DateSrv.nextDate(meetupOpt.map(_.data.date).getOrElse(new DateTime()), 2, DateTimeConstants.TUESDAY, new LocalTime(19, 0))
       val nextTitle = Meetup.title(nextDate)
       val nextMeetup = Meetup.Data(nextTitle, nextDate, None, List(), None, None, None)
       formView(Ok, meetupForm.fill(nextMeetup), None)

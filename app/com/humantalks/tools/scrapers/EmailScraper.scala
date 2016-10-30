@@ -27,6 +27,18 @@ case class EmailScraper(ctx: Contexts, ws: WSClient) extends Controller {
           "linkedin" -> findAccounts(json).flatMap(findAccount("linkedin")).flatMap(accountToUsername),
           "accounts" -> findAccounts(json)
         ) ++ res.json.as[JsObject])
+      }.recover {
+        case e: Throwable => Right(Json.obj(
+          "name" -> "",
+          "username" -> "",
+          "avatar" -> "",
+          "backgroundImage" -> "",
+          "bio" -> "",
+          "site" -> "",
+          "twitter" -> "",
+          "linkedin" -> "",
+          "error" -> e.getMessage
+        ))
       }
     })
   }

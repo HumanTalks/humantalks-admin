@@ -64,41 +64,43 @@
         }
         @meetup.data.roti.map{r => <p><img src="@r" style="width: 100%;"></p>}
 
-        <br>
-        <button class="btn btn-default btn-lg" data-toggle="modal" data-target="#create-talk-modal">Créer un talk</button>
-        <a href="@MeetupCtrl.publish(meetup.id)" class="btn btn-default btn-lg">Publier meetup</a>
+        @if(meetup.data.date.isAfterNow){
+            <button class="btn btn-default btn-lg" data-toggle="modal" data-target="#create-talk-modal">Créer un talk</button>
+            <a href="@MeetupCtrl.publish(meetup.id)" class="btn btn-default btn-lg">Publier meetup</a>
 
-        @if(pendingTalks.nonEmpty) {
-            <h3>Talks non planifiés</h3>
-            <ul>
-            @pendingTalks.map { talk =>
-                <li>
-                    @helper.form(action=MeetupCtrl.doAddTalk(meetup.id, talk.id), 'class->"inline") {
-                        <button type="submit" class="btn btn-link" title="Add talk to this meetup"><i class="fa fa-plus"></i></button>
+            @if(pendingTalks.nonEmpty) {
+                <h3>Talks non planifiés</h3>
+                <ul>
+                    @pendingTalks.map { talk =>
+                        <li>
+                            @helper.form(action=MeetupCtrl.doAddTalk(meetup.id, talk.id), 'class->"inline") {
+                                <button type="submit" class="btn btn-link" title="Add talk to this meetup"><i class="fa fa-plus"></i></button>
+                            }
+                            @com.humantalks.internal.talks.views.html.partials.status(talk)
+                            <a href="@TalkCtrl.get(talk.id)">@talk.data.title</a>
+                            @speakers(talk.data.speakers, allPersons)
+                            @slidesLink(talk.data.slides)
+                            @videoLink(talk.data.video)
+                        </li>
                     }
-                    @com.humantalks.internal.talks.views.html.partials.status(talk)
-                    <a href="@TalkCtrl.get(talk.id)">@talk.data.title</a>
-                    @speakers(talk.data.speakers, allPersons)
-                    @slidesLink(talk.data.slides)
-                    @videoLink(talk.data.video)
-                </li>
+                </ul>
             }
-            </ul>
-        }
-        @if(pendingProposals.nonEmpty){
-            <h3>Propositions non planifiées</h3>
-            <ul>
-            @pendingProposals.map { proposal =>
-                <li>
-                    @helper.form(action=MeetupCtrl.doAddProposal(meetup.id, proposal.id), 'class->"inline") {
-                        <button type="submit" class="btn btn-link" title="Create a talk from this proposal and add it to this meetup"><i class="fa fa-plus"></i></button>
+            @if(pendingProposals.nonEmpty){
+                <h3>Propositions non planifiées</h3>
+                <ul>
+                    @pendingProposals.map { proposal =>
+                        <li>
+                            @helper.form(action=MeetupCtrl.doAddProposal(meetup.id, proposal.id), 'class->"inline") {
+                                <button type="submit" class="btn btn-link" title="Create a talk from this proposal and add it to this meetup"><i class="fa fa-plus"></i></button>
+                            }
+                            @com.humantalks.internal.proposals.views.html.partials.status(proposal)
+                            @if(proposal.data.availabilities.contains(meetup.data.date.toLocalDate)){<span class="label label-success">Disponible</span>}
+                            <a href="@ProposalCtrl.get(proposal.id)">@proposal.data.title</a>
+                            @speakers(proposal.data.speakers, allPersons)
+                        </li>
                     }
-                    @com.humantalks.internal.proposals.views.html.partials.status(proposal)
-                    <a href="@ProposalCtrl.get(proposal.id)">@proposal.data.title</a>
-                    @speakers(proposal.data.speakers, allPersons)
-                </li>
+                </ul>
             }
-            </ul>
         }
         @helper.form(action=MeetupCtrl.doAddTalkForm(meetup.id), 'class->"form-inline") {
             <div class="row">

@@ -78,7 +78,11 @@ function buildSelect2CreateModal(modalSelector: string, mainInputName: string, c
                     addToSelect($select, created);
                     closeModal($modal);
                 }, function(err){
-                    alert('ERROR '+err.status+' '+err.statusText+' :\n'+JSON.stringify(err.responseJSON));
+                    if(err && err.responseJSON && err.responseJSON.error && err.responseJSON.error.description) {
+                        alert('Error: '+err.responseJSON.error.description);
+                    } else {
+                        alert('ERROR '+err.status+' '+err.statusText+' :\n'+JSON.stringify(err.responseJSON));
+                    }
                 });
             });
         } else {
@@ -250,22 +254,22 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
 
 // fill form with remotely fetched data
 (function(){
-    scraper('twitterScraper', (account: string) => {
+    scraper('twitterScraper', $.debounce(250, (account: string) => {
         return $.get(config.api.tools+'/scrapers/twitter/profil?account='+account).then(function(res){
             return res.data;
         });
-    });
-    scraper('emailScraper', (email: string) => {
+    }));
+    scraper('emailScraper', $.debounce(250, (email: string) => {
         return $.get(config.api.tools+'/scrapers/email/profil?email='+email).then(function(res){
             return res.data;
         });
-    });
+    }));
 
     function scraper(attr: string, fetch) {
         $('input['+attr+']').each(function(){
             var $input = $(this);
             update($input, fetch); // run on page load
-            $input.on('change', function () {
+            $input.on('change', function(){
                 update($input, fetch);
             });
         });
@@ -302,12 +306,12 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
         const $form = $(this);
         const duplicatesUrl = $form.attr('duplicates');
         const labels = Utils.formLabels($form);
-        Utils.formInputs($form).on('change', function(){
+        Utils.formInputs($form).on('change', $.debounce(250, function(){
             const model = Utils.formModel($form);
             fetchDuplicates(duplicatesUrl, model).then(function(duplicates){
                 renderDuplicates($form, duplicates, labels);
             });
-        });
+        }));
     });
     function fetchDuplicates(url, model) {
         return $.ajax({

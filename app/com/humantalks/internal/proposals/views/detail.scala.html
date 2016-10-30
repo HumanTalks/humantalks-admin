@@ -23,5 +23,11 @@
             @helper.form(action=ProposalCtrl.doReject(proposal.id), 'class->"inline") { <button type="submit" class="btn btn-danger" title="Rejeter cette proposition" confirm>Rejeter</button> }
             @helper.form(action=ProposalCtrl.doAccept(proposal.id), 'class->"inline") { <button type="submit" class="btn btn-success" title="Accepter cette proposition" confirm>Accepter</button> }
         }
+        @if(proposal.data.availabilities.length > 0){
+            <h3>Disponibilités</h3>
+            <ul>
+                @proposal.data.availabilities.map { d => <li>@date(d, Some("dd MMMM yyyy"))</li> }
+            </ul>
+        }
     </div>
 }

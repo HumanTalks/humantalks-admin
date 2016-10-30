@@ -5,6 +5,7 @@ import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
 import global.helpers.EnumerationHelper
 import global.values.{ TypedId, TypedIdHelper }
+import org.joda.time.LocalDate
 import play.api.data.Forms._
 import play.api.libs.json.Json
 
@@ -31,7 +32,8 @@ object Proposal {
       description: Option[String],
       speakers: List[Person.Id],
       slides: Option[String],
-      slidesEmbedCode: Option[String]
+      slidesEmbedCode: Option[String],
+      availabilities: List[LocalDate]
   ) {
     def trim: Data = copy(
       title = title.trim,
@@ -49,6 +51,7 @@ object Proposal {
     "description" -> optional(text),
     "speakers" -> list(of[Person.Id]),
     "slides" -> optional(text),
-    "slidesEmbedCode" -> ignored(Option.empty[String])
+    "slidesEmbedCode" -> ignored(Option.empty[String]),
+    "availabilities" -> list(jodaLocalDate(pattern = "dd/MM/yyyy"))
   )(Proposal.Data.apply)(Proposal.Data.unapply)
 }

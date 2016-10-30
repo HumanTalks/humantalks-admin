@@ -45,7 +45,7 @@ object EmbedSrv {
         _.body match {
           case SlideShare.isPresent(embedUrl) if SlideShare.url.findFirstIn(url).isDefined => Right(SlideShare.embed(url, EmbedUrl(embedUrl)))
           case SpeakerDeck.isPresent(embedId, embedRatio) if SpeakerDeck.url.findFirstIn(url).isDefined => Right(SpeakerDeck.embed(url, embedId, embedRatio))
-          case Reveal.isPresent() => Right(Reveal.embed(url))
+          case Html.isPresent() => Right(Html.embed(url))
           case _ => default
         }
       }
@@ -140,9 +140,9 @@ object EmbedSrv {
     def embedCode(embedId: String, embedRatio: String): EmbedCode = EmbedCode(s"""<script async class="speakerdeck-embed" data-id="$embedId" data-ratio="$embedRatio" src="//speakerdeck.com/assets/embed.js"></script>""")
     def embed(url: String, embedId: String, embedRatio: String): EmbedData = EmbedData(url, name, url, embedCode(embedId, embedRatio).value)
   }
-  private object Reveal {
-    val name = "Reveal"
-    val isPresent = "(?is).*<div class=\"reveal.*".r
+  private object Html {
+    val name = "Html"
+    val isPresent = "(?is).*(?:(?:<div class=\"reveal)|(?:<div id=\"impress)|(?:remark.create)).*".r
     def embedCode(url: String): EmbedCode = EmbedCode(s"""<iframe src="$url" width="595" height="485" frameborder="0"></iframe>""")
     def embed(url: String): EmbedData = EmbedData(url, name, url, embedCode(url).value)
   }
