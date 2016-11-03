@@ -2,11 +2,19 @@ package global.helpers
 
 import global.infrastructure.DbService
 import play.api.mvc.Results.NotFound
-import play.api.mvc.Result
+import play.api.mvc.{ Headers, AnyContent, Result }
 
 import scala.concurrent.{ ExecutionContext, Future }
 
 object CtrlHelper {
+  def getReferer(headers: Headers): Option[String] =
+    headers.get("Referer").orElse(headers.get("Host"))
+
+  def getFieldValue(body: AnyContent, name: String): Option[String] =
+    body.asFormUrlEncoded.flatMap(_.get(name).flatMap(_.headOption))
+  def getFieldValues(body: AnyContent, name: String): Option[Seq[String]] =
+    body.asFormUrlEncoded.flatMap(_.get(name))
+
   def withItem[T, Id, Data, User](srv: DbService[T, Id, Data, User])(id: Id)(block: T => Future[Result])(implicit ec: ExecutionContext): Future[Result] = {
     srv.get(id).flatMap { itemOpt =>
       itemOpt.map { item =>

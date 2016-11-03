@@ -41,19 +41,21 @@
                     @slidesLink(talk.data.slides)
                     @videoLink(talk.data.video)
                     @if(talk.data.slides.isEmpty) {
-                        @helper.form(action=TalkCtrl.setSlides(talk.id), 'class->"form-inline") {
+                        @helper.form(action=TalkCtrl.setAttribute(talk.id), 'class->"form-inline") {
+                            <input type="hidden" name="attribute" value="slides">
                             <div class="form-group">
-                                <label class="sr-only" for="slides">Slides</label>
-                                <input type="text" class="form-control" name="slides" id="slides" placeholder="Ajouter les slides">
+                                <label class="sr-only" for="value">Slides</label>
+                                <input type="text" class="form-control" name="value" id="value" placeholder="Ajouter les slides">
                             </div>
                             <button type="submit" class="btn btn-default">Ajouter</button>
                         }
                     }
                     @if(talk.data.video.isEmpty) {
-                        @helper.form(action=TalkCtrl.setVideo(talk.id), 'class->"form-inline") {
+                        @helper.form(action=TalkCtrl.setAttribute(talk.id), 'class->"form-inline") {
+                            <input type="hidden" name="attribute" value="video">
                             <div class="form-group">
-                                <label class="sr-only" for="video">Video</label>
-                                <input type="text" class="form-control" name="video" id="video" placeholder="Ajouter la video">
+                                <label class="sr-only" for="value">Video</label>
+                                <input type="text" class="form-control" name="value" id="value" placeholder="Ajouter la video">
                             </div>
                             <button type="submit" class="btn btn-default">Ajouter</button>
                         }

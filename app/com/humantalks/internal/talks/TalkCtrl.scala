@@ -92,21 +92,17 @@ case class TalkCtrl(
     }
   }
 
-  def setSlides(id: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    val result = Redirect(req.headers.get("Referer").orElse(req.headers.get("Host")).getOrElse(routes.TalkCtrl.get(id).toString))
-    req.body.asFormUrlEncoded.get("slides").headOption.map { slides =>
-      talkDbService.setSlides(id, slides, req.identity.id).map { _ => result }
-    }.getOrElse {
-      Future.successful(result)
-    }
-  }
-
-  def setVideo(id: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    val result = Redirect(req.headers.get("Referer").orElse(req.headers.get("Host")).getOrElse(routes.TalkCtrl.get(id).toString))
-    req.body.asFormUrlEncoded.get("video").headOption.map { video =>
-      talkDbService.setVideo(id, video, req.identity.id).map { _ => result }
-    }.getOrElse {
-      Future.successful(result)
+  def setAttribute(id: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    val redirectUrl = CtrlHelper.getReferer(req.headers).getOrElse(routes.TalkCtrl.get(id).toString)
+    (for {
+      attribute <- CtrlHelper.getFieldValue(req.body, "attribute")
+      value <- CtrlHelper.getFieldValue(req.body, "value")
+    } yield {
+      talkDbService.updateAttribute(id, attribute, value, req.identity.id)
+        .map { _ => Redirect(redirectUrl) }
+        .recover { case e: Throwable => Redirect(redirectUrl).flashing("error" -> s"Bad request: ${e.getMessage}") }
+    }).getOrElse {
+      Future.successful(Redirect(redirectUrl).flashing("error" -> "Bad request: you should set 'attribute' and 'value' in form parameters !"))
     }
   }
 

@@ -71,7 +71,7 @@ case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
     }
     get(id).flatMap {
       _.map { meetup =>
-        update(meetup, meetup.data.copy(talks = swap(meetup.data.talks, talkId, up)), by).map(Some(_))
+        update(meetup, meetup.data.copy(talks = swap[Talk.Id](meetup.data.talks, talkId, up)), by).map(Some(_))
       }.getOrElse {
         Future.successful(None)
       }

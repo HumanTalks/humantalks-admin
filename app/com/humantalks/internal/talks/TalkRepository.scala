@@ -57,21 +57,18 @@ case class TalkRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: EmbedS
   private def partialUpdate(id: Talk.Id, patch: JsObject, by: Person.Id, op: String = "$set"): Future[WriteResult] =
     collection.partialUpdate(Json.obj("id" -> id), Json.obj(op -> (patch - "id" - "meta")).deepMerge(Json.obj("$set" -> Json.obj("meta.updated" -> new DateTime(), "meta.updatedBy" -> by))))
 
-  def setSlides(id: Talk.Id, slides: String, by: Person.Id): Future[WriteResult] =
-    embedSrv.embedRemote(slides).flatMap { slidesEmbed =>
-      partialUpdate(id, Json.obj(
-        "data.slides" -> slides,
-        "data.slidesEmbedCode" -> slidesEmbed.right.toOption.map(_.embedCode)
-      ), by)
+  def updateAttribute(id: Talk.Id, attribute: String, value: String, by: Person.Id): Future[WriteResult] = {
+    attribute match {
+      case "video" | "slides" => embedSrv.embedRemote(value).flatMap { embed =>
+        partialUpdate(id, Json.obj(
+          s"data.$attribute" -> value,
+          s"data.${attribute}EmbedCode" -> embed.right.toOption.map(_.embedCode)
+        ), by)
+      }
+      case "title" | "description" => partialUpdate(id, Json.obj(s"data.$attribute" -> value), by)
+      case _ => Future.failed(new IllegalArgumentException(s"Unable to update attribute '$attribute'"))
     }
-
-  def setVideo(id: Talk.Id, video: String, by: Person.Id): Future[WriteResult] =
-    embedSrv.embedRemote(video).flatMap { videoEmbed =>
-      partialUpdate(id, Json.obj(
-        "data.video" -> video,
-        "data.videoEmbedCode" -> videoEmbed.right.toOption.map(_.embedCode)
-      ), by)
-    }
+  }
 
   def setStatus(id: Talk.Id, status: Talk.Status.Value, by: Person.Id): Future[WriteResult] =
     partialUpdate(id, Json.obj("status" -> status), by)
