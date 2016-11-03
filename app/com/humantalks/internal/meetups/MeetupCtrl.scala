@@ -2,7 +2,6 @@ package com.humantalks.internal.meetups
 
 import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
-import com.humantalks.common.services.DateSrv
 import com.humantalks.exposed.proposals.{ Proposal, ProposalDbService }
 import com.humantalks.internal.persons.{ PersonDbService, Person }
 import com.humantalks.internal.talks.{ TalkDbService, Talk }
@@ -10,7 +9,7 @@ import com.humantalks.internal.venues.VenueDbService
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
 import global.helpers.CtrlHelper
-import org.joda.time.{ LocalTime, DateTimeConstants, DateTime }
+import org.joda.time.DateTime
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc._
@@ -43,10 +42,8 @@ case class MeetupCtrl(
   def create = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     implicit val user = Some(req.identity)
     meetupDbService.getLast.flatMap { meetupOpt =>
-      val nextDate = DateSrv.nextDate(meetupOpt.map(_.data.date).getOrElse(new DateTime()), 2, DateTimeConstants.TUESDAY, new LocalTime(19, 0))
-      val nextTitle = Meetup.title(nextDate)
-      val nextMeetup = Meetup.Data(nextTitle, nextDate, None, List(), None, None, None)
-      formView(Ok, meetupForm.fill(nextMeetup), None)
+      val lastDate = meetupOpt.map(_.data.date).getOrElse(new DateTime())
+      formView(Ok, meetupForm.fill(Meetup.Data.generate(lastDate)), None)
     }
   }
 

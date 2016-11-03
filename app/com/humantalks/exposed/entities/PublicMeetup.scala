@@ -39,7 +39,8 @@ case class PublicMeetup(
   talks: Option[List[PublicTalk]],
   description: Option[String],
   roti: Option[String],
-  meetupUrl: Option[String]
+  meetupUrl: Option[String],
+  personCount: Option[Int]
 )
 object PublicMeetup {
   def from(meetup: Meetup, venuesOpt: Option[List[Venue]], talksOpt: Option[List[Talk]], speakersOpt: Option[List[Person]]): PublicMeetup = PublicMeetup(
@@ -58,7 +59,8 @@ object PublicMeetup {
     },
     description = meetup.data.description,
     roti = meetup.data.roti,
-    meetupUrl = meetup.data.meetupUrl
+    meetupUrl = meetup.data.meetupUrl,
+    personCount = meetup.data.personCount
   )
 
   implicit val format = Json.format[PublicMeetup]

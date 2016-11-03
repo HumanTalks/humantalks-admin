@@ -10,6 +10,7 @@
 @fieldHorizontal(meetupForm("venue"), 'label -> "Lieu") { field => @inputSelect2(field, List(), 'remote -> Select2Ctrl.venues.toString, 'placeholder -> "Sélectionner un lieu") }
 @fieldHorizontal(meetupForm("date"), 'label -> "Date") { field => @inputDatetime(field, 'placeholder -> "ex: 12/07/2016 19:00") }
 @fieldHorizontal(meetupForm("description"), 'label -> "Description") { field => @inputTextarea(field, 'rows -> "5", 'placeholder -> "Ce texte sera intéré au début de la description meetup") }
-    @fieldHorizontal(meetupForm("talks"), 'label -> "Talks") { field => @inputSelectMulti2(field, List(), 'remote -> Select2Ctrl.talks.toString, 'placeholder -> "Sélectionner les talks", 'onCreate -> "createTalkModal", 'onCreateLabel -> "Nouveau talk") }
+@fieldHorizontal(meetupForm("talks"), 'label -> "Talks") { field => @inputSelectMulti2(field, List(), 'remote -> Select2Ctrl.talks.toString, 'placeholder -> "Sélectionner les talks", 'onCreate -> "createTalkModal", 'onCreateLabel -> "Nouveau talk") }
 @fieldHorizontal(meetupForm("roti"), 'label -> "Roti") { field => @inputText(field, 'placeholder -> "ex: https://pbs.twimg.com/media/Ck8GeIOWUAEgKdG.jpg:large") }
+@fieldHorizontal(meetupForm("personCount"), 'label -> "Nombre de participants") { field => @inputNumber(field, 'placeholder -> "ex: 123") }
 

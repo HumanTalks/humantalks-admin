@@ -1,11 +1,12 @@
 package com.humantalks.internal.meetups
 
+import com.humantalks.common.services.DateSrv
 import com.humantalks.common.values.Meta
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
 import com.humantalks.internal.venues.Venue
 import global.values.{ TypedId, TypedIdHelper }
-import org.joda.time.{ LocalTime, LocalDate, DateTime }
+import org.joda.time.{ DateTimeConstants, LocalTime, DateTime }
 import play.api.data.Forms._
 import play.api.libs.json.Json
 
@@ -31,13 +32,21 @@ object Meetup {
       talks: List[Talk.Id],
       description: Option[String],
       roti: Option[String],
-      meetupUrl: Option[String]
+      meetupUrl: Option[String],
+      personCount: Option[Int]
   ) {
     def trim: Data = copy(
       title = title.trim,
       description = description.map(_.trim),
       roti = roti.map(_.trim)
     )
+  }
+  object Data {
+    def generate(after: DateTime): Data = {
+      val nextDate = DateSrv.nextDate(after, 2, DateTimeConstants.TUESDAY, new LocalTime(19, 0))
+      val nextTitle = Meetup.title(nextDate)
+      Meetup.Data(nextTitle, nextDate, None, List(), None, None, None, None)
+    }
   }
 
   implicit val formatData = Json.format[Data]
@@ -49,7 +58,8 @@ object Meetup {
     "talks" -> list(of[Talk.Id]),
     "description" -> optional(text),
     "roti" -> optional(text),
-    "meetupUrl" -> optional(text)
+    "meetupUrl" -> optional(text),
+    "personCount" -> optional(number)
   )(Meetup.Data.apply)(Meetup.Data.unapply)
 
   def meetupDescription(meetup: Meetup, talkList: List[Talk], personList: List[Person], venueList: List[Venue]): String = {

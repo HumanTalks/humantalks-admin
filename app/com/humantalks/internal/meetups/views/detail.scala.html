@@ -62,6 +62,7 @@
             }
             </ol>
         }
+        @meetup.data.personCount.map{c => <p>@c participants</p>}
         @meetup.data.roti.map{r => <p><img src="@r" style="width: 100%;"></p>}
 
         @if(meetup.data.date.isAfterNow){
