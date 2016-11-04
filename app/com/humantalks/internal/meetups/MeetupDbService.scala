@@ -14,7 +14,7 @@ case class MeetupDbService(talkRepository: TalkRepository, meetupRepository: Mee
   val name = meetupRepository.name
 
   def find(filter: JsObject = Json.obj(), sort: JsObject = meetupRepository.defaultSort): Future[List[Meetup]] = meetupRepository.find(filter, sort)
-  def findPublished(sort: JsObject = meetupRepository.defaultSort): Future[List[Meetup]] = meetupRepository.find(Json.obj("published" -> true), sort)
+  def findPast(sort: JsObject = meetupRepository.defaultSort): Future[List[Meetup]] = meetupRepository.findPast(sort)
   def findByIds(ids: Seq[Meetup.Id], sort: JsObject = meetupRepository.defaultSort): Future[List[Meetup]] = meetupRepository.findByIds(ids, sort)
   def findForTalk(id: Talk.Id, sort: JsObject = meetupRepository.defaultSort): Future[List[Meetup]] = meetupRepository.findForTalk(id, sort)
   def findForTalks(ids: Seq[Talk.Id], sort: JsObject = meetupRepository.defaultSort): Future[List[Meetup]] = meetupRepository.findForTalks(ids, sort)

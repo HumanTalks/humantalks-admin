@@ -52,7 +52,7 @@ case class PublicApi(
     val includeList = getIncludeList(include)
     ApiHelper.resultList({
       for {
-        meetups <- meetupDbService.findPublished()
+        meetups <- meetupDbService.findPast()
         venues <- if (includeList.contains(includeVenue)) venueDbService.findByIds(meetups.flatMap(_.data.venue)) else Future.successful(List())
         talks <- if (includeList.contains(includeTalk)) talkDbService.findByIds(meetups.flatMap(_.data.talks)) else Future.successful(List())
         speakers <- if (includeList.contains(includeSpeaker)) personDbService.findByIds(talks.flatMap(_.data.speakers)) else Future.successful(List())
@@ -71,7 +71,7 @@ case class PublicApi(
     val includeList = getIncludeList(include)
     ApiHelper.resultList({
       for {
-        meetups <- meetupDbService.findPublished()
+        meetups <- meetupDbService.findPast()
         talks <- talkDbService.findByIds(meetups.flatMap(_.data.talks))
         speakers <- if (includeList.contains(includeSpeaker)) personDbService.findByIds(talks.flatMap(_.data.speakers)) else Future.successful(List())
         venues <- if (includeList.contains(includeVenue)) venueDbService.findByIds(meetups.flatMap(_.data.venue)) else Future.successful(List())
@@ -90,7 +90,7 @@ case class PublicApi(
     val includeList = getIncludeList(include)
     ApiHelper.resultList({
       for {
-        meetups <- meetupDbService.findPublished()
+        meetups <- meetupDbService.findPast()
         talks <- talkDbService.findByIds(meetups.flatMap(_.data.talks))
         speakers <- personDbService.findByIds(talks.flatMap(_.data.speakers))
         venues <- if (includeList.contains(includeVenue)) venueDbService.findByIds(meetups.flatMap(_.data.venue)) else Future.successful(List())
@@ -110,7 +110,7 @@ case class PublicApi(
     ApiHelper.resultList({
       for {
         venues <- venueDbService.find()
-        meetups <- if (includeList.contains(includeMeetup)) meetupDbService.findPublished() else Future.successful(List())
+        meetups <- if (includeList.contains(includeMeetup)) meetupDbService.findPast() else Future.successful(List())
         talks <- if (includeList.contains(includeTalk)) talkDbService.findByIds(meetups.flatMap(_.data.talks)) else Future.successful(List())
         speakers <- if (includeList.contains(includeSpeaker)) personDbService.findByIds(talks.flatMap(_.data.speakers)) else Future.successful(List())
       } yield Right(venues.map { venue =>
