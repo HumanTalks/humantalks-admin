@@ -15,7 +15,9 @@ import scala.concurrent.duration._
 
 case class Conf(configuration: Configuration) {
   object App {
+    val env = configuration.getString("application.env").get
     val langs = new DefaultLangs(configuration).availables
+    def isProd: Boolean = env == "prod"
   }
   object Organization {
     object Admin {
@@ -44,5 +46,12 @@ case class Conf(configuration: Configuration) {
   object Sendgrid {
     val conf = configuration.getConfig("sendgrid").get
     val apiKey: String = conf.getString("api-key").get
+  }
+  object Slack {
+    val conf = configuration.getConfig("slack").get
+    val token: String = conf.getString("token").get
+    val botName: String = conf.getString("botName").get
+    val botIcon: String = conf.getString("botIcon").get
+    val proposalChannel: String = conf.getString("proposalChannel").get
   }
 }

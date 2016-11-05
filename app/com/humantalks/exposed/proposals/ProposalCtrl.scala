@@ -1,8 +1,7 @@
 package com.humantalks.exposed.proposals
 
 import com.humantalks.common.Conf
-import com.humantalks.common.services.DateSrv
-import com.humantalks.common.services.sendgrid._
+import com.humantalks.common.services.{ NotificationSrv, DateSrv }
 import com.humantalks.internal.persons.{ Person, PersonDbService }
 import com.humantalks.internal.talks.TalkDbService
 import global.Contexts
@@ -10,7 +9,7 @@ import global.helpers.CtrlHelper
 import org.joda.time.{ DateTimeConstants, DateTime }
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{ RequestHeader, Action, Controller, Result }
+import play.api.mvc.{ Action, Controller, Result }
 
 import scala.concurrent.Future
 
@@ -20,7 +19,7 @@ case class ProposalCtrl(
     personDbService: PersonDbService,
     talkDbService: TalkDbService,
     proposalDbService: ProposalDbService,
-    sendgridSrv: SendgridSrv
+    notificationSrv: NotificationSrv
 )(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.wsToEC
   import ctx._
@@ -37,8 +36,8 @@ case class ProposalCtrl(
       proposalData => for {
         (_, id) <- proposalDbService.create(proposalData, proposalData.speakers.head)
         proposal <- proposalDbService.get(id).map(_.get)
-        person <- personDbService.get(proposal.data.speakers.head).map(_.get)
-        success <- sendSubmitedMail(proposal, person)
+        speakers <- personDbService.findByIds(proposal.data.speakers)
+        success <- notificationSrv.proposalCreated(proposal, speakers)
       } yield Ok(views.html.submited(proposal.id, proposalData))
     )
   }
@@ -65,20 +64,6 @@ case class ProposalCtrl(
       val now = new DateTime()
       val nextDates = (1 to 7).map(i => now.plusMonths(i)).map(d => DateSrv.getNthDayOfMonth(d, 2, DateTimeConstants.TUESDAY)).filter(_.toDateTimeAtCurrentTime.isAfterNow).toList
       status(views.html.form(proposalForm, proposalOpt, personList, nextDates, personForm))
-    }
-  }
-  private def sendSubmitedMail(proposal: Proposal, person: Person)(implicit request: RequestHeader): Future[Boolean] = {
-    val url = routes.ProposalCtrl.update(proposal.id).absoluteURL()
-    sendgridSrv.send(Email(
-      personalizations = Recipient.single(person.data.email.get, Some(person.data.name)),
-      from = Address(conf.Organization.Admin.email, Some(conf.Organization.Admin.name)),
-      subject = "Thanks for submitting to HumanTalks Paris",
-      content = Seq(
-        Content.text(views.txt.emails.proposalSubmited(proposal, person, url, conf.Organization.Admin.email).body),
-        Content.html(views.html.emails.proposalSubmited(proposal, person, url, conf.Organization.Admin.email).body)
-      )
-    )).map(res => 200 <= res.status && res.status < 300).recover {
-      case _ => false
     }
   }
 }

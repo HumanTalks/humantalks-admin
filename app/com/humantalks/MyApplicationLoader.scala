@@ -5,7 +5,8 @@ import com.humantalks.auth.services.{ AuthSrv, MailerSrv }
 import com.humantalks.auth.silhouette._
 import com.humantalks.common.Conf
 import com.humantalks.common.controllers.Select2Ctrl
-import com.humantalks.common.services.EmbedSrv
+import com.humantalks.common.services.slack.SlackSrv
+import com.humantalks.common.services.{ NotificationSrv, EmbedSrv }
 import com.humantalks.common.services.sendgrid.SendgridSrv
 import com.humantalks.exposed.PublicApi
 import com.humantalks.exposed.proposals.{ ProposalDbService, ProposalRepository }
@@ -68,14 +69,17 @@ class MyComponents(context: ApplicationLoader.Context)
   val proposalDbService = ProposalDbService(talkRepository, proposalRepository)
 
   val authSrv = AuthSrv(passwordHasherRegistry, credentialsProvider, authInfoRepository)
+
   val sendgridSrv = SendgridSrv(conf, wsClient)
   val mailerSrv = MailerSrv(conf, sendgridSrv)
+  val slackSrv = SlackSrv(conf, ctx, wsClient)
+  val notificationSrv = NotificationSrv(conf, sendgridSrv, slackSrv)
 
   implicit val messagesApiImp = messagesApi
   val router: Router = new Routes(
     httpErrorHandler,
     com.humantalks.exposed.Application(ctx),
-    com.humantalks.exposed.proposals.ProposalCtrl(conf, ctx, personDbService, talkDbService, proposalDbService, sendgridSrv),
+    com.humantalks.exposed.proposals.ProposalCtrl(conf, ctx, personDbService, talkDbService, proposalDbService, notificationSrv),
     com.humantalks.auth.AuthCtrl(ctx, silhouette, conf, authSrv, personRepository, credentialsRepository, authTokenRepository, avatarService, mailerSrv),
     com.humantalks.internal.Application(ctx, silhouette),
     VenueCtrl(ctx, silhouette, venueDbService, personDbService, meetupDbService),

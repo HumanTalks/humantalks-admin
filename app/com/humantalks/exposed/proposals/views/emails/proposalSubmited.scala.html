@@ -1,11 +1,10 @@
-@import com.humantalks.internal.persons.Person
 @import com.humantalks.exposed.proposals.Proposal
-@(proposal: Proposal, person: Person, url: String, adminEmail: String)(implicit messagesApi: MessagesApi)
+@(proposal: Proposal, url: String, adminEmail: String)(implicit messagesApi: MessagesApi)
 <html>
     <body>
-        <p>Hello @person.data.name,</p>
+        <p>Hello,</p>
         <p>
-            Thanks for submitting your proposal. We will come back to you soon.<br>
+            Thanks for submitting your proposal <b>@proposal.data.title</b>. We will come back to you soon.<br>
             If you have any question, feel free to reach us at @adminEmail<br>
             Note that you can edit your proposal whenever you want using this link : <a href="@url">@url</a>
         </p>
