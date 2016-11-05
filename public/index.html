@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>HumanTalks Paris</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="author" content="@humantalksparis">
+    <meta name="twitter:creator" content="@humantalksparis">
+    <meta property="og:url" content="https://pixelastic.github.io/humantalks/">
+    <meta name="description" content="Recherchez dans l'ensemble des talks des HumanTalks Paris">
+    <meta name="twitter:description" content="Recherchez dans l'ensemble des talks des HumanTalks Paris">
+    <meta property="og:description" content="Recherchez dans l'ensemble des talks des HumanTalks Paris">
+    <meta name="twitter:site" content="Recherche HumanTalks Paris">
+    <meta property="og:site" content="Recherche HumanTalks Paris">
+    <meta property="og:site_name" content="Recherche HumanTalks Paris">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://pixelastic.github.io/humantalks/img/opengraph.png">
+    <meta property="og:image" content="https://pixelastic.github.io/humantalks/img/opengraph.png">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/instantsearch.js/1/instantsearch.min.css">
+    <link rel="stylesheet" type="text/css" href="./main.css">
+    <link rel="shortcut icon" href="./favicon.ico">
+    <!--[if lt IE 9]><script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script><![endif]-->
+  </head>
+  <body class="oh"><header class="top-0 w-100 bg-purple white"><div class="flex-row-nowrap mh3 h3"><div class="flex-none lh-0 flex"><img class="flex-auto w4 db mv2 mr4" src="./img/humantalks.png"></div><div class="flex-auto flex flex-vcenter w-20"><input class="w-100 h2 bg-purple bt0 br0 bl0 bb bw1 b--white mr3 mt2 outline-0 white f3" id="js-searchbar"></div><div class="flex-auto self-end tr pb1 white-80">Recherche par <a href="https://www.algolia.com"><img class="h1 v-textbottom" src="./img/algolia.svg"></a></div></div></header><div class="flex-row-nowrap" style="height:calc(100vh - 4rem)"><div class="flex-none oy w5 pa2 br bw2 b--purple bg-white"><div class="mv2" id="js-locations"></div><div class="mv2" id="js-speakers"></div><div class="mt3 f6 near-black tc">Code available on <a class="link purple" href="https://github.com/pixelastic/humantalks">GitHub</a>.</div></div><div class="flex-auto oy pa2 pr3" style="overflow-x: hidden"><div class="flex-row-nowrap mb2 pa2"><div class="flex-auto title f3 black-80"><div id="js-stats"></div></div><div class="flex-none"><a class="bg-purple hover-bg-blue pa2 fr white link" href="http://humantalksparis.herokuapp.com/submit-talk" target="_blank">Proposer un talk</a></div></div><div id="js-hits"></div><div id="js-pagination"></div><div class="tl f5 dark-gray i mt5">Les HumanTalks Paris sont possibles chaque mois grâce à nos sponsors: </div><div class="flex-row-wrap ma2"><div class="flex-auto w-20 flex flex-center"><img src="https://res.cloudinary.com/pixelastic-humantalks/image/fetch/w_120,q_90,f_auto,e_grayscale/https://pixelastic.github.io/humantalks/img/sponsors/neocase.png"/></div><div class="flex-auto w-20 flex flex-center"><img src="https://res.cloudinary.com/pixelastic-humantalks/image/fetch/w_120,q_90,f_auto,e_grayscale/https://pixelastic.github.io/humantalks/img/sponsors/humancoders.png"/></div><div class="flex-auto w-20 flex flex-center"><img src="https://res.cloudinary.com/pixelastic-humantalks/image/fetch/w_120,q_90,f_auto,e_grayscale/https://pixelastic.github.io/humantalks/img/sponsors/arolla.png"/></div><div class="flex-auto w-20 flex flex-center"><img src="https://res.cloudinary.com/pixelastic-humantalks/image/fetch/w_120,q_90,f_auto,e_grayscale/https://pixelastic.github.io/humantalks/img/sponsors/alwaysdata.png"/></div><div class="flex-auto w-20 flex flex-center"><img src="https://res.cloudinary.com/pixelastic-humantalks/image/fetch/w_120,q_90,f_auto,e_grayscale/https://pixelastic.github.io/humantalks/img/sponsors/soat.png"/></div><div class="flex-auto w-20 flex flex-center"><img src="https://res.cloudinary.com/pixelastic-humantalks/image/fetch/w_120,q_90,f_auto,e_grayscale/https://pixelastic.github.io/humantalks/img/sponsors/octo.png"/></div><div class="flex-auto w-20 flex flex-center"><img src="https://res.cloudinary.com/pixelastic-humantalks/image/fetch/w_120,q_90,f_auto,e_grayscale/https://pixelastic.github.io/humantalks/img/sponsors/nexeo.png"/></div><div class="flex-auto w-20 flex flex-center"><img src="https://res.cloudinary.com/pixelastic-humantalks/image/fetch/w_120,q_90,f_auto,e_grayscale/https://pixelastic.github.io/humantalks/img/sponsors/jetbrains.png"/></div><div class="flex-auto w-20 flex flex-center"><img src="https://res.cloudinary.com/pixelastic-humantalks/image/fetch/w_120,q_90,f_auto,e_grayscale/https://pixelastic.github.io/humantalks/img/sponsors/carbonit.png"/></div></div><div class="mt3 tc"><a class="f7 black-50 hover-purple link" href="http://humantalksparis.herokuapp.com/home">Connexion admin</a></div><script id="js-template-hits" language="x-template">
+  <div class="flex-auto flex-row-nowrap mb2 ba b--black-30 bg-white shadow-3 pv2 ph3">
+
+    <div class="flex-none w5 flex-column-nowrap">
+      <a href="{{thumbnailLink}}" target="_blank" class="flex-auto flex-center flex link">
+        <img src="{{thumbnail}}" class="br2 h4" />
+      </a>
+      <div class="flex-auto flex-row-nowrap items-end mt2">
+        <a href="{{meetupUrl}}" target="_blank" class="flex-auto link hover-purple tc f6 dark-gray hit--meetup">
+          <span class="fa fa-meetup db f3 mb1"></span>
+          Meetup
+        </a>
+        {{#hasVideo}}
+          <a href="{{videoUrl}}" target="_blank" class="flex-auto link hover-purple tc f6 dark-gray hit--video">
+            <span class="fa fa-youtube db f3 mb1"></span>
+            Video
+          </a>
+        {{/hasVideo}}
+        {{#hasSlides}}
+          <a href="{{slidesUrl}}" target="_blank" class="flex-auto link hover-purple tc f6 dark-gray hit--slides">
+            <span class="fa fa-slideshare db f3 mb1"></span>
+            Slides
+          </a>
+        {{/hasSlides}}
+      </div>
+    </div>
+
+    <div class="flex-auto flex-column-nowrap pl2 f6 dark-gray">
+      <a href="{{titleLink}}" target="_blank" class="hit--title title f3 no-b flex-none link purple b mv2 db">{{{title}}}</a>
+      <div class="mb2 flex-none flex-row-wrap">
+        {{#authors}}
+          <a href="{{link}}" class="hit--author flex-none mr2 flex-row-nowrap flex-vcenter link dark-gray hover-purple" link dark-gray hover-purple">
+            <img src="{{picture}}" class="hit--author-picture h2 flex-none mr2"/>
+            <div class="flex-none">{{{highlightedName}}}</div>
+          </a>
+        {{/authors}}
+      </div>
+      <div class="flex-auto justify lh-copy">{{{description}}}</div>
+      <a href="{{meetupUrl}}" class="hit--location flex-none self-end mt2 link dark-gray hover-purple">
+        <div class="tr">
+          Présenté le {{readableDate}} chez {{{readableLocation}}}
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+
+<script id="js-template-noresults" language="x-template">
+  <div class="flex-auto b fa2 pa3 ma2 bg-white shadow-4 ba b--black-30 black-80">
+    Aucun résultat. Pourquoi ne pas proposer un talk sur un sujet que vous aimeriez voir abordé?
+  </div>
+</script>
+</div></div></body>
+  <script src="https://cdn.jsdelivr.net/g/lodash@4.11.1,jquery@2.2.1,instantsearch.js@1.8.13,momentjs@2.15.2(moment-with-locales.min.js)"></script>
+  <script src="./js/in-viewport.min.js"></script>
+  <script src="app.js"></script>
+  <script>require('javascripts/app').default.init()</script>
+</html>

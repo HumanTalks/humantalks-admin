@@ -1,5 +1,6 @@
 package com.humantalks.exposed
 
+import controllers.Assets
 import global.Contexts
 import play.api.mvc.{ Action, Controller }
 
@@ -9,7 +10,7 @@ case class Application(
   import Contexts.wsToEC
   import ctx._
 
-  def index = Action { implicit req =>
-    Ok(views.html.index())
+  def index = Action.async { implicit req =>
+    Assets.at("/public", "index.html").apply(req)
   }
 }
