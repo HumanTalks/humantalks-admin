@@ -130,10 +130,8 @@ object ApiHelper {
   def resultJson(exec: Future[Either[ApiError, JsValue]], success: Status = Ok, error: Status = NotFound)(implicit ec: ExecutionContext, req: RequestHeader): Future[Result] = {
     val start = new DateTime()
     exec.map {
-      _ match {
-        case Right(data) => writeSuccess(success, start, data)
-        case Left(err) => writeError(error, start, err)
-      }
+      case Right(data) => writeSuccess(success, start, data)
+      case Left(err) => writeError(error, start, err)
     }.recover {
       case e: Throwable => writeError(InternalServerError, start, ApiError.from(e))
     }

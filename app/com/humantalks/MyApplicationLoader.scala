@@ -73,7 +73,7 @@ class MyComponents(context: ApplicationLoader.Context)
   val sendgridSrv = SendgridSrv(conf, wsClient)
   val mailerSrv = MailerSrv(conf, sendgridSrv)
   val slackSrv = SlackSrv(conf, ctx, wsClient)
-  val notificationSrv = NotificationSrv(conf, sendgridSrv, slackSrv)
+  val notificationSrv = NotificationSrv(conf, sendgridSrv, slackSrv, personDbService, talkDbService, meetupDbService)
 
   implicit val messagesApiImp = messagesApi
   val router: Router = new Routes(
@@ -85,7 +85,7 @@ class MyComponents(context: ApplicationLoader.Context)
     VenueCtrl(ctx, silhouette, venueDbService, personDbService, meetupDbService),
     PersonCtrl(ctx, silhouette, personDbService, talkDbService, proposalDbService),
     TalkCtrl(ctx, silhouette, personDbService, talkDbService, meetupDbService, proposalDbService),
-    MeetupCtrl(ctx, silhouette, venueDbService, personDbService, talkDbService, meetupDbService, proposalDbService),
+    MeetupCtrl(ctx, silhouette, venueDbService, personDbService, talkDbService, meetupDbService, proposalDbService, notificationSrv),
     ProposalCtrl(ctx, silhouette, personDbService, proposalDbService, talkDbService),
     AdminCtrl(ctx, silhouette, personDbService, credentialsRepository, authTokenRepository),
     PublicApi(ctx, venueDbService, personDbService, talkDbService, meetupDbService),

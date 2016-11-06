@@ -77,16 +77,14 @@ case class PersonCtrl(
 
   def doDelete(id: Person.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     personDbService.delete(id).map {
-      _ match {
-        case Left((talks, proposals)) => {
-          val references = List(
-            if (talks.nonEmpty) Some(talks.length + " talks") else None,
-            if (proposals.nonEmpty) Some(proposals.length + " proposals") else None
-          ).flatten.mkString(",")
-          Redirect(routes.PersonCtrl.get(id)).flashing("error" -> s"Unable to delete person, it's still referenced in $references, delete them first.")
-        }
-        case Right(res) => Redirect(routes.PersonCtrl.find()).flashing("success" -> "Person deleted")
+      case Left((talks, proposals)) => {
+        val references = List(
+          if (talks.nonEmpty) Some(talks.length + " talks") else None,
+          if (proposals.nonEmpty) Some(proposals.length + " proposals") else None
+        ).flatten.mkString(",")
+        Redirect(routes.PersonCtrl.get(id)).flashing("error" -> s"Unable to delete person, it's still referenced in $references, delete them first.")
       }
+      case Right(res) => Redirect(routes.PersonCtrl.find()).flashing("success" -> "Person deleted")
     }
   }
 

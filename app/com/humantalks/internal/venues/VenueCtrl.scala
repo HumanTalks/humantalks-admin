@@ -76,10 +76,8 @@ case class VenueCtrl(
 
   def doDelete(id: Venue.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     venueDbService.delete(id).map {
-      _ match {
-        case Left(meetups) => Redirect(routes.VenueCtrl.get(id)).flashing("error" -> s"Unable to delete venue, it's still referenced in ${meetups.length} meetups, delete them first.")
-        case Right(res) => Redirect(routes.VenueCtrl.find()).flashing("success" -> "Venue deleted")
-      }
+      case Left(meetups) => Redirect(routes.VenueCtrl.get(id)).flashing("error" -> s"Unable to delete venue, it's still referenced in ${meetups.length} meetups, delete them first.")
+      case Right(res) => Redirect(routes.VenueCtrl.find()).flashing("success" -> "Venue deleted")
     }
   }
 

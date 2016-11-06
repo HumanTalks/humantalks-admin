@@ -2,6 +2,7 @@ package com.humantalks.internal.meetups
 
 import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
+import com.humantalks.common.services.NotificationSrv
 import com.humantalks.exposed.proposals.{ Proposal, ProposalDbService }
 import com.humantalks.internal.persons.{ PersonDbService, Person }
 import com.humantalks.internal.talks.{ TalkDbService, Talk }
@@ -23,7 +24,8 @@ case class MeetupCtrl(
     personDbService: PersonDbService,
     talkDbService: TalkDbService,
     meetupDbService: MeetupDbService,
-    proposalDbService: ProposalDbService
+    proposalDbService: ProposalDbService,
+    notificationSrv: NotificationSrv
 )(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.ctrlToEC
   import ctx._
@@ -52,7 +54,9 @@ case class MeetupCtrl(
     meetupForm.bindFromRequest.fold(
       formWithErrors => formView(BadRequest, formWithErrors, None),
       meetupData => meetupDbService.create(meetupData, req.identity.id).map {
-        case (_, id) => Redirect(routes.MeetupCtrl.get(id))
+        case (_, id) =>
+          notificationSrv.meetupCreated(id, meetupData)
+          Redirect(routes.MeetupCtrl.get(id))
       }
     )
   }
@@ -98,16 +102,19 @@ case class MeetupCtrl(
     talkForm.bindFromRequest.fold(
       formWithErrors => Future.successful(Redirect(routes.MeetupCtrl.get(id)).flashing("error" -> "Incorrect form values")),
       talkData => talkDbService.create(talkData, req.identity.id).flatMap {
-        case (_, talkId) => meetupDbService.addTalk(id, talkId, req.identity.id).map { _ =>
-          Redirect(routes.MeetupCtrl.get(id))
-        }
+        case (_, talkId) =>
+          meetupDbService.addTalk(id, talkId, req.identity.id).map { _ =>
+            notificationSrv.addTalkToMeetup(id, talkId, req.identity.id)
+            Redirect(routes.MeetupCtrl.get(id))
+          }
       }
     )
   }
 
   def doAddTalkForm(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    req.body.asFormUrlEncoded.get("talkId").headOption.flatMap(p => Talk.Id.from(p).right.toOption).map { talkId =>
+    CtrlHelper.getFieldValue(req.body, "talkId").flatMap(p => Talk.Id.from(p).right.toOption).map { talkId =>
       meetupDbService.addTalk(id, talkId, req.identity.id).map { _ =>
+        notificationSrv.addTalkToMeetup(id, talkId, req.identity.id)
         Redirect(routes.MeetupCtrl.get(id))
       }
     }.getOrElse {
@@ -117,6 +124,7 @@ case class MeetupCtrl(
 
   def doAddTalk(id: Meetup.Id, talkId: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     meetupDbService.addTalk(id, talkId, req.identity.id).map { _ =>
+      notificationSrv.addTalkToMeetup(id, talkId, req.identity.id)
       Redirect(routes.MeetupCtrl.get(id))
     }
   }
@@ -136,6 +144,7 @@ case class MeetupCtrl(
   def doAddProposal(id: Meetup.Id, proposalId: Proposal.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     proposalDbService.accept(proposalId, req.identity.id).flatMap {
       case Right(talkId) => meetupDbService.addTalk(id, talkId, req.identity.id).map { _ =>
+        notificationSrv.addTalkToMeetup(id, talkId, req.identity.id)
         Redirect(routes.MeetupCtrl.get(id)).flashing("success" -> "Proposal transformed into a talk and added to meetup :)")
       }
       case Left(err) => Future.successful(Redirect(routes.MeetupCtrl.get(id)).flashing("error" -> err))
@@ -163,10 +172,8 @@ case class MeetupCtrl(
 
   def doDelete(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     meetupDbService.delete(id).map {
-      _ match {
-        case Left(nothing) => Redirect(routes.MeetupCtrl.get(id)).flashing("error" -> "Unable to delete meetup (should NEVER happen)")
-        case Right(res) => Redirect(routes.MeetupCtrl.find()).flashing("success" -> "Meetup deleted")
-      }
+      case Left(nothing) => Redirect(routes.MeetupCtrl.get(id)).flashing("error" -> "Unable to delete meetup (should NEVER happen)")
+      case Right(res) => Redirect(routes.MeetupCtrl.find()).flashing("success" -> "Meetup deleted")
     }
   }
 

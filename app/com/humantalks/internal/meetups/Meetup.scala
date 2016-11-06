@@ -24,6 +24,7 @@ object Meetup {
   }
 
   def title(date: DateTime): String = "HumanTalks Paris " + date.toString("MMMM YYYY")
+  def slackChannel(date: DateTime): String = date.toString("YYYY_MM")
 
   case class Data(
       title: String,

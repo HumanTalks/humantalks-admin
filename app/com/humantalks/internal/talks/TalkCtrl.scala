@@ -108,10 +108,8 @@ case class TalkCtrl(
 
   def doDelete(id: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     talkDbService.delete(id).map {
-      _ match {
-        case Left(meetups) => Redirect(routes.TalkCtrl.get(id)).flashing("error" -> s"Unable to delete talk, it's still referenced in ${meetups.length} meetups, delete them first.")
-        case Right(res) => Redirect(routes.TalkCtrl.find()).flashing("success" -> "Talk deleted")
-      }
+      case Left(meetups) => Redirect(routes.TalkCtrl.get(id)).flashing("error" -> s"Unable to delete talk, it's still referenced in ${meetups.length} meetups, delete them first.")
+      case Right(res) => Redirect(routes.TalkCtrl.find()).flashing("success" -> "Talk deleted")
     }
   }
 
