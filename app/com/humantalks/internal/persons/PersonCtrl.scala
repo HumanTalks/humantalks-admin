@@ -9,6 +9,7 @@ import global.Contexts
 import global.helpers.CtrlHelper
 import play.api.data.Form
 import play.api.i18n.MessagesApi
+import play.api.libs.json.Json
 import play.api.mvc._
 
 import scala.concurrent.Future
@@ -26,7 +27,11 @@ case class PersonCtrl(
 
   def find = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     implicit val user = Some(req.identity)
-    personDbService.find().map { personList =>
+    // temporary until all persons gets an email...
+    (CtrlHelper.getParamValue(req, "email") match {
+      case Some("false") => personDbService.find(Json.obj("data.email" -> Json.obj("$exists" -> false)))
+      case _ => personDbService.find()
+    }).map { personList =>
       Ok(views.html.list(personList))
     }
   }
