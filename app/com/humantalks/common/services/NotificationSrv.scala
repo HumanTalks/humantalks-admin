@@ -92,8 +92,8 @@ case class NotificationSrv(conf: Conf, sendgridSrv: SendgridSrv, slackSrv: Slack
 
   private def toName(person: Person): String =
     person.data.email.map(email => slackMail(email, person.data.name)).getOrElse(person.data.name)
-  private def slackLink(url: String, title: String = ""): String =
+  private def slackLink(url: String, title: String): String =
     if (title.length > 0) s"<$url|$title>" else url
-  private def slackMail(mail: String, name: String = ""): String =
+  private def slackMail(mail: String, name: String): String =
     if (name.length > 0) s"<mailto:$mail|$name>" else mail
 }

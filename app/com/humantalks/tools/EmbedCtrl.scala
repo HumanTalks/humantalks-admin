@@ -10,6 +10,12 @@ case class EmbedCtrl(ctx: Contexts, embedSrv: EmbedSrv) extends Controller {
   import ctx._
 
   def embed(url: String) = Action.async { implicit req =>
-    ApiHelper.result(embedSrv.embedRemote(url, Right(EmbedData.unknown(url))), Results.Ok, Results.NotFound)
+    ApiHelper.result(embedSrv.embedRemote(url).map { res =>
+      req.queryString.get("debug").flatMap(_.find(_ == "true")).map { _ =>
+        res
+      }.getOrElse {
+        res.left.flatMap(_ => Right(EmbedData.unknown(url)))
+      }
+    }, Results.Ok, Results.NotFound)
   }
 }

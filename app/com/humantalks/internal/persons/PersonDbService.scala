@@ -24,14 +24,19 @@ case class PersonDbService(personRepository: PersonRepository, talkRepository: T
         personRepository.create(elt, by)
       }
     }
-  def update(elt: Person, data: Person.Data, by: Person.Id): Future[WriteResult] =
-    personRepository.getByEmail(data.email.get).flatMap { personOpt =>
-      personOpt.map { person =>
-        Future.failed(new IllegalArgumentException("A person with email " + data.email.get + " already exists"))
-      }.getOrElse {
-        personRepository.update(elt, data, by)
+  def update(elt: Person, data: Person.Data, by: Person.Id): Future[WriteResult] = {
+    data.email.map { email =>
+      personRepository.getByEmail(email).flatMap { personOpt =>
+        personOpt.map { person =>
+          Future.failed(new IllegalArgumentException("A person with email " + email + " already exists"))
+        }.getOrElse {
+          personRepository.update(elt, data, by)
+        }
       }
+    }.getOrElse {
+      personRepository.update(elt, data, by)
     }
+  }
   def setRole(id: Person.Id, role: Option[Person.Role.Value], by: Person.Id): Future[WriteResult] = personRepository.setRole(id, role, by)
 
   def delete(id: Person.Id): Future[Either[(List[Talk], List[Proposal]), WriteResult]] = {

@@ -20,14 +20,13 @@ object EmbedData {
 }
 
 case class EmbedSrv(ws: WSClient) {
-  def embed(url: String, default: Either[ApiError, EmbedData] = EmbedSrv.default): Either[ApiError, EmbedData] = EmbedSrv.embed(url, default)
-  def embedRemote(url: String, default: Either[ApiError, EmbedData] = EmbedSrv.default)(implicit ec: ExecutionContext): Future[Either[ApiError, EmbedData]] = EmbedSrv.embedRemote(ws)(url, default)
+  def embed(url: String): Either[ApiError, EmbedData] = EmbedSrv.embed(url)
+  def embedRemote(url: String)(implicit ec: ExecutionContext): Future[Either[ApiError, EmbedData]] = EmbedSrv.embedRemote(ws)(url)
   def resolve(url: String)(implicit ec: ExecutionContext): Future[String] = EmbedSrv.resolve(ws)(url)
-  def resolveAndEmbed(url: String, default: Either[ApiError, EmbedData] = EmbedSrv.default)(implicit ec: ExecutionContext): Future[Either[ApiError, EmbedData]] = resolve(url).flatMap(u => embedRemote(u, default))
+  def resolveAndEmbed(url: String)(implicit ec: ExecutionContext): Future[Either[ApiError, EmbedData]] = resolve(url).flatMap(u => embedRemote(u))
 }
 object EmbedSrv {
-  private val default = Left(ApiError.notFound("Unknown service"))
-  def embed(url: String, default: Either[ApiError, EmbedData] = default): Either[ApiError, EmbedData] = url match {
+  def embed(url: String): Either[ApiError, EmbedData] = url match {
     case YouTube.url1(videoId) => Right(YouTube.embed(url, videoId))
     case YouTube.url2(videoId) => Right(YouTube.embed(url, videoId))
     case Dailymotion.url(videoId) => Right(Dailymotion.embed(url, videoId))
@@ -35,10 +34,10 @@ object EmbedSrv {
     case GoogleSlides.url(slidesId) => Right(GoogleSlides.embed(url, slidesId))
     case SlidesDotCom.url(user, slidesId) => Right(SlidesDotCom.embed(url, user, slidesId))
     case Pdf.url() => Right(Pdf.embed(url))
-    case _ => default
+    case _ => Left(ApiError.notFound(s"No embed code found for url: $url"))
   }
 
-  def embedRemote(ws: WSClient)(url: String, default: Either[ApiError, EmbedData] = default)(implicit ec: ExecutionContext): Future[Either[ApiError, EmbedData]] =
+  def embedRemote(ws: WSClient)(url: String)(implicit ec: ExecutionContext): Future[Either[ApiError, EmbedData]] =
     embed(url) match {
       case Right(embedData) => Future.successful(Right(embedData))
       case Left(err) => fetch(ws)(url) {
@@ -46,7 +45,7 @@ object EmbedSrv {
           case SlideShare.isPresent(embedUrl) if SlideShare.url.findFirstIn(url).isDefined => Right(SlideShare.embed(url, EmbedUrl(embedUrl)))
           case SpeakerDeck.isPresent(embedId, embedRatio) if SpeakerDeck.url.findFirstIn(url).isDefined => Right(SpeakerDeck.embed(url, embedId, embedRatio))
           case Html.isPresent() => Right(Html.embed(url))
-          case _ => default
+          case content => Left(ApiError.notFound(s"No embed code found for url: $url", Some(content)))
         }
       }
     }

@@ -36,7 +36,7 @@ object ApiError {
 
   val emtpy = ApiError(Code.Unknown, "empty")
   def notFound(): ApiError = ApiError(Code.NotFound, "Unable to find requested element")
-  def notFound(message: String): ApiError = ApiError(Code.NotFound, message)
+  def notFound(message: String, description: Option[String] = None): ApiError = ApiError(Code.NotFound, message, description)
   def from(e: Throwable): ApiError = e match {
     case e: ConnectException => ApiError(Code.NetworkError, "Can't access network", Some(e.getMessage))
     case e: NodeSetNotReachable => ApiError(Code.MongoError, "Can't access database", Some(e.getMessage.replace("MongoError['", "").replace("']", "")))

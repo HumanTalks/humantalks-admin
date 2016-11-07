@@ -112,6 +112,7 @@ function buildSelect2CreateModal(modalSelector: string, mainInputName: string, c
     function addToSelect(select, model){
         var template = '<option value="'+model.id+'" selected>'+getLabel(model)+'</option>';
         select.append(template);
+        select.find('[value=new]').remove();
         select.trigger('change');
     }
 }
