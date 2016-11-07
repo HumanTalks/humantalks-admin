@@ -254,16 +254,16 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
 
 // fill form with remotely fetched data
 (function(){
-    scraper('twitterScraper', $.debounce(250, (account: string) => {
+    scraper('twitterScraper', (account: string) => {
         return $.get(config.api.tools+'/scrapers/twitter/profil?account='+account).then(function(res){
             return res.data;
         });
-    }));
-    scraper('emailScraper', $.debounce(250, (email: string) => {
+    });
+    scraper('emailScraper', (email: string) => {
         return $.get(config.api.tools+'/scrapers/email/profil?email='+email).then(function(res){
             return res.data;
         });
-    }));
+    });
 
     function scraper(attr: string, fetch) {
         $('input['+attr+']').each(function(){
