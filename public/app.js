@@ -346,7 +346,7 @@ var Search = {
       hitsPerPage: 20,
       cssClasses: {
         root: 'flex-row-wrap mb3',
-        item: 'flex-auto flex'
+        item: 'flex-auto flex w-100'
       },
       templates: {
         item: hitTemplate,
