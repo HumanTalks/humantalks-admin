@@ -22,7 +22,7 @@
                 <div class="media-body">
                     <h4 class="media-heading">
                         <a href="@MeetupCtrl.get(meetup.id)">@meetup.data.title</a>
-                        @meetup.data.meetupUrl.map{url => <a href="@url" target="_blank"><i class="fa fa-external-link"></i></a>}
+                        @meetup.meetupUrl.map{url => <a href="@url" target="_blank"><i class="fa fa-external-link"></i></a>}
                     </h4>
                     <p>
                         @partials.status(meetup)

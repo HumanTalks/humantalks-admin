@@ -9,6 +9,7 @@ import com.humantalks.internal.persons.Person
 
 case class Venue(
   id: Venue.Id,
+  meetupId: Option[Long],
   data: Venue.Data,
   meta: Meta
 )

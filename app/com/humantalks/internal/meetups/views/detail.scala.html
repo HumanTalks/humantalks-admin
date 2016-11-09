@@ -22,7 +22,7 @@
                 @helper.form(action=MeetupCtrl.doDelete(meetup.id), 'class->"inline") {<button type="submit" class="btn btn-danger" title="Supprimer ce meetup" confirm><i class="fa fa-trash"></i></button> }
             </span>
             @meetup.data.title
-            @meetup.data.meetupUrl.map{url => <a href="@url" target="_blank"><i class="fa fa-external-link"></i></a>}
+            @meetup.meetupUrl.map{url => <a href="@url" target="_blank"><i class="fa fa-external-link"></i></a>}
         </h1>
         <p>@partials.status(meetup) @venue(meetup.data.venue, venueList) le @date(meetup.data.date.toLocalDate)</p>
         <p>@meetup.data.description</p>

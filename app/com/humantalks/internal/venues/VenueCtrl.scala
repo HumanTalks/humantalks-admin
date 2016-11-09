@@ -23,6 +23,7 @@ case class VenueCtrl(
   import Contexts.ctrlToEC
   import ctx._
   val venueForm = Form(Venue.fields)
+  val personForm = Form(Person.fields)
 
   def find = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     implicit val user = Some(req.identity)
@@ -82,6 +83,6 @@ case class VenueCtrl(
   }
 
   private def formView(status: Status, venueForm: Form[Venue.Data], venueOpt: Option[Venue])(implicit request: RequestHeader, user: Option[Person]): Future[Result] = {
-    Future.successful(status(views.html.form(venueForm, venueOpt)))
+    Future.successful(status(views.html.form(venueForm, venueOpt, personForm)))
   }
 }

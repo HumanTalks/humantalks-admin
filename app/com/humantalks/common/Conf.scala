@@ -47,6 +47,11 @@ case class Conf(configuration: Configuration) {
     val conf = configuration.getConfig("sendgrid").get
     val apiKey: String = conf.getString("api-key").get
   }
+  object Meetup {
+    val conf = configuration.getConfig("meetup").get
+    val apiKey: String = conf.getString("api-key").get
+    val group: String = conf.getString("group").get
+  }
   object Slack {
     val conf = configuration.getConfig("slack").get
     val token: String = conf.getString("token").get

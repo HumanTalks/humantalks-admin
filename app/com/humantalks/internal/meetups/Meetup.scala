@@ -11,11 +11,18 @@ import play.api.data.Forms._
 import play.api.libs.json.Json
 
 case class Meetup(
-  id: Meetup.Id,
-  data: Meetup.Data,
-  published: Boolean,
-  meta: Meta
-)
+    id: Meetup.Id,
+    meetupGroup: Option[String],
+    meetupId: Option[Long],
+    data: Meetup.Data,
+    published: Boolean,
+    meta: Meta
+) {
+  lazy val meetupUrl: Option[String] = for {
+    group <- meetupGroup
+    id <- meetupId
+  } yield s"http://www.meetup.com/fr-FR/$group/events/$id/"
+}
 object Meetup {
   case class Id(value: String) extends TypedId(value)
   object Id extends TypedIdHelper[Id] {
@@ -33,7 +40,6 @@ object Meetup {
       talks: List[Talk.Id],
       description: Option[String],
       roti: Option[String],
-      meetupUrl: Option[String],
       personCount: Option[Int]
   ) {
     def trim: Data = copy(
@@ -46,7 +52,7 @@ object Meetup {
     def generate(after: DateTime): Data = {
       val nextDate = DateSrv.nextDate(after, 2, DateTimeConstants.TUESDAY, new LocalTime(19, 0))
       val nextTitle = Meetup.title(nextDate)
-      Meetup.Data(nextTitle, nextDate, None, List(), None, None, None, None)
+      Meetup.Data(nextTitle, nextDate, None, List(), None, None, None)
     }
   }
 
@@ -59,7 +65,6 @@ object Meetup {
     "talks" -> list(of[Talk.Id]),
     "description" -> optional(text),
     "roti" -> optional(text),
-    "meetupUrl" -> optional(text),
     "personCount" -> optional(number)
   )(Meetup.Data.apply)(Meetup.Data.unapply)
 

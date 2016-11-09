@@ -59,7 +59,7 @@ object PublicMeetup {
     },
     description = meetup.data.description,
     roti = meetup.data.roti,
-    meetupUrl = meetup.data.meetupUrl,
+    meetupUrl = meetup.meetupUrl,
     personCount = meetup.data.personCount
   )
 

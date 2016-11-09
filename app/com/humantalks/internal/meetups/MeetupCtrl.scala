@@ -44,7 +44,9 @@ case class MeetupCtrl(
   def create = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     implicit val user = Some(req.identity)
     meetupDbService.getLast.flatMap { meetupOpt =>
+      play.Logger.info("meetupOpt: " + meetupOpt)
       val lastDate = meetupOpt.map(_.data.date).getOrElse(new DateTime())
+      play.Logger.info("lastDate: " + lastDate)
       formView(Ok, meetupForm.fill(Meetup.Data.generate(lastDate)), None)
     }
   }

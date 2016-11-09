@@ -30,7 +30,7 @@ object PublicMeetupNoTalks {
     },
     description = meetup.data.description,
     roti = meetup.data.roti,
-    meetupUrl = meetup.data.meetupUrl
+    meetupUrl = meetup.meetupUrl
   )
 
   implicit val format = Json.format[PublicMeetupNoTalks]

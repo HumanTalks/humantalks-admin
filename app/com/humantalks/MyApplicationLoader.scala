@@ -5,6 +5,7 @@ import com.humantalks.auth.services.{ AuthSrv, MailerSrv }
 import com.humantalks.auth.silhouette._
 import com.humantalks.common.Conf
 import com.humantalks.common.controllers.Select2Ctrl
+import com.humantalks.common.services.meetup.MeetupSrv
 import com.humantalks.common.services.slack.SlackSrv
 import com.humantalks.common.services.{ NotificationSrv, EmbedSrv }
 import com.humantalks.common.services.sendgrid.SendgridSrv
@@ -73,6 +74,7 @@ class MyComponents(context: ApplicationLoader.Context)
   val sendgridSrv = SendgridSrv(conf, wsClient)
   val mailerSrv = MailerSrv(conf, sendgridSrv)
   val slackSrv = SlackSrv(conf, ctx, wsClient)
+  val meetupSrv = MeetupSrv(conf, ctx, wsClient)
   val notificationSrv = NotificationSrv(conf, sendgridSrv, slackSrv, personDbService, talkDbService, meetupDbService)
 
   implicit val messagesApiImp = messagesApi
