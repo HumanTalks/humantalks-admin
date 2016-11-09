@@ -63,6 +63,12 @@
                 </li>
             }
             </ol>
+            <b>T-shirts:</b>
+            <ul>
+            @meetup.data.talks.flatMap(id => allTalks.find(_.id == id)).flatMap(_.data.speakers).flatMap(id => allPersons.find(_.id == id)).groupBy(_.data.shirt).toSeq.sortBy(_._1).reverse.map { case (size, ids) =>
+              <li>@ids.length @size.map(v => messagesApi("person.shirt."+v)).getOrElse(if(ids.length == 1) "taille inconnue" else "tailles inconnues")</li>
+            }
+            </ul>
         }
         @meetup.data.personCount.map{c => <p>@c participants</p>}
         @meetup.data.roti.map{r => <p><img src="@r" style="width: 100%;"></p>}

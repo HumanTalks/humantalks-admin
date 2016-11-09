@@ -90,3 +90,14 @@ auth.reset_password.reset.success=Mot de passe réinitialisé!
 auth.reset_password.reset.error.expired_token=Le lien n''est plus valide! Merci de recommencer la procédure de réinitialisation du mot de passe.
 auth.reset_password.reset.error.invalid_provider=Le lien n''est plus valide! Merci de recommencer la procédure de réinitialisation du mot de passe.
 auth.reset_password.reset.error.no_matching_user=Le lien n''est plus valide! Merci de recommencer la procédure de réinitialisation du mot de passe.
+
+# Person texts
+
+person.shirt.S_F=S Femme
+person.shirt.M_F=M Femme
+person.shirt.L_F=L Femme
+person.shirt.XS_M=XS Homme
+person.shirt.S_M=S Homme
+person.shirt.M_M=M Homme
+person.shirt.L_M=L Homme
+person.shirt.XL_M=XL Homme

@@ -27,7 +27,7 @@ case class PersonDbService(personRepository: PersonRepository, talkRepository: T
   def update(elt: Person, data: Person.Data, by: Person.Id): Future[WriteResult] = {
     data.email.map { email =>
       personRepository.getByEmail(email).flatMap { personOpt =>
-        personOpt.map { person =>
+        personOpt.filter(_.id != elt.id).map { person =>
           Future.failed(new IllegalArgumentException("A person with email " + email + " already exists"))
         }.getOrElse {
           personRepository.update(elt, data, by)

@@ -30,6 +30,13 @@ object Person {
   object Role extends Enumeration {
     val User, Organizer, Admin = Value
   }
+  implicit val formatRole = EnumerationHelper.enumFormat(Role)
+
+  object Shirt extends Enumeration {
+    val XS_M, S_F, S_M, M_F, M_M, L_F, L_M, XL_M = Value
+  }
+  implicit val formatShirt = EnumerationHelper.enumFormat(Shirt)
+  implicit val mappingShirt = EnumerationHelper.formMapping(Shirt)
 
   case class Data(
       name: String,
@@ -37,6 +44,7 @@ object Person {
       email: Option[String], // to match existing person when submiting a new talk
       phone: Option[String],
       avatar: Option[String],
+      shirt: Option[Person.Shirt.Value],
       description: Option[String]
   ) {
     def trim: Data = copy(
@@ -59,6 +67,7 @@ object Person {
         email = Some(register.email),
         phone = None,
         avatar = avatar,
+        shirt = None,
         description = None
       ),
       loginInfo = Some(loginInfo),
@@ -77,7 +86,6 @@ object Person {
       meta = Meta.from(by)
     )
 
-  implicit val formatRole = EnumerationHelper.enumFormat(Role)
   implicit val formatData = Json.format[Person.Data]
   implicit val format = Json.format[Person]
   val fields = mapping(
@@ -86,6 +94,7 @@ object Person {
     "email" -> optional(email),
     "phone" -> optional(text),
     "avatar" -> optional(text),
+    "shirt" -> optional(of[Person.Shirt.Value]),
     "description" -> optional(text)
   )(Person.Data.apply)(Person.Data.unapply)
 }
