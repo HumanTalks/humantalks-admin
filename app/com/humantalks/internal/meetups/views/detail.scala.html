@@ -11,6 +11,12 @@
 @import com.humantalks.internal.meetups.routes.MeetupCtrl
 @import com.humantalks.internal.proposals.routes.ProposalCtrl
 @(meetup: Meetup, talkForm: Form[Talk.Data], personForm: Form[Person.Data], pendingTalks: List[Talk], allTalks: List[Talk], allPersons: List[Person], venueList: List[Venue], pendingProposals: List[Proposal])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
+@getTalks(meetup: Meetup, allTalks: List[Talk]) = @{
+    meetup.data.talks.flatMap(id => allTalks.find(_.id == id))
+}
+@getSpeakers(meetup: Meetup, allTalks: List[Talk], allPersons: List[Person]) = @{
+    getTalks(meetup, allTalks).flatMap(_.data.speakers).flatMap(id => allPersons.find(_.id == id))
+}
 @main(meetup.data.title) {
     @header("meetup")
 
@@ -29,7 +35,7 @@
         @if(meetup.data.talks.nonEmpty) {
             <h3>Talks</h3>
             <ol>
-            @meetup.data.talks.flatMap(id => allTalks.find(_.id == id)).map { talk =>
+            @getTalks(meetup, allTalks).map { talk =>
                 <li>
                     @helper.form(action=MeetupCtrl.doRemoveTalk(meetup.id, talk.id), 'class->"inline") { <button type="submit" class="btn btn-clear" title="Remove this talk from the meetup" confirm><i class="fa fa-trash"></i></button> }
                     @helper.form(action=MeetupCtrl.doMoveTalk(meetup.id, talk.id, true), 'class->"inline") { <button type="submit" class="btn btn-clear" title="Monter le talk dans la liste"><i class="fa fa-arrow-up"></i></button> }
@@ -65,7 +71,7 @@
             </ol>
             <b>T-shirts:</b>
             <ul>
-            @meetup.data.talks.flatMap(id => allTalks.find(_.id == id)).flatMap(_.data.speakers).flatMap(id => allPersons.find(_.id == id)).groupBy(_.data.shirt).toSeq.sortBy(_._1).reverse.map { case (size, ids) =>
+            @getSpeakers(meetup, allTalks, allPersons).groupBy(_.data.shirt).toSeq.sortBy(_._1).reverse.map { case (size, ids) =>
               <li>@ids.length @size.map(v => messagesApi("person.shirt."+v)).getOrElse(if(ids.length == 1) "taille inconnue" else "tailles inconnues")</li>
             }
             </ul>

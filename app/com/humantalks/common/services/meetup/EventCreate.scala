@@ -4,7 +4,6 @@ import org.joda.time.DateTime
 
 // cf https://www.meetup.com/fr-FR/meetup_api/docs/:urlname/events/?uri=%2Fmeetup_api%2Fdocs%2F%3Aurlname%2Fevents%2F#create
 case class EventCreate(
-    announce: Boolean,
     status: String, // TODO enum (draft)
     name: String, // < 80
     description: String, // < 50000
@@ -35,7 +34,6 @@ object EventCreate {
   val google = 24856453
 
   def toParams(data: EventCreate): Map[String, String] = Map(
-    "announce" -> data.announce.toString,
     "publish_status" -> data.status,
     "name" -> data.name,
     "description" -> data.description,
@@ -56,7 +54,6 @@ object EventCreate {
   )
   def from(meetup: com.humantalks.internal.meetups.Meetup, venue: com.humantalks.internal.venues.Venue, hosts: List[Long], announce: Boolean): EventCreate = {
     EventCreate(
-      announce = announce,
       status = "draft",
       name = meetup.data.title,
       description = meetup.data.description.getOrElse(""),

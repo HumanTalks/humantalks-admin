@@ -24,6 +24,11 @@
                     </ul>
                 </li>
             </ul>
+            <!--<form class="navbar-form navbar-right">
+                <div class="form-group">
+                    <input type="search" class="form-control omni-search" autocomplete="off" placeholder="Search">
+                </div>
+            </form>-->
             @* TODO : refactor to improve : https://github.com/adrianhurt/play-silhouette-credentials-seed/blob/9413cb25838a38623dc694003e8f82f81d975daf/app/views/tags/auth/withService.scala.html *@
             @if(user.flatMap(_.role).exists(_ >= Person.Role.Organizer)){
                 <ul class="nav navbar-nav">

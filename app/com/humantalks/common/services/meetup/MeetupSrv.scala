@@ -47,7 +47,13 @@ case class MeetupSrv(conf: Conf, ctx: Contexts, ws: WSClient) {
       Future.successful(Left(List(s"createEvent forbidden in '${conf.App.env}'")))
     }
 
-  def updateEvent(groupUrlName: String, eventId: String, data: Map[String, String]): Future[Either[List[String], Event]] =
+  def updateEvent(groupUrlName: String, eventId: String, data: EventCreate): Future[Either[List[String], Event]] =
+    patchEvent(groupUrlName, eventId, data.toParams)
+
+  def announceEvent(groupUrlName: String, eventId: String): Future[Either[List[String], Event]] =
+    patchEvent(groupUrlName, eventId, Map("announce" -> "true"))
+
+  private def patchEvent(groupUrlName: String, eventId: String, data: Map[String, String]): Future[Either[List[String], Event]] =
     if (conf.App.isProd) {
       ws.url(s"$baseUrl/$groupUrlName/events/$eventId")
         .withQueryString((authParams ++ data).toList: _*)

@@ -356,6 +356,43 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
     }
 })();
 
+// omni-search with https://twitter.github.io/typeahead.js/
+(function(){
+    const states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
+        'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
+        'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
+        'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
+        'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
+        'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',
+        'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
+        'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
+        'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+    ];
+    function substringMatcher(strs) {
+        return function findMatches(q, cb) {
+            const regex = new RegExp(q, 'i');
+            cb(strs.filter(str => regex.test(str)));
+        };
+    }
+    $('.omni-search').typeahead({
+        minLength: 2,
+        hint: true,
+        highlight: true
+    }, {
+        name: 'states-1',
+        source: substringMatcher(states),
+        templates: {
+            header: '<h3>Dataset 1</h3>'
+        }
+    }, {
+        name: 'states-2',
+        source: substringMatcher(states),
+        templates: {
+            header: '<h3>Dataset 2</h3>'
+        }
+    });
+})();
+
 // GMapPlace picker (https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete?hl=fr)
 var GMapPlacePicker = (function(){
     return {
