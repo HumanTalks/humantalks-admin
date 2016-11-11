@@ -65,7 +65,7 @@ object EventCreate {
       rsvp_close_time = new DateTime(0),
       hosts = hosts,
       self_rsvp = true,
-      venue_id = venue.meetupId.get,
+      venue_id = venue.meetupRef.get.id,
       venue_visibility = "public",
       lat = venue.data.location.get.coords.lat,
       lon = venue.data.location.get.coords.lng,

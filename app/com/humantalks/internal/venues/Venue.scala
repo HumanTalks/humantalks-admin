@@ -9,7 +9,7 @@ import com.humantalks.internal.persons.Person
 
 case class Venue(
   id: Venue.Id,
-  meetupId: Option[Long],
+  meetupRef: Option[Venue.MeetupRef],
   data: Venue.Data,
   meta: Meta
 )
@@ -20,10 +20,12 @@ object Venue {
     def generate(): Id = Id(TypedId.generate())
   }
 
+  case class MeetupRef(id: Long)
+
   case class Data(
       name: String, // nom de la société / salle
       location: Option[GMapPlace],
-      capacity: Option[Int], // nombre de place
+      capacity: Option[Int], // nombre de places
       twitter: Option[String],
       logo: Option[String],
       contacts: List[Person.Id],
@@ -37,7 +39,8 @@ object Venue {
     )
   }
 
-  implicit val formatData = Json.format[Venue.Data]
+  implicit val formatData = Json.format[Data]
+  implicit val formatMeetupRef = Json.format[MeetupRef]
   implicit val format = Json.format[Venue]
   val fields = mapping(
     "name" -> nonEmptyText,

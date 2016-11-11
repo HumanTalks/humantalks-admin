@@ -1,5 +1,5 @@
 @import com.humantalks.internal.persons.Person
-@(menu: String)(implicit user: Option[Person])
+@(menu: String)(implicit userOpt: Option[Person])
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -17,7 +17,7 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i></a>
                     <ul class="dropdown-menu">
                         <li><a href="@com.humantalks.internal.persons.routes.PersonCtrl.profil">Mon profil</a></li>
-                        @if(user.flatMap(_.role).exists(_ >= Person.Role.Admin)) {
+                        @if(userOpt.exists(_.isAuthorized(Person.Role.Admin))) {
                             <li><a href="@com.humantalks.internal.admin.routes.AdminCtrl.users">Admin</a></li>
                         }
                         <li>@helper.form(action=com.humantalks.auth.routes.AuthCtrl.doLogout) { <button type="submit" class="btn btn-link">Logout</button> }</li>
@@ -30,7 +30,7 @@
                 </div>
             </form>-->
             @* TODO : refactor to improve : https://github.com/adrianhurt/play-silhouette-credentials-seed/blob/9413cb25838a38623dc694003e8f82f81d975daf/app/views/tags/auth/withService.scala.html *@
-            @if(user.flatMap(_.role).exists(_ >= Person.Role.Organizer)){
+            @if(userOpt.exists(_.isAuthorized(Person.Role.Organizer))){
                 <ul class="nav navbar-nav">
                     <li @if(menu == "meetup"){class="active"}><a href="@com.humantalks.internal.meetups.routes.MeetupCtrl.find">Meetups</a></li>
                     <li @if(menu == "talk"){class="active"}><a href="@com.humantalks.internal.talks.routes.TalkCtrl.find">Talks</a></li>

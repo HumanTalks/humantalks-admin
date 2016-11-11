@@ -52,7 +52,7 @@ case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
     collection.getOne(sort = Json.obj("data.date" -> -1))
 
   def create(data: Meetup.Data, by: Person.Id): Future[(WriteResult, Meetup.Id)] = {
-    val toCreate = Meetup(Meetup.Id.generate(), None, None, data.trim, published = false, Meta.from(by))
+    val toCreate = Meetup(Meetup.Id.generate(), meetupRef = None, data.trim, Meta.from(by))
     collection.create(toCreate).map { res => (res, toCreate.id) }
   }
 
@@ -74,7 +74,7 @@ case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
     }
     get(id).flatMap {
       _.map { meetup =>
-        update(meetup, meetup.data.copy(talks = swap[Talk.Id](meetup.data.talks, talkId, up)), by).map(Some(_))
+        update(meetup, meetup.data.copy(talks = swap(meetup.data.talks, talkId, up)), by).map(Some(_))
       }.getOrElse {
         Future.successful(None)
       }

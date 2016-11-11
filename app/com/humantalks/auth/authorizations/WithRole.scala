@@ -10,6 +10,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 case class WithRole(role: Person.Role.Value) extends Authorization[Person, CookieAuthenticator] {
   def isAuthorized[B](person: Person, authenticator: CookieAuthenticator)(implicit request: Request[B]): Future[Boolean] = {
-    Future.successful(person.role.exists(_ >= role))
+    Future.successful(person.isAuthorized(role))
   }
 }

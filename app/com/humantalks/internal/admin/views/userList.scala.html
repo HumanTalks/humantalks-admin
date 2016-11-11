@@ -27,15 +27,15 @@
             </thead>
             <tbody>
                 @userList.map { u =>
-                    <tr @if(!u.activated){class="danger"}>
+                    <tr @if(!u.isActivated){class="danger"}>
                         <td>
                             <a href="@PersonCtrl.get(u.id)">
                                 @u.data.avatar.map{url => <img src="@url" style="max-height: 30px;">}
                                 @u.data.name
                             </a>
                         </td>
-                        <td>@u.loginInfo.map{l => (@l.providerID,@l.providerKey)}</td>
-                        <td>@credentials.find(c => u.loginInfo.contains(c.loginInfo)).map{c => <span title="Hash: @c.passwordInfo.password / Salt: @c.passwordInfo.salt">@c.passwordInfo.hasher</span>}</td>
+                        <td>@u.auth.map{a => (@a.loginInfo.providerID,@a.loginInfo.providerKey)}</td>
+                        <td>@credentials.find(c => u.auth.exists(_.loginInfo == c.loginInfo)).map{c => <span title="Hash: @c.passwordInfo.password / Salt: @c.passwordInfo.salt">@c.passwordInfo.hasher</span>}</td>
                         <td>@u.data.email.map{e => <a href="mailto:@e">@e</a>}</td>
                         <td>@u.data.twitter.map{t => <a href="https://twitter.com/@t" target="_blank">@@@t</a>}</td>
                         <td>
@@ -44,7 +44,7 @@
                                     <select name="role" class="form-control">
                                         <option></option>
                                         @Person.Role.values.map { role =>
-                                          <option value="@role" @if(u.role.contains(role)){selected}>@role</option>
+                                          <option value="@role" @if(u.hasRole(role)){selected}>@role</option>
                                         }
                                     </select>
                                 </div>

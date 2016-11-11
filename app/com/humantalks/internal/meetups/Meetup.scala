@@ -12,16 +12,11 @@ import play.api.libs.json.Json
 
 case class Meetup(
     id: Meetup.Id,
-    meetupGroup: Option[String],
-    meetupId: Option[Long],
+    meetupRef: Option[Meetup.MeetupRef],
     data: Meetup.Data,
-    published: Boolean,
     meta: Meta
 ) {
-  lazy val meetupUrl: Option[String] = for {
-    group <- meetupGroup
-    id <- meetupId
-  } yield s"http://www.meetup.com/fr-FR/$group/events/$id/"
+  lazy val meetupUrl: Option[String] = meetupRef.map(r => s"http://www.meetup.com/fr-FR/${r.group}/events/${r.id}/")
 }
 object Meetup {
   case class Id(value: String) extends TypedId(value)
@@ -30,8 +25,7 @@ object Meetup {
     def generate(): Id = Id(TypedId.generate())
   }
 
-  def title(date: DateTime): String = "HumanTalks Paris " + date.toString("MMMM YYYY")
-  def slackChannel(date: DateTime): String = date.toString("YYYY_MM")
+  case class MeetupRef(group: String, id: Long, announced: Boolean)
 
   case class Data(
       title: String,
@@ -56,7 +50,11 @@ object Meetup {
     }
   }
 
+  def title(date: DateTime): String = "HumanTalks Paris " + date.toString("MMMM YYYY")
+  def slackChannel(date: DateTime): String = date.toString("YYYY_MM")
+
   implicit val formatData = Json.format[Data]
+  implicit val formatRef = Json.format[MeetupRef]
   implicit val format = Json.format[Meetup]
   val fields = mapping(
     "title" -> nonEmptyText,

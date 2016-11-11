@@ -90,7 +90,7 @@ case class AuthCtrl(
       formData => {
         authSrv.authenticate(formData.email, formData.password).flatMap { loginInfo =>
           personRepository.retrieve(loginInfo).flatMap {
-            case Some(person) if !person.activated => Future.successful(Ok(views.html.notActivated(formData.email)))
+            case Some(person) if !person.isActivated => Future.successful(Ok(views.html.notActivated(formData.email)))
             case Some(person) =>
               silhouette.env.authenticatorService.create(loginInfo).map {
                 case authenticator: CookieAuthenticator if formData.rememberMe =>
@@ -134,7 +134,7 @@ case class AuthCtrl(
     val loginInfo = LoginInfo(CredentialsProvider.ID, decodedEmail)
     val result = Redirect(routes.AuthCtrl.login()).flashing("info" -> messagesApi("auth.not_activated.submit.success", decodedEmail))
     personRepository.retrieve(loginInfo).flatMap {
-      case Some(person) if !person.activated =>
+      case Some(person) if !person.isActivated =>
         authTokenRepository.create(person.id).map { authToken =>
           mailerSrv.sendActivateAccount(decodedEmail, person, authToken)
           result
@@ -200,7 +200,7 @@ case class AuthCtrl(
           formData => personRepository.get(authToken.person).flatMap {
             case Some(person) if person.hasProvider(CredentialsProvider.ID) =>
               val passwordInfo = authSrv.hashPassword(formData.password)
-              authSrv.updateAuthInfo(person.loginInfo.get, passwordInfo).map { _ =>
+              authSrv.updateAuthInfo(person.auth.get.loginInfo, passwordInfo).map { _ =>
                 Redirect(routes.AuthCtrl.login()).flashing("success" -> messagesApi("auth.reset_password.reset.success"))
               }
             case None => Future.successful(Redirect(routes.AuthCtrl.login()).flashing("error" -> messagesApi("auth.reset_password.reset.error.no_matching_user")))

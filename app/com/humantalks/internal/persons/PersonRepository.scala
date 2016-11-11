@@ -57,10 +57,10 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   /* Method used for Auth */
 
   def findUsers(filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[List[Person]] =
-    collection.find(Json.obj("loginInfo" -> Json.obj("$exists" -> true)) ++ filter, sort)
+    collection.find(Json.obj("auth" -> Json.obj("$exists" -> true)) ++ filter, sort)
 
   def retrieve(loginInfo: LoginInfo): Future[Option[Person]] =
-    collection.get(Json.obj("loginInfo.providerID" -> loginInfo.providerID, "loginInfo.providerKey" -> loginInfo.providerKey))
+    collection.get(Json.obj("auth.loginInfo.providerID" -> loginInfo.providerID, "auth.loginInfo.providerKey" -> loginInfo.providerKey))
 
   def register(form: RegisterForm, loginInfo: LoginInfo, avatar: Option[String] = None): Future[Person] = {
     getByEmail(form.email).flatMap { personOpt =>
@@ -70,9 +70,11 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
             name = form.name,
             avatar = avatar.orElse(person.data.avatar)
           ),
-          loginInfo = Some(loginInfo),
-          role = Some(Role.User),
-          activated = false,
+          auth = Some(Person.Auth(
+            loginInfo = loginInfo,
+            role = Role.User,
+            activated = false
+          )),
           meta = person.meta.update(person.id)
         )
         update(p).map(_ => p)
@@ -86,7 +88,7 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   def unregister(id: Person.Id): Future[Option[Person]] = {
     get(id).flatMap { personOpt =>
       personOpt.map { person =>
-        val p = person.copy(loginInfo = None, role = None, activated = false)
+        val p = person.copy(auth = None, meta = person.meta.update(person.id))
         update(p).map(_ => Some(p))
       }.getOrElse {
         Future.successful(None)
@@ -95,8 +97,8 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   }
 
   def activate(id: Person.Id): Future[WriteResult] =
-    partialUpdate(id, Json.obj("activated" -> true), id)
+    partialUpdate(id, Json.obj("auth.activated" -> true), id)
 
   def setRole(id: Person.Id, role: Option[Person.Role.Value], by: Person.Id): Future[WriteResult] =
-    partialUpdate(id, Json.obj("role" -> role), by)
+    partialUpdate(id, Json.obj("auth.role" -> role), by)
 }

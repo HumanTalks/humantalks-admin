@@ -1,6 +1,7 @@
 @import com.humantalks.internal.meetups.Meetup
 @(meetup: Meetup)
-@meetup.published match {
-    case true => {<span class="label label-success">Publié</span>}
-    case tfalse => {<span class="label label-danger">Brouillon</span>}
+@meetup.meetupRef match {
+    case Some(Meetup.MeetupRef(_, _, true)) => {<a href="@meetup.meetupUrl" target="_blank" class="label label-success">Annoncé</a>}
+    case Some(Meetup.MeetupRef(_, _, false)) => {<a href="@meetup.meetupUrl" target="_blank" class="label label-warning">Publié</a>}
+    case None => {}
 }

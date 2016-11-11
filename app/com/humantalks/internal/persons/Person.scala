@@ -11,13 +11,16 @@ import play.api.libs.json.Json
 
 case class Person(
     id: Person.Id,
+    meetupRef: Option[Person.MeetupRef],
     data: Person.Data,
-    loginInfo: Option[LoginInfo],
-    role: Option[Person.Role.Value],
-    activated: Boolean,
+    auth: Option[Person.Auth],
     meta: Meta
 ) extends Identity {
-  def hasProvider(provider: String): Boolean = loginInfo.exists(_.providerID == provider)
+  def isUser: Boolean = auth.isDefined
+  def isActivated: Boolean = auth.exists(_.activated)
+  def hasProvider(provider: String): Boolean = auth.exists(_.loginInfo.providerID == provider)
+  def hasRole(role: Person.Role.Value): Boolean = auth.exists(_.role == role)
+  def isAuthorized(role: Person.Role.Value): Boolean = auth.exists(_.role >= role)
 }
 object Person {
   val anonymous = Id("ffffffff-ffff-ffff-ffff-ffffffffffff")
@@ -27,16 +30,7 @@ object Person {
     def generate(): Id = Id(TypedId.generate())
   }
 
-  object Role extends Enumeration {
-    val User, Organizer, Admin = Value
-  }
-  implicit val formatRole = EnumerationHelper.enumFormat(Role)
-
-  object Shirt extends Enumeration {
-    val XS_M, S_F, S_M, M_F, M_M, L_F, L_M, XL_M = Value
-  }
-  implicit val formatShirt = EnumerationHelper.enumFormat(Shirt)
-  implicit val mappingShirt = EnumerationHelper.formMapping(Shirt)
+  case class MeetupRef(id: Long)
 
   case class Data(
       name: String,
@@ -57,10 +51,29 @@ object Person {
     )
   }
 
+  case class Auth(
+    loginInfo: LoginInfo,
+    role: Person.Role.Value,
+    activated: Boolean
+  )
+
+  object Role extends Enumeration {
+    val User, Organizer, Admin = Value
+    val default = User
+  }
+  implicit val formatRole = EnumerationHelper.enumFormat(Role)
+
+  object Shirt extends Enumeration {
+    val XS_M, S_F, S_M, M_F, M_M, L_F, L_M, XL_M = Value
+  }
+  implicit val formatShirt = EnumerationHelper.enumFormat(Shirt)
+  implicit val mappingShirt = EnumerationHelper.formMapping(Shirt)
+
   def from(register: RegisterForm, loginInfo: LoginInfo, avatar: Option[String] = None): Person = {
     val id = Id.generate()
     Person(
       id = id,
+      meetupRef = None,
       data = Data(
         name = register.name,
         twitter = None,
@@ -70,23 +83,26 @@ object Person {
         shirt = None,
         description = None
       ),
-      loginInfo = Some(loginInfo),
-      activated = false,
-      role = Some(Role.User),
+      auth = Some(Auth(
+        loginInfo = loginInfo,
+        role = Role.default,
+        activated = false
+      )),
       meta = Meta.from(id)
     )
   }
   def from(data: Person.Data, by: Person.Id): Person =
     Person(
       id = Person.Id.generate(),
+      meetupRef = None,
       data = data.trim,
-      loginInfo = None,
-      activated = false,
-      role = Some(Role.User),
+      auth = None,
       meta = Meta.from(by)
     )
 
-  implicit val formatData = Json.format[Person.Data]
+  implicit val formatAuth = Json.format[Auth]
+  implicit val formatData = Json.format[Data]
+  implicit val formatMeetupRef = Json.format[MeetupRef]
   implicit val format = Json.format[Person]
   val fields = mapping(
     "name" -> nonEmptyText,
