@@ -1,4 +1,4 @@
-package com.humantalks.common.services.meetup
+package com.humantalks.common.services.meetup.models
 
 import org.joda.time.DateTime
 import play.api.libs.json.Json

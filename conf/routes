@@ -60,8 +60,10 @@ POST    /meetups/create                                             com.humantal
 GET     /meetups/$id<.{36}>                                         com.humantalks.internal.meetups.MeetupCtrl.get(id: Meetup.Id)
 GET     /meetups/$id<.{36}>/edit                                    com.humantalks.internal.meetups.MeetupCtrl.update(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/edit                                    com.humantalks.internal.meetups.MeetupCtrl.doUpdate(id: Meetup.Id)
-GET     /meetups/$id<.{36}>/publish                                 com.humantalks.internal.meetups.MeetupCtrl.publish(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/publish                                 com.humantalks.internal.meetups.MeetupCtrl.doPublish(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/updatePublish                           com.humantalks.internal.meetups.MeetupCtrl.doUpdatePublish(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/announce                                com.humantalks.internal.meetups.MeetupCtrl.doAnnounce(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/unpublish                               com.humantalks.internal.meetups.MeetupCtrl.doUnpublish(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/delete                                  com.humantalks.internal.meetups.MeetupCtrl.doDelete(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/talks                                   com.humantalks.internal.meetups.MeetupCtrl.doCreateTalk(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/talks/add                               com.humantalks.internal.meetups.MeetupCtrl.doAddTalkForm(id: Meetup.Id)
@@ -97,33 +99,33 @@ GET     /api/select2/meetups                                        com.humantal
 
 GET     /api/internal                                               com.humantalks.internal.Application.apiRoot
 
-GET     /api/internal/venues                                        com.humantalks.internal.venues.VenueApi.find
-POST    /api/internal/venues                                        com.humantalks.internal.venues.VenueApi.create
-GET     /api/internal/venues/$id<.{36}>                             com.humantalks.internal.venues.VenueApi.get(id: Venue.Id)
-PUT     /api/internal/venues/$id<.{36}>                             com.humantalks.internal.venues.VenueApi.update(id: Venue.Id)
-DELETE  /api/internal/venues/$id<.{36}>                             com.humantalks.internal.venues.VenueApi.delete(id: Venue.Id)
-POST    /api/internal/venues/duplicates                             com.humantalks.internal.venues.VenueApi.duplicates(id: Option[String] ?= None)
+GET     /api/internal/venues                                        com.humantalks.internal.venues.VenueApiCtrl.find
+POST    /api/internal/venues                                        com.humantalks.internal.venues.VenueApiCtrl.create
+GET     /api/internal/venues/$id<.{36}>                             com.humantalks.internal.venues.VenueApiCtrl.get(id: Venue.Id)
+PUT     /api/internal/venues/$id<.{36}>                             com.humantalks.internal.venues.VenueApiCtrl.update(id: Venue.Id)
+DELETE  /api/internal/venues/$id<.{36}>                             com.humantalks.internal.venues.VenueApiCtrl.delete(id: Venue.Id)
+POST    /api/internal/venues/duplicates                             com.humantalks.internal.venues.VenueApiCtrl.duplicates(id: Option[String] ?= None)
 
-GET     /api/internal/persons                                       com.humantalks.internal.persons.PersonApi.find
-POST    /api/internal/persons                                       com.humantalks.internal.persons.PersonApi.create
-GET     /api/internal/persons/$id<.{36}>                            com.humantalks.internal.persons.PersonApi.get(id: Person.Id)
-PUT     /api/internal/persons/$id<.{36}>                            com.humantalks.internal.persons.PersonApi.update(id: Person.Id)
-DELETE  /api/internal/persons/$id<.{36}>                            com.humantalks.internal.persons.PersonApi.delete(id: Person.Id)
-POST    /api/internal/persons/duplicates                            com.humantalks.internal.persons.PersonApi.duplicates(id: Option[String] ?= None)
+GET     /api/internal/persons                                       com.humantalks.internal.persons.PersonApiCtrl.find
+POST    /api/internal/persons                                       com.humantalks.internal.persons.PersonApiCtrl.create
+GET     /api/internal/persons/$id<.{36}>                            com.humantalks.internal.persons.PersonApiCtrl.get(id: Person.Id)
+PUT     /api/internal/persons/$id<.{36}>                            com.humantalks.internal.persons.PersonApiCtrl.update(id: Person.Id)
+DELETE  /api/internal/persons/$id<.{36}>                            com.humantalks.internal.persons.PersonApiCtrl.delete(id: Person.Id)
+POST    /api/internal/persons/duplicates                            com.humantalks.internal.persons.PersonApiCtrl.duplicates(id: Option[String] ?= None)
 
-GET     /api/internal/talks                                         com.humantalks.internal.talks.TalkApi.find
-POST    /api/internal/talks                                         com.humantalks.internal.talks.TalkApi.create
-GET     /api/internal/talks/$id<.{36}>                              com.humantalks.internal.talks.TalkApi.get(id: Talk.Id)
-PUT     /api/internal/talks/$id<.{36}>                              com.humantalks.internal.talks.TalkApi.update(id: Talk.Id)
-DELETE  /api/internal/talks/$id<.{36}>                              com.humantalks.internal.talks.TalkApi.delete(id: Talk.Id)
-POST    /api/internal/talks/duplicates                              com.humantalks.internal.talks.TalkApi.duplicates(id: Option[String] ?= None)
+GET     /api/internal/talks                                         com.humantalks.internal.talks.TalkApiCtrl.find
+POST    /api/internal/talks                                         com.humantalks.internal.talks.TalkApiCtrl.create
+GET     /api/internal/talks/$id<.{36}>                              com.humantalks.internal.talks.TalkApiCtrl.get(id: Talk.Id)
+PUT     /api/internal/talks/$id<.{36}>                              com.humantalks.internal.talks.TalkApiCtrl.update(id: Talk.Id)
+DELETE  /api/internal/talks/$id<.{36}>                              com.humantalks.internal.talks.TalkApiCtrl.delete(id: Talk.Id)
+POST    /api/internal/talks/duplicates                              com.humantalks.internal.talks.TalkApiCtrl.duplicates(id: Option[String] ?= None)
 
-GET     /api/internal/meetups                                       com.humantalks.internal.meetups.MeetupApi.find
-POST    /api/internal/meetups                                       com.humantalks.internal.meetups.MeetupApi.create
-GET     /api/internal/meetups/$id<.{36}>                            com.humantalks.internal.meetups.MeetupApi.get(id: Meetup.Id)
-PUT     /api/internal/meetups/$id<.{36}>                            com.humantalks.internal.meetups.MeetupApi.update(id: Meetup.Id)
-DELETE  /api/internal/meetups/$id<.{36}>                            com.humantalks.internal.meetups.MeetupApi.delete(id: Meetup.Id)
-POST    /api/internal/meetups/duplicates                            com.humantalks.internal.meetups.MeetupApi.duplicates(id: Option[String] ?= None)
+GET     /api/internal/meetups                                       com.humantalks.internal.meetups.MeetupApiCtrl.find
+POST    /api/internal/meetups                                       com.humantalks.internal.meetups.MeetupApiCtrl.create
+GET     /api/internal/meetups/$id<.{36}>                            com.humantalks.internal.meetups.MeetupApiCtrl.get(id: Meetup.Id)
+PUT     /api/internal/meetups/$id<.{36}>                            com.humantalks.internal.meetups.MeetupApiCtrl.update(id: Meetup.Id)
+DELETE  /api/internal/meetups/$id<.{36}>                            com.humantalks.internal.meetups.MeetupApiCtrl.delete(id: Meetup.Id)
+POST    /api/internal/meetups/duplicates                            com.humantalks.internal.meetups.MeetupApiCtrl.duplicates(id: Option[String] ?= None)
 
 GET     /api/tools                                                  com.humantalks.tools.Application.apiRoot
 GET     /api/tools/embed                                            com.humantalks.tools.EmbedCtrl.embed(url: String)

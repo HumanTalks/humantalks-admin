@@ -1,5 +1,6 @@
 package com.humantalks.internal.persons
 
+import com.humantalks.auth.infrastructure.CredentialsRepository
 import com.humantalks.exposed.proposals.{ Proposal, ProposalRepository }
 import com.humantalks.internal.talks.{ Talk, TalkRepository }
 import global.infrastructure.DbService
@@ -9,7 +10,7 @@ import reactivemongo.api.commands.WriteResult
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-case class PersonDbService(personRepository: PersonRepository, talkRepository: TalkRepository, proposalRepository: ProposalRepository) extends DbService[Person, Person.Id, Person.Data, Person.Id] {
+case class PersonDbService(credentialsRepository: CredentialsRepository, personRepository: PersonRepository, talkRepository: TalkRepository, proposalRepository: ProposalRepository) extends DbService[Person, Person.Id, Person.Data, Person.Id] {
   val name = personRepository.name
 
   def find(filter: JsObject = Json.obj(), sort: JsObject = personRepository.defaultSort): Future[List[Person]] = personRepository.find(filter, sort)
@@ -41,11 +42,13 @@ case class PersonDbService(personRepository: PersonRepository, talkRepository: T
 
   def delete(id: Person.Id): Future[Either[(List[Talk], List[Proposal]), WriteResult]] = {
     (for {
+      personOpt <- personRepository.get(id)
       talks <- talkRepository.findForPerson(id)
       proposals <- proposalRepository.findForPerson(id)
-    } yield (talks, proposals)).flatMap {
-      case (talks, proposals) =>
+    } yield (personOpt, talks, proposals)).flatMap {
+      case (personOpt, talks, proposals) =>
         if (talks.isEmpty && proposals.isEmpty) {
+          personOpt.flatMap(_.auth).map(auth => credentialsRepository.remove(auth.loginInfo))
           personRepository.delete(id).map(r => Right(r))
         } else {
           Future.successful(Left((talks, proposals)))

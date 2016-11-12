@@ -1,7 +1,7 @@
 package global.controllers
 
 import global.Contexts
-import global.helpers.ApiHelper
+import global.helpers.{ CtrlHelper, ApiHelper }
 import global.infrastructure.Mongo
 import play.api.i18n.{ Lang, MessagesApi }
 import play.api.libs.json.Json
@@ -35,6 +35,6 @@ case class Application(ctx: Contexts, db: Mongo)(implicit messageApi: MessagesAp
   }
 
   def changeLang(lang: String) = Action { implicit req =>
-    messageApi.setLang(Redirect(req.headers.get("Referer").orElse(req.headers.get("Host")).get), new Lang(lang))
+    messageApi.setLang(Redirect(CtrlHelper.getReferer(req.headers).get), new Lang(lang))
   }
 }

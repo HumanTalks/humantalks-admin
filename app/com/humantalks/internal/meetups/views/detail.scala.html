@@ -25,6 +25,24 @@
         <h1>
             <span class="pull-right">
                 <a href="@MeetupCtrl.update(meetup.id)" class="btn btn-default" title="Modifier ce meetup"><i class="fa fa-pencil-square-o"></i></a>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Publier <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                        @meetup.meetupRef.map { ref =>
+                            <li>@helper.form(action=MeetupCtrl.doUpdatePublish(meetup.id), 'class->"inline") {<button type="submit" class="btn-link" title="Mettre à jour sur meetup.com" confirm>Mettre à jour sur meetup.com</button> }</li>
+                            @if(ref.announced) {
+                                <li class="disabled"><a href="#">Déjà annoncé</a></li>
+                            } else {
+                                <li>@helper.form(action=MeetupCtrl.doAnnounce(meetup.id), 'class->"inline") {<button type="submit" class="btn-link" title="Annoncer sur meetup.com" confirm>Annoncer sur meetup.com</button> }</li>
+                            }
+                            <li>@helper.form(action=MeetupCtrl.doUnpublish(meetup.id), 'class->"inline") {<button type="submit" class="btn-link" title="Supprimer de meetup.com" confirm>Supprimer de meetup.com</button> }</li>
+                        }.getOrElse {
+                            <li>@helper.form(action=MeetupCtrl.doPublish(meetup.id), 'class->"inline") {<button type="submit" class="btn-link" title="Créer sur meetup.com" confirm>Créer sur meetup.com (draft)</button> }</li>
+                        }
+                    </ul>
+                </div>
                 @helper.form(action=MeetupCtrl.doDelete(meetup.id), 'class->"inline") {<button type="submit" class="btn btn-danger" title="Supprimer ce meetup" confirm><i class="fa fa-trash"></i></button> }
             </span>
             @meetup.data.title
@@ -80,9 +98,6 @@
         @meetup.data.roti.map{r => <p><img src="@r" style="width: 100%;"></p>}
 
         @if(meetup.data.date.isAfterNow){
-            <button class="btn btn-default btn-lg" data-toggle="modal" data-target="#create-talk-modal">Créer un talk</button>
-            <a href="@MeetupCtrl.publish(meetup.id)" class="btn btn-default btn-lg">Publier meetup</a>
-
             @if(pendingTalks.nonEmpty) {
                 <h3>Talks non planifiés</h3>
                 <ul>
@@ -116,6 +131,8 @@
                     }
                 </ul>
             }
+
+            <button class="btn btn-default btn-lg" data-toggle="modal" data-target="#create-talk-modal">Créer un talk</button>
         }
         @helper.form(action=MeetupCtrl.doAddTalkForm(meetup.id), 'class->"form-inline") {
             <div class="row">

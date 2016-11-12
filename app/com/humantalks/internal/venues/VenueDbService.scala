@@ -17,6 +17,7 @@ case class VenueDbService(venueRepository: VenueRepository, meetupRepository: Me
   def get(id: Venue.Id): Future[Option[Venue]] = venueRepository.get(id)
   def create(elt: Venue.Data, by: Person.Id): Future[(WriteResult, Venue.Id)] = venueRepository.create(elt, by)
   def update(elt: Venue, data: Venue.Data, by: Person.Id): Future[WriteResult] = venueRepository.update(elt, data, by)
+  def setMeetupRef(id: Venue.Id, meetupRef: Venue.MeetupRef, by: Person.Id): Future[WriteResult] = venueRepository.setMeetupRef(id, meetupRef, by)
 
   def delete(id: Venue.Id): Future[Either[List[Meetup], WriteResult]] = {
     meetupRepository.findForVenue(id).flatMap { meetups =>

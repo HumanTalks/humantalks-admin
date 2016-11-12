@@ -48,8 +48,8 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   def update(elt: Person, data: Person.Data, by: Person.Id): Future[WriteResult] =
     update(elt.copy(data = data.trim, meta = elt.meta.update(by)))
 
-  private def partialUpdate(id: Person.Id, patch: JsObject, by: Person.Id, op: String = "$set"): Future[WriteResult] =
-    collection.partialUpdate(Json.obj("id" -> id), Json.obj(op -> (patch - "id" - "meta")).deepMerge(Json.obj("$set" -> Json.obj("meta.updated" -> new DateTime(), "meta.updatedBy" -> by))))
+  private def partialUpdate(id: Person.Id, patch: JsObject, by: Person.Id): Future[WriteResult] =
+    collection.partialUpdate(Json.obj("id" -> id), patch.deepMerge(Json.obj("$set" -> Json.obj("meta.updated" -> new DateTime(), "meta.updatedBy" -> by))))
 
   def delete(id: Person.Id): Future[WriteResult] =
     collection.delete(Json.obj("id" -> id))
@@ -97,8 +97,8 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   }
 
   def activate(id: Person.Id): Future[WriteResult] =
-    partialUpdate(id, Json.obj("auth.activated" -> true), id)
+    partialUpdate(id, Json.obj("$set" -> Json.obj("auth.activated" -> true)), id)
 
   def setRole(id: Person.Id, role: Option[Person.Role.Value], by: Person.Id): Future[WriteResult] =
-    partialUpdate(id, Json.obj("auth.role" -> role), by)
+    partialUpdate(id, Json.obj("$set" -> Json.obj("auth.role" -> role)), by)
 }

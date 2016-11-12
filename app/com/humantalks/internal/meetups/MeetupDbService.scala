@@ -42,6 +42,7 @@ case class MeetupDbService(talkRepository: TalkRepository, meetupRepository: Mee
       }
       res
     }
-  def setPublished(id: Meetup.Id, by: Person.Id): Future[WriteResult] = meetupRepository.setPublished(id, by)
+  def setMeetupRef(id: Meetup.Id, meetupRef: Meetup.MeetupRef, by: Person.Id): Future[WriteResult] = meetupRepository.setMeetupRef(id, meetupRef, by)
+  def unsetMeetupRef(id: Meetup.Id, by: Person.Id): Future[WriteResult] = meetupRepository.unsetMeetupRef(id, by)
   def delete(id: Meetup.Id): Future[Either[Nothing, WriteResult]] = meetupRepository.delete(id).map(res => Right(res))
 }

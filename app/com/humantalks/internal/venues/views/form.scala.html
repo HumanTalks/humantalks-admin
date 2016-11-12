@@ -3,7 +3,7 @@
 @import global.views.html.partials._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.venues.routes.VenueCtrl
-@import com.humantalks.internal.venues.routes.VenueApi
+@import com.humantalks.internal.venues.routes.VenueApiCtrl
 @(venueForm: Form[Venue.Data], venueOpt: Option[Venue], personForm: Form[Person.Data])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
 @main("Nouveau lieu") {
     @header("venue")
@@ -16,7 +16,7 @@
 
         <div class="row">
             <div class="col-md-12">
-            @helper.form(action=venueOpt.map(p => VenueCtrl.doUpdate(p.id)).getOrElse(VenueCtrl.doCreate()), 'duplicates -> VenueApi.duplicates(venueOpt.map(_.id.toString)).toString, 'class->"form-horizontal venue-form") {
+            @helper.form(action=venueOpt.map(p => VenueCtrl.doUpdate(p.id)).getOrElse(VenueCtrl.doCreate()), 'duplicates -> VenueApiCtrl.duplicates(venueOpt.map(_.id.toString)).toString, 'class->"form-horizontal venue-form") {
                 @partials.fields(venueForm)
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">

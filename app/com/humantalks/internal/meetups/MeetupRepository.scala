@@ -59,11 +59,11 @@ case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   def update(elt: Meetup, data: Meetup.Data, by: Person.Id): Future[WriteResult] =
     collection.update(Json.obj("id" -> elt.id), elt.copy(data = data.trim, meta = elt.meta.update(by)))
 
-  private def partialUpdate(id: Meetup.Id, patch: JsObject, by: Person.Id, op: String = "$set"): Future[WriteResult] =
-    collection.partialUpdate(Json.obj("id" -> id), Json.obj(op -> (patch - "id" - "meta")).deepMerge(Json.obj("$set" -> Json.obj("meta.updated" -> new DateTime(), "meta.updatedBy" -> by))))
+  private def partialUpdate(id: Meetup.Id, patch: JsObject, by: Person.Id): Future[WriteResult] =
+    collection.partialUpdate(Json.obj("id" -> id), patch.deepMerge(Json.obj("$set" -> Json.obj("meta.updated" -> new DateTime(), "meta.updatedBy" -> by))))
 
   def addTalk(id: Meetup.Id, talkId: Talk.Id, by: Person.Id): Future[WriteResult] =
-    partialUpdate(id, Json.obj("data.talks" -> talkId), by, "$addToSet")
+    partialUpdate(id, Json.obj("$addToSet" -> Json.obj("data.talks" -> talkId)), by)
 
   def moveTalk(id: Meetup.Id, talkId: Talk.Id, up: Boolean, by: Person.Id): Future[Option[WriteResult]] = {
     def swap[T](list: List[T], elt: T, before: Boolean): List[T] = list match {
@@ -82,10 +82,13 @@ case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   }
 
   def removeTalk(id: Meetup.Id, talkId: Talk.Id, by: Person.Id): Future[WriteResult] =
-    partialUpdate(id, Json.obj("data.talks" -> talkId), by, "$pull")
+    partialUpdate(id, Json.obj("$pull" -> Json.obj("data.talks" -> talkId)), by)
 
-  def setPublished(id: Meetup.Id, by: Person.Id): Future[WriteResult] =
-    partialUpdate(id, Json.obj("published" -> true), by)
+  def setMeetupRef(id: Meetup.Id, meetupRef: Meetup.MeetupRef, by: Person.Id): Future[WriteResult] =
+    partialUpdate(id, Json.obj("$set" -> Json.obj("meetupRef" -> meetupRef)), by)
+
+  def unsetMeetupRef(id: Meetup.Id, by: Person.Id): Future[WriteResult] =
+    partialUpdate(id, Json.obj("$unset" -> Json.obj("meetupRef" -> "")), by)
 
   def delete(id: Meetup.Id): Future[WriteResult] =
     collection.delete(Json.obj("id" -> id))

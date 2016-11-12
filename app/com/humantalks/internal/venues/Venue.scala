@@ -20,7 +20,7 @@ object Venue {
     def generate(): Id = Id(TypedId.generate())
   }
 
-  case class MeetupRef(id: Long)
+  case class MeetupRef(group: String, id: Long)
 
   case class Data(
       name: String, // nom de la société / salle

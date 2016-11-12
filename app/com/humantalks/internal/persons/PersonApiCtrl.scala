@@ -10,7 +10,7 @@ import play.api.mvc._
 
 import scala.concurrent.Future
 
-case class PersonApi(
+case class PersonApiCtrl(
     ctx: Contexts,
     silhouette: Silhouette[SilhouetteEnv],
     personDbService: PersonDbService

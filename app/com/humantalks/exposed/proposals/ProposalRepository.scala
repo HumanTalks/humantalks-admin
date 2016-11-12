@@ -52,14 +52,14 @@ case class ProposalRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: Em
       collection.update(Json.obj("id" -> elt.id), toUpdate)
     }
 
-  private def partialUpdate(id: Proposal.Id, patch: JsObject, by: Person.Id, op: String = "$set"): Future[WriteResult] =
-    collection.partialUpdate(Json.obj("id" -> id), Json.obj(op -> (patch - "id" - "meta")).deepMerge(Json.obj("$set" -> Json.obj("meta.updated" -> new DateTime(), "meta.updatedBy" -> by))))
+  private def partialUpdate(id: Proposal.Id, patch: JsObject, by: Person.Id): Future[WriteResult] =
+    collection.partialUpdate(Json.obj("id" -> id), patch.deepMerge(Json.obj("$set" -> Json.obj("meta.updated" -> new DateTime(), "meta.updatedBy" -> by))))
 
   def setStatus(id: Proposal.Id, status: Proposal.Status.Value, by: Person.Id): Future[WriteResult] =
-    partialUpdate(id, Json.obj("status" -> status), by)
+    partialUpdate(id, Json.obj("$set" -> Json.obj("status" -> status)), by)
 
   def setTalk(id: Proposal.Id, talkId: Talk.Id, by: Person.Id): Future[WriteResult] =
-    partialUpdate(id, Json.obj("talk" -> talkId, "status" -> Proposal.Status.Accepted), by)
+    partialUpdate(id, Json.obj("$set" -> Json.obj("talk" -> talkId, "status" -> Proposal.Status.Accepted)), by)
 
   def delete(id: Proposal.Id): Future[WriteResult] =
     collection.delete(Json.obj("id" -> id))

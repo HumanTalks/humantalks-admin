@@ -82,18 +82,18 @@ case class TalkCtrl(
 
   def doAccept(id: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     talkDbService.accept(id, req.identity.id).map { _ =>
-      Redirect(req.headers.get("Referer").orElse(req.headers.get("Host")).getOrElse(routes.TalkCtrl.get(id).toString))
+      Redirect(CtrlHelper.getReferer(req.headers, routes.TalkCtrl.get(id)))
     }
   }
 
   def doReject(id: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     talkDbService.reject(id, req.identity.id).map { _ =>
-      Redirect(req.headers.get("Referer").orElse(req.headers.get("Host")).getOrElse(routes.TalkCtrl.get(id).toString))
+      Redirect(CtrlHelper.getReferer(req.headers, routes.TalkCtrl.get(id)))
     }
   }
 
   def setAttribute(id: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    val redirectUrl = CtrlHelper.getReferer(req.headers).getOrElse(routes.TalkCtrl.get(id).toString)
+    val redirectUrl = CtrlHelper.getReferer(req.headers, routes.TalkCtrl.get(id))
     (for {
       attribute <- CtrlHelper.getFieldValue(req.body, "attribute")
       value <- CtrlHelper.getFieldValue(req.body, "value")

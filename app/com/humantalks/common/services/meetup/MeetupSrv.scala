@@ -1,76 +1,92 @@
 package com.humantalks.common.services.meetup
 
 import com.humantalks.common.Conf
+import com.humantalks.common.services.meetup.models.{ EventCreate, VenueCreate }
+import com.humantalks.internal.meetups.{ MeetupDbService, Meetup }
+import com.humantalks.internal.persons.Person
+import com.humantalks.internal.talks.Talk
+import com.humantalks.internal.venues.{ Venue, VenueDbService }
 import global.Contexts
-import play.api.libs.json.JsValue
-import play.api.libs.ws.WSClient
 
 import scala.concurrent.Future
 
-case class MeetupSrv(conf: Conf, ctx: Contexts, ws: WSClient) {
+case class MeetupSrv(conf: Conf, ctx: Contexts, meetupApi: MeetupApi, venueDbService: VenueDbService, meetupDbService: MeetupDbService) {
   import Contexts.wsToEC
   import ctx._
-  private val baseUrl = "https://api.meetup.com"
-  private val authParams = Map("key" -> conf.Meetup.apiKey, "sign" -> "sign")
 
-  def getGroup(groupUrlName: String): Future[Either[List[String], Group]] =
-    ws.url(s"$baseUrl/$groupUrlName")
-      .withQueryString((authParams ++ Map("photo-host" -> "secure")).toList: _*)
-      .get()
-      .map(res => parseResponse(res.json, _.as[Group]))
-
-  def getVenues(groupUrlName: String): Future[Either[List[String], List[Venue]]] =
-    ws.url(s"$baseUrl/$groupUrlName/venues")
-      .withQueryString((authParams ++ Map("page" -> "50")).toList: _*)
-      .get()
-      .map(res => parseResponse(res.json, _.as[List[Venue]]))
-
-  def getEvents(groupUrlName: String): Future[Either[List[String], List[Event]]] =
-    ws.url(s"$baseUrl/$groupUrlName/events")
-      .withQueryString((authParams ++ Map("photo-host" -> "secure", "status" -> "upcoming,past")).toList: _*)
-      .get()
-      .map(res => parseResponse(res.json, _.as[List[Event]]))
-
-  def getEvent(groupUrlName: String, eventId: String): Future[Either[List[String], Event]] =
-    ws.url(s"$baseUrl/$groupUrlName/events/$eventId")
-      .withQueryString((authParams ++ Map("photo-host" -> "secure")).toList: _*)
-      .get()
-      .map(res => parseResponse(res.json, _.as[Event]))
-
-  def createEvent(groupUrlName: String, data: EventCreate): Future[Either[List[String], Event]] =
-    if (conf.App.isProd) {
-      ws.url(s"$baseUrl/$groupUrlName/events")
-        .withQueryString((authParams ++ data.toParams).toList: _*)
-        .post("")
-        .map(res => parseResponse(res.json, _.as[Event]))
-    } else {
-      Future.successful(Left(List(s"createEvent forbidden in '${conf.App.env}'")))
+  def create(meetup: Meetup, venueOpt: Option[Venue], talkList: List[Talk], personList: List[Person], by: Person.Id): Future[Either[List[String], Meetup.MeetupRef]] = {
+    val group = conf.Meetup.group
+    meetup.meetupRef.map { ref =>
+      Future.successful(Left(List(s"Meetup reference found for ${meetup.data.title} (already created)")))
+    }.getOrElse {
+      withMeetupRef(group, venueOpt, by).flatMap { venueWithMeetupRefOpt =>
+        val eventCreate = EventCreate.from(meetup, venueWithMeetupRefOpt, talkList, personList)
+        meetupApi.createEvent(group, eventCreate).flatMap {
+          case Right(event) => meetupDbService.setMeetupRef(meetup.id, Meetup.MeetupRef(group, event.id.toLong, announced = false), by).map { _ =>
+            Right(Meetup.MeetupRef(group, event.id.toLong, announced = false))
+          }
+          case Left(errs) => Future.successful(Left(errs))
+        }
+      }
     }
+  }
 
-  def updateEvent(groupUrlName: String, eventId: String, data: EventCreate): Future[Either[List[String], Event]] =
-    patchEvent(groupUrlName, eventId, data.toParams)
-
-  def announceEvent(groupUrlName: String, eventId: String): Future[Either[List[String], Event]] =
-    patchEvent(groupUrlName, eventId, Map("announce" -> "true"))
-
-  private def patchEvent(groupUrlName: String, eventId: String, data: Map[String, String]): Future[Either[List[String], Event]] =
-    if (conf.App.isProd) {
-      ws.url(s"$baseUrl/$groupUrlName/events/$eventId")
-        .withQueryString((authParams ++ data).toList: _*)
-        .patch("")
-        .map(res => parseResponse(res.json, _.as[Event]))
-    } else {
-      Future.successful(Left(List(s"updateEvent forbidden in '${conf.App.env}'")))
+  def update(meetup: Meetup, venueOpt: Option[Venue], talkList: List[Talk], personList: List[Person], by: Person.Id): Future[Either[List[String], Meetup.MeetupRef]] = {
+    meetup.meetupRef.map { ref =>
+      withMeetupRef(ref.group, venueOpt, by).flatMap { venueWithMeetupRefOpt =>
+        val eventCreate = EventCreate.from(meetup, venueWithMeetupRefOpt, talkList, personList)
+        meetupApi.updateEvent(ref.group, ref.id, eventCreate).map {
+          case Right(event) => Right(ref)
+          case Left(errs) => Left(errs)
+        }
+      }
+    }.getOrElse {
+      Future.successful(Left(List(s"No meetup reference found for ${meetup.data.title}")))
     }
+  }
 
-  def getRsvps(groupUrlName: String, eventId: String): Future[Either[List[String], List[Rsvp]]] =
-    ws.url(s"$baseUrl/$groupUrlName/events/$eventId/rsvps")
-      .withQueryString((authParams ++ Map("photo-host" -> "secure")).toList: _*)
-      .get()
-      .map(res => parseResponse(res.json, _.as[List[Rsvp]]))
+  def announce(meetup: Meetup, by: Person.Id): Future[Either[List[String], Meetup.MeetupRef]] = {
+    meetup.meetupRef.map { ref =>
+      meetupApi.announceEvent(ref.group, ref.id).flatMap {
+        case Right(event) => meetupDbService.setMeetupRef(meetup.id, ref.copy(announced = true), by).map { _ =>
+          Right(ref.copy(announced = true))
+        }
+        case Left(errs) => Future.successful(Left(errs))
+      }
+    }.getOrElse {
+      Future.successful(Left(List(s"No meetup reference found for ${meetup.data.title}")))
+    }
+  }
 
-  private def parseResponse[T](json: JsValue, parse: JsValue => T): Either[List[String], T] =
-    (json \ "errors").asOpt[List[JsValue]].map(errs => Left(errs.flatMap(err => (err \ "message").asOpt[String])))
-      .orElse { (json \ "error").asOpt[String].map(err => Left(List(err))) }
-      .getOrElse { Right(parse(json)) }
+  def delete(meetup: Meetup, by: Person.Id): Future[Either[List[String], Unit]] = {
+    meetup.meetupRef.map { ref =>
+      meetupApi.deleteEvent(ref.group, ref.id).flatMap { res =>
+        meetupDbService.unsetMeetupRef(meetup.id, by).map { _ =>
+          res
+        }
+      }
+    }.getOrElse {
+      Future.successful(Left(List(s"No meetup reference found for ${meetup.data.title}")))
+    }
+  }
+
+  private def withMeetupRef(group: String, venueOpt: Option[Venue], by: Person.Id): Future[Option[Venue]] =
+    venueOpt.map { venue =>
+      getVenueMeetupId(group, venue, by).map { res =>
+        Some(venue.copy(meetupRef = res.map(_._2)))
+      }
+    }.getOrElse(Future.successful(None))
+  private def getVenueMeetupId(group: String, venue: Venue, by: Person.Id): Future[Option[(Venue.Id, Venue.MeetupRef)]] =
+    venue.meetupRef.map(ref => Future.successful(Some((venue.id, ref)))).getOrElse {
+      createVenue(group, venue, by).map(_.map(id => (venue.id, id)))
+    }
+  private def createVenue(group: String, venue: Venue, by: Person.Id): Future[Option[Venue.MeetupRef]] =
+    VenueCreate.from(venue).map { venueCreate =>
+      meetupApi.createVenue(group, venueCreate).flatMap {
+        case Right(res) => venueDbService.setMeetupRef(venue.id, Venue.MeetupRef(group, res.id), by).map { _ =>
+          Some(Venue.MeetupRef(group, res.id))
+        }
+        case Left(err) => Future.successful(None)
+      }
+    }.getOrElse(Future.successful(None))
 }

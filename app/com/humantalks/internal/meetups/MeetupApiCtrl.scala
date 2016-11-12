@@ -9,7 +9,7 @@ import global.helpers.ApiHelper
 import play.api.libs.json.Json
 import play.api.mvc.Controller
 
-case class MeetupApi(
+case class MeetupApiCtrl(
     ctx: Contexts,
     silhouette: Silhouette[SilhouetteEnv],
     meetupDbService: MeetupDbService

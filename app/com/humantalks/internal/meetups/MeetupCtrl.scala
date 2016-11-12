@@ -3,6 +3,7 @@ package com.humantalks.internal.meetups
 import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
 import com.humantalks.common.services.NotificationSrv
+import com.humantalks.common.services.meetup.MeetupSrv
 import com.humantalks.exposed.proposals.{ Proposal, ProposalDbService }
 import com.humantalks.internal.persons.{ PersonDbService, Person }
 import com.humantalks.internal.talks.{ TalkDbService, Talk }
@@ -25,6 +26,7 @@ case class MeetupCtrl(
     talkDbService: TalkDbService,
     meetupDbService: MeetupDbService,
     proposalDbService: ProposalDbService,
+    meetupSrv: MeetupSrv,
     notificationSrv: NotificationSrv
 )(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.ctrlToEC
@@ -44,9 +46,7 @@ case class MeetupCtrl(
   def create = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     implicit val user = Some(req.identity)
     meetupDbService.getLast.flatMap { meetupOpt =>
-      play.Logger.info("meetupOpt: " + meetupOpt)
       val lastDate = meetupOpt.map(_.data.date).getOrElse(new DateTime())
-      play.Logger.info("lastDate: " + lastDate)
       formView(Ok, meetupForm.fill(Meetup.Data.generate(lastDate)), None)
     }
   }
@@ -101,74 +101,112 @@ case class MeetupCtrl(
   }
 
   def doCreateTalk(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    val redirectUrl = CtrlHelper.getReferer(req.headers, routes.MeetupCtrl.get(id))
     talkForm.bindFromRequest.fold(
-      formWithErrors => Future.successful(Redirect(routes.MeetupCtrl.get(id)).flashing("error" -> "Incorrect form values")),
+      formWithErrors => Future.successful(Redirect(redirectUrl).flashing("error" -> "Incorrect form values")),
       talkData => talkDbService.create(talkData, req.identity.id).flatMap {
         case (_, talkId) =>
           meetupDbService.addTalk(id, talkId, req.identity.id).map { _ =>
             notificationSrv.addTalkToMeetup(id, talkId, req.identity.id)
-            Redirect(routes.MeetupCtrl.get(id))
+            Redirect(redirectUrl)
           }
       }
     )
   }
 
   def doAddTalkForm(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    val redirectUrl = CtrlHelper.getReferer(req.headers, routes.MeetupCtrl.get(id))
     CtrlHelper.getFieldValue(req.body, "talkId").flatMap(p => Talk.Id.from(p).right.toOption).map { talkId =>
       meetupDbService.addTalk(id, talkId, req.identity.id).map { _ =>
         notificationSrv.addTalkToMeetup(id, talkId, req.identity.id)
-        Redirect(routes.MeetupCtrl.get(id))
+        Redirect(redirectUrl)
       }
     }.getOrElse {
-      Future.successful(Redirect(routes.MeetupCtrl.get(id)).flashing("error" -> "Unable to find talk :("))
+      Future.successful(Redirect(redirectUrl).flashing("error" -> "Unable to find talk :("))
     }
   }
 
   def doAddTalk(id: Meetup.Id, talkId: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     meetupDbService.addTalk(id, talkId, req.identity.id).map { _ =>
       notificationSrv.addTalkToMeetup(id, talkId, req.identity.id)
-      Redirect(routes.MeetupCtrl.get(id))
+      Redirect(CtrlHelper.getReferer(req.headers, routes.MeetupCtrl.get(id)))
     }
   }
 
   def doMoveTalk(id: Meetup.Id, talkId: Talk.Id, up: Boolean) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     meetupDbService.moveTalk(id, talkId, up, req.identity.id).map { _ =>
-      Redirect(routes.MeetupCtrl.get(id))
+      Redirect(CtrlHelper.getReferer(req.headers, routes.MeetupCtrl.get(id)))
     }
   }
 
   def doRemoveTalk(id: Meetup.Id, talkId: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     meetupDbService.removeTalk(id, talkId, req.identity.id).map { _ =>
-      Redirect(routes.MeetupCtrl.get(id))
+      Redirect(CtrlHelper.getReferer(req.headers, routes.MeetupCtrl.get(id)))
     }
   }
 
   def doAddProposal(id: Meetup.Id, proposalId: Proposal.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    val redirectUrl = CtrlHelper.getReferer(req.headers, routes.MeetupCtrl.get(id))
     proposalDbService.accept(proposalId, req.identity.id).flatMap {
       case Right(talkId) => meetupDbService.addTalk(id, talkId, req.identity.id).map { _ =>
         notificationSrv.addTalkToMeetup(id, talkId, req.identity.id)
-        Redirect(routes.MeetupCtrl.get(id)).flashing("success" -> "Proposal transformed into a talk and added to meetup :)")
+        Redirect(redirectUrl).flashing("success" -> "Proposal transformed into a talk and added to meetup :)")
       }
-      case Left(err) => Future.successful(Redirect(routes.MeetupCtrl.get(id)).flashing("error" -> err))
-    }
-  }
-
-  def publish(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    implicit val user = Some(req.identity)
-    CtrlHelper.withItem(meetupDbService)(id) { meetup =>
-      val venueListFut = venueDbService.findByIds(meetup.data.venue.toSeq)
-      val talkListFut = talkDbService.findByIds(meetup.data.talks)
-      for {
-        venueList <- venueListFut
-        talkList <- talkListFut
-        personList <- personDbService.findByIds(talkList.flatMap(_.data.speakers))
-      } yield Ok(views.html.publish(meetup, talkList, personList, venueList))
+      case Left(err) => Future.successful(Redirect(redirectUrl).flashing("error" -> err))
     }
   }
 
   def doPublish(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    meetupDbService.setPublished(id, req.identity.id).map { _ =>
-      Redirect(routes.MeetupCtrl.get(id))
+    val redirectUrl = CtrlHelper.getReferer(req.headers, routes.MeetupCtrl.get(id))
+    CtrlHelper.withItem(meetupDbService)(id) { meetup =>
+      for {
+        venueOpt <- meetup.data.venue.map(id => venueDbService.get(id)).getOrElse(Future.successful(None))
+        talkList <- talkDbService.findByIds(meetup.data.talks)
+        personList <- personDbService.findByIds(talkList.flatMap(_.data.speakers))
+        res <- meetupSrv.create(meetup, venueOpt, talkList, personList, req.identity.id)
+      } yield res match {
+        case Right(_) => Redirect(redirectUrl)
+        case Left(errs) => Redirect(redirectUrl).flashing("error" -> errs.mkString(", "))
+      }
+    }
+  }
+
+  def doUpdatePublish(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    val redirectUrl = CtrlHelper.getReferer(req.headers, routes.MeetupCtrl.get(id))
+    CtrlHelper.withItem(meetupDbService)(id) { meetup =>
+      for {
+        venueOpt <- meetup.data.venue.map(id => venueDbService.get(id)).getOrElse(Future.successful(None))
+        talkList <- talkDbService.findByIds(meetup.data.talks)
+        personList <- personDbService.findByIds(talkList.flatMap(_.data.speakers))
+        res <- meetupSrv.update(meetup, venueOpt, talkList, personList, req.identity.id)
+      } yield res match {
+        case Right(_) => Redirect(redirectUrl)
+        case Left(errs) => Redirect(redirectUrl).flashing("error" -> errs.mkString(", "))
+      }
+    }
+  }
+
+  def doAnnounce(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    val redirectUrl = CtrlHelper.getReferer(req.headers, routes.MeetupCtrl.get(id))
+    CtrlHelper.withItem(meetupDbService)(id) { meetup =>
+      for {
+        res <- meetupSrv.announce(meetup, req.identity.id)
+      } yield res match {
+        case Right(_) => Redirect(redirectUrl)
+        case Left(errs) => Redirect(redirectUrl).flashing("error" -> errs.mkString(", "))
+      }
+    }
+  }
+
+  def doUnpublish(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    val redirectUrl = CtrlHelper.getReferer(req.headers, routes.MeetupCtrl.get(id))
+    CtrlHelper.withItem(meetupDbService)(id) { meetup =>
+      for {
+        res <- meetupSrv.delete(meetup, req.identity.id)
+      } yield res match {
+        case Right(_) => Redirect(redirectUrl)
+        case Left(errs) => Redirect(redirectUrl).flashing("error" -> errs.mkString(", "))
+      }
     }
   }
 
