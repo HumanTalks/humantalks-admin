@@ -1,8 +1,20 @@
 @import com.humantalks.internal.talks.Talk
+@import com.humantalks.internal.talks.routes.TalkCtrl
 @(talk: Talk)
-@talk.status match {
-    case Talk.Status.Suggested => {<span class="label label-info" title="Talk suggéré par un organisateur. Le speaker doit être contacté pour valider avec lui">Suggéré</span>}
-    case Talk.Status.Proposed => {<span class="label label-primary" title="Talk proposé par le speaker. Les organisateurs doivent valider le talk et la date">Proposé</span>}
-    case Talk.Status.Accepted => {<span class="label label-success" title="Talk accepté pour un meetup par les orgas & speakers">Accepté</span>}
-    case Talk.Status.Rejected => {<span class="label label-danger" title="Talk refusé, ne sera jamais donné à un meetup">Refusé</span>}
-}
+<div class="dropdown" style="display: inline;">
+    @talk.status match {
+        case Talk.Status.Suggested => {<span class="label label-info dropdown-toggle" data-toggle="dropdown" title="Talk suggéré par un organisateur. Le speaker doit être contacté pour valider avec lui">Suggéré</span>}
+        case Talk.Status.Proposed =>  {<span class="label label-primary dropdown-toggle" data-toggle="dropdown" title="Talk proposé par le speaker. Les organisateurs doivent valider le talk et la date">Proposé</span>}
+        case Talk.Status.Accepted =>  {<span class="label label-success dropdown-toggle" data-toggle="dropdown" title="Talk accepté pour un meetup par les orgas & speakers">Accepté</span>}
+        case Talk.Status.Rejected =>  {<span class="label label-danger dropdown-toggle" data-toggle="dropdown" title="Talk refusé, ne sera jamais donné à un meetup">Refusé</span>}
+    }
+    <ul class="dropdown-menu">
+        @Talk.Status.values.map { v =>
+            @if(talk.status == v) {
+                <li class="disabled"><a href="#">@v</a></li>
+            } else {
+                <li>@helper.form(action = TalkCtrl.setStatus(talk.id, v), 'class -> "inline") {<button type="submit" class="btn-link" title="Mettre le status '@v'">@v</button> }</li>
+            }
+        }
+    </ul>
+</div>

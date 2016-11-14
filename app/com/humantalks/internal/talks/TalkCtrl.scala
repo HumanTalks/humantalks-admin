@@ -80,6 +80,12 @@ case class TalkCtrl(
     )
   }
 
+  def setStatus(id: Talk.Id, status: Talk.Status.Value) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    talkDbService.setStatus(id, status, req.identity.id).map { _ =>
+      Redirect(CtrlHelper.getReferer(req.headers, routes.TalkCtrl.get(id)))
+    }
+  }
+
   def doAccept(id: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     talkDbService.accept(id, req.identity.id).map { _ =>
       Redirect(CtrlHelper.getReferer(req.headers, routes.TalkCtrl.get(id)))

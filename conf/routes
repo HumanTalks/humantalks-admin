@@ -49,9 +49,10 @@ POST    /talks/create                                               com.humantal
 GET     /talks/$id<.{36}>                                           com.humantalks.internal.talks.TalkCtrl.get(id: Talk.Id)
 GET     /talks/$id<.{36}>/edit                                      com.humantalks.internal.talks.TalkCtrl.update(id: Talk.Id)
 POST    /talks/$id<.{36}>/edit                                      com.humantalks.internal.talks.TalkCtrl.doUpdate(id: Talk.Id)
-POST    /talks/$id<.{36}>/attribute                                 com.humantalks.internal.talks.TalkCtrl.setAttribute(id: Talk.Id)
+POST    /talks/$id<.{36}>/status/:status                            com.humantalks.internal.talks.TalkCtrl.setStatus(id: Talk.Id, status: Talk.Status.Value)
 POST    /talks/$id<.{36}>/accept                                    com.humantalks.internal.talks.TalkCtrl.doAccept(id: Talk.Id)
 POST    /talks/$id<.{36}>/reject                                    com.humantalks.internal.talks.TalkCtrl.doReject(id: Talk.Id)
+POST    /talks/$id<.{36}>/attribute                                 com.humantalks.internal.talks.TalkCtrl.setAttribute(id: Talk.Id)
 POST    /talks/$id<.{36}>/delete                                    com.humantalks.internal.talks.TalkCtrl.doDelete(id: Talk.Id)
 
 GET     /meetups                                                    com.humantalks.internal.meetups.MeetupCtrl.find

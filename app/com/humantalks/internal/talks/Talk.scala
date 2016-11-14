@@ -23,6 +23,8 @@ object Talk {
   object Status extends Enumeration {
     val Suggested, Proposed, Accepted, Rejected = Value
   }
+  implicit val statusPathBinder = EnumerationHelper.pathBinder(Status)
+  implicit val statusFormat = EnumerationHelper.enumFormat(Status)
 
   case class Data(
       title: String,
@@ -41,8 +43,7 @@ object Talk {
     )
   }
 
-  implicit val formatStatus = EnumerationHelper.enumFormat(Status)
-  implicit val formatData = Json.format[Talk.Data]
+  implicit val formatData = Json.format[Data]
   implicit val format = Json.format[Talk]
   val fields = mapping(
     "title" -> nonEmptyText,

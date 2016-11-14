@@ -21,6 +21,7 @@ case class TalkDbService(talkRepository: TalkRepository, meetupRepository: Meetu
   def create(elt: Talk.Data, by: Person.Id): Future[(WriteResult, Talk.Id)] = talkRepository.create(elt, by)
   def update(elt: Talk, data: Talk.Data, by: Person.Id): Future[WriteResult] = talkRepository.update(elt, data, by)
   def updateAttribute(id: Talk.Id, attribute: String, value: String, by: Person.Id): Future[WriteResult] = talkRepository.updateAttribute(id, attribute, value, by)
+  def setStatus(id: Talk.Id, status: Talk.Status.Value, by: Person.Id): Future[WriteResult] = talkRepository.setStatus(id, status, by)
   def accept(id: Talk.Id, by: Person.Id): Future[WriteResult] = talkRepository.setStatus(id, Talk.Status.Accepted, by)
   def reject(id: Talk.Id, by: Person.Id): Future[WriteResult] = talkRepository.setStatus(id, Talk.Status.Rejected, by)
 

@@ -17,17 +17,17 @@ case class VenueCreate(
 object VenueCreate {
   def toParams(data: VenueCreate): Map[String, String] =
     Map(
-    "name" -> Some(data.name),
-    "visibility" -> Some(data.visibility),
-    "address_1" -> Some(data.address_1),
-    "address_2" -> data.address_2,
-    "city" -> Some(data.city),
-    "state" -> data.state,
-    "country" -> Some(data.country),
-    "web_url" -> data.web_url,
-    "phone" -> data.phone,
-    "hours" -> data.hours
-  ).flatMap { case (key, valueOpt) => valueOpt.map(value => (key, value)) }
+      "name" -> Some(data.name),
+      "visibility" -> Some(data.visibility),
+      "address_1" -> Some(data.address_1),
+      "address_2" -> data.address_2,
+      "city" -> Some(data.city),
+      "state" -> data.state,
+      "country" -> Some(data.country),
+      "web_url" -> data.web_url,
+      "phone" -> data.phone,
+      "hours" -> data.hours
+    ).flatMap { case (key, valueOpt) => valueOpt.map(value => (key, value)) }
 
   def from(venue: com.humantalks.internal.venues.Venue): Option[VenueCreate] = {
     val addressFromStreet = venue.data.location.flatMap(l => l.street.map(street => l.streetNo.map(_ + " ").getOrElse("") + street))

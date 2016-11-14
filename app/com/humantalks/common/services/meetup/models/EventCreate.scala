@@ -36,24 +36,24 @@ object EventCreate {
 
   def toParams(data: EventCreate): Map[String, String] =
     Map(
-    "publish_status" -> Some(data.status),
-    "name" -> Some(data.name),
-    "description" -> Some(data.description),
-    "time" -> Some(data.time.getMillis.toString),
-    "duration" -> data.duration.map(_.toString),
-    "rsvp_limit" -> data.rsvp_limit.map(_.toString),
-    "guest_limit" -> Some(data.guest_limit.toString),
-    "rsvp_open_time" -> Some(data.rsvp_open_time.getMillis.toString),
-    "rsvp_close_time" -> Some(data.rsvp_close_time.getMillis.toString),
-    "event_hosts" -> Some(data.hosts.mkString(",")),
-    "self_rsvp" -> Some(data.self_rsvp.toString),
-    "venue_id" -> data.venue_id.map(_.toString),
-    "venue_visibility" -> data.venue_visibility,
-    "lat" -> data.lat.map(_.toString),
-    "lon" -> data.lon.map(_.toString),
-    "how_to_find_us" -> data.how_to_find_us,
-    "question" -> data.question
-  ).flatMap { case (key, valueOpt) => valueOpt.map(value => (key, value)) }
+      "publish_status" -> Some(data.status),
+      "name" -> Some(data.name),
+      "description" -> Some(data.description),
+      "time" -> Some(data.time.getMillis.toString),
+      "duration" -> data.duration.map(_.toString),
+      "rsvp_limit" -> data.rsvp_limit.map(_.toString),
+      "guest_limit" -> Some(data.guest_limit.toString),
+      "rsvp_open_time" -> Some(data.rsvp_open_time.getMillis.toString),
+      "rsvp_close_time" -> Some(data.rsvp_close_time.getMillis.toString),
+      "event_hosts" -> Some(data.hosts.mkString(",")),
+      "self_rsvp" -> Some(data.self_rsvp.toString),
+      "venue_id" -> data.venue_id.map(_.toString),
+      "venue_visibility" -> data.venue_visibility,
+      "lat" -> data.lat.map(_.toString),
+      "lon" -> data.lon.map(_.toString),
+      "how_to_find_us" -> data.how_to_find_us,
+      "question" -> data.question
+    ).flatMap { case (key, valueOpt) => valueOpt.map(value => (key, value)) }
 
   def from(meetup: Meetup, venueOpt: Option[com.humantalks.internal.venues.Venue], talkList: List[Talk], personList: List[Person]): EventCreate =
     EventCreate(
@@ -73,5 +73,6 @@ object EventCreate {
       lat = venueOpt.flatMap(_.data.location.map(_.coords.lat)),
       lon = venueOpt.flatMap(_.data.location.map(_.coords.lng)),
       how_to_find_us = None,
-      question = None)
+      question = None
+    )
 }
