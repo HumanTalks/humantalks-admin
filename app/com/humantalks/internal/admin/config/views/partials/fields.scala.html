@@ -1,0 +1,7 @@
+@import com.humantalks.internal.admin.config.Config
+@import global.views.html.form._
+@(configForm: Form[Config.Data])(implicit messagesApi: MessagesApi)
+@fieldHorizontal(configForm("ref"), 'label -> "Référence") { field => @inputText(field, 'placeholder -> "ex: proposal.email.confirmation", 'autofocus -> "") }
+@fieldHorizontal(configForm("content"), 'label -> "Type de contenu") { field => @inputSelect(field, Config.ContentType.values.toList.map(v => (v.toString, messagesApi("config.contenttype."+v))), 'emptyOption -> " ") }
+@fieldHorizontal(configForm("description"), 'label -> "Description") { field => @inputTextarea(field, 'rows -> "5", 'placeholder -> "ex: Explication de la configuration...") }
+@fieldHorizontal(configForm("value"), 'label -> "Contenu") { field => @inputTextarea(field, 'rows -> "5", 'placeholder -> "ex: bla bla bla") }

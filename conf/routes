@@ -82,6 +82,15 @@ GET     /admin/users                                                com.humantal
 POST    /admin/users/$id<.{36}>/role                                com.humantalks.internal.admin.AdminCtrl.setRole(id: Person.Id)
 POST    /admin/users/deleteToken/:id                                com.humantalks.internal.admin.AdminCtrl.deleteToken(id: AuthToken.Id)
 
+GET     /admin/config                                               com.humantalks.internal.admin.config.ConfigCtrl.find
+GET     /admin/config/create                                        com.humantalks.internal.admin.config.ConfigCtrl.create
+POST    /admin/config/create                                        com.humantalks.internal.admin.config.ConfigCtrl.doCreate
+GET     /admin/config/$id<.{36}>                                    com.humantalks.internal.admin.config.ConfigCtrl.get(id: Config.Id)
+GET     /admin/config/$id<.{36}>/edit                               com.humantalks.internal.admin.config.ConfigCtrl.update(id: Config.Id)
+POST    /admin/config/$id<.{36}>/edit                               com.humantalks.internal.admin.config.ConfigCtrl.doUpdate(id: Config.Id)
+POST    /admin/config/$id<.{36}>/value                              com.humantalks.internal.admin.config.ConfigCtrl.doUpdateValue(id: Config.Id)
+POST    /admin/config/$id<.{36}>/delete                             com.humantalks.internal.admin.config.ConfigCtrl.doDelete(id: Config.Id)
+
 GET     /api                                                        com.humantalks.exposed.PublicApi.apiRoot
 GET     /api/meetups                                                com.humantalks.exposed.PublicApi.findMeetups(include: Option[String] ?= None)
 GET     /api/meetups/$id<.{36}>                                     com.humantalks.exposed.PublicApi.findMeetup(id: Meetup.Id, include: Option[String] ?= None)

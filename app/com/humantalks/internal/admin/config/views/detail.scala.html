@@ -1,0 +1,32 @@
+@import com.humantalks.internal.admin.config.Config
+@import com.humantalks.internal.persons.Person
+@import global.views.html.format._
+@import global.views.html.partials._
+@import com.humantalks.common.views.html.format._
+@import com.humantalks.internal.views.html.partials._
+@import com.humantalks.internal.admin.config.routes.ConfigCtrl
+@(config: Config)(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@main(config.data.ref) {
+    @header("config")
+
+    <div class="container">
+        @flash()
+        <h1>
+            @if(userOpt.exists(_.isAuthorized(Person.Role.Admin))) {
+                <span class="pull-right">
+                    <a href="@ConfigCtrl.update(config.id)" class="btn btn-default" title="Modifier la config"><i class="fa fa-pencil-square-o"></i></a>
+                    @helper.form(action = ConfigCtrl.doDelete(config.id), 'class -> "inline") { <button type="submit" class="btn btn-danger" title="Supprimer cette config" confirm><i class="fa fa-trash"></i></button> }
+                </span>
+            }
+            @config.data.ref
+        </h1>
+        <p>@multiline(config.data.description)</p>
+        @helper.form(action=ConfigCtrl.doUpdateValue(config.id)) {
+            <div class="form-group">
+                <label for="value">Valeur</label>
+                <textarea class="form-control" id="value" name="value" rows="20">@config.data.value</textarea>
+            </div>
+            <button type="submit" class="btn btn-default">Modifier</button>
+        }
+    </div>
+}

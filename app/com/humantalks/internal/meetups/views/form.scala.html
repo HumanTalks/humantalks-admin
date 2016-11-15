@@ -6,7 +6,7 @@
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.meetups.routes.MeetupCtrl
 @import com.humantalks.internal.meetups.routes.MeetupApiCtrl
-@(meetupForm: Form[Meetup.Data], talkForm: Form[Talk.Data], personForm: Form[Person.Data], meetupOpt: Option[Meetup])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
+@(meetupForm: Form[Meetup.Data], talkForm: Form[Talk.Data], personForm: Form[Person.Data], meetupOpt: Option[Meetup])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @main("Nouveau meetup") {
     @header("meetup")
 

@@ -83,7 +83,7 @@ object Meetup {
     val introduction = meetup.data.description.map(_ + br + br).getOrElse("")
     val venueText = venueOpt.map(venueToMarkdown).getOrElse("")
     val talksText = meetup.data.talks.flatMap(id => talkList.find(_.id == id)).map(t => talkToMarkdown(t, personList)).mkString("")
-    val conclusion = "Proposez vos sujets pour les prochaines sessions : " + link("http://bit.ly/HTParis-sujet", "http://bit.ly/HTParis-sujet")
+    val conclusion = "Proposez vos sujets pour les prochaines sessions : " + link("https://humantalksparis.herokuapp.com/submit-talk", "https://humantalksparis.herokuapp.com/submit-talk")
 
     introduction + venueText + talksText + conclusion
   }

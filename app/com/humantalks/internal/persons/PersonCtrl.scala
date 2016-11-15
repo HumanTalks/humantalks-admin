@@ -98,7 +98,7 @@ case class PersonCtrl(
     Future.successful(Ok(views.html.profil(req.identity)))
   }
 
-  private def formView(status: Status, personForm: Form[Person.Data], personOpt: Option[Person])(implicit request: RequestHeader, user: Option[Person]): Future[Result] = {
+  private def formView(status: Status, personForm: Form[Person.Data], personOpt: Option[Person])(implicit request: RequestHeader, userOpt: Option[Person]): Future[Result] = {
     Future.successful(status(views.html.form(personForm, personOpt)))
   }
 }

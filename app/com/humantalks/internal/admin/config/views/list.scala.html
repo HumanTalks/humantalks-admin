@@ -1,0 +1,39 @@
+@import com.humantalks.internal.admin.config.Config
+@import com.humantalks.internal.persons.Person
+@import global.views.html.format._
+@import global.views.html.partials._
+@import com.humantalks.common.views.html.format._
+@import com.humantalks.internal.views.html.partials._
+@import com.humantalks.internal.admin.config.routes.ConfigCtrl
+@(configList: List[Config])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@main("Configs") {
+    @header("config")
+
+    <div class="container">
+        @flash()
+        <h1>
+            @if(userOpt.exists(_.isAuthorized(Person.Role.Admin))) { <a href="@ConfigCtrl.create" class="pull-right"><i class="fa fa-plus"></i></a> }
+            Configurations
+        </h1>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Clé</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Contenu</th>
+                </tr>
+            </thead>
+            <tbody>
+                @configList.map { config =>
+                    <tr>
+                        <td><a href="@ConfigCtrl.get(config.id)">@config.data.ref</a></td>
+                        <td>@messagesApi("config.contenttype."+config.data.content)</td>
+                        <td>@config.data.description</td>
+                        <td>@multiline(config.data.value)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

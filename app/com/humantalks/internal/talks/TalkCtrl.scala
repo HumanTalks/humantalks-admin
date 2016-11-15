@@ -119,7 +119,7 @@ case class TalkCtrl(
     }
   }
 
-  private def formView(status: Status, talkForm: Form[Talk.Data], talkOpt: Option[Talk])(implicit request: RequestHeader, user: Option[Person]): Future[Result] = {
+  private def formView(status: Status, talkForm: Form[Talk.Data], talkOpt: Option[Talk])(implicit request: RequestHeader, userOpt: Option[Person]): Future[Result] = {
     Future.successful(status(views.html.form(talkForm, talkOpt, personForm)))
   }
 }

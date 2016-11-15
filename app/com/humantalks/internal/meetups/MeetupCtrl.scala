@@ -217,7 +217,7 @@ case class MeetupCtrl(
     }
   }
 
-  private def formView(status: Status, meetupForm: Form[Meetup.Data], meetupOpt: Option[Meetup])(implicit request: RequestHeader, user: Option[Person]): Future[Result] = {
+  private def formView(status: Status, meetupForm: Form[Meetup.Data], meetupOpt: Option[Meetup])(implicit request: RequestHeader, userOpt: Option[Person]): Future[Result] = {
     Future.successful(status(views.html.form(meetupForm, talkForm, personForm, meetupOpt)))
   }
 }

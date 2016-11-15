@@ -17,9 +17,8 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i></a>
                     <ul class="dropdown-menu">
                         <li><a href="@com.humantalks.internal.persons.routes.PersonCtrl.profil">Mon profil</a></li>
-                        @if(userOpt.exists(_.isAuthorized(Person.Role.Admin))) {
-                            <li><a href="@com.humantalks.internal.admin.routes.AdminCtrl.users">Admin</a></li>
-                        }
+                        @if(userOpt.exists(_.isAuthorized(Person.Role.Organizer))) { <li><a href="@com.humantalks.internal.admin.config.routes.ConfigCtrl.find">Config</a></li> }
+                        @if(userOpt.exists(_.isAuthorized(Person.Role.Admin))) { <li><a href="@com.humantalks.internal.admin.routes.AdminCtrl.users">Admin</a></li> }
                         <li>@helper.form(action=com.humantalks.auth.routes.AuthCtrl.doLogout) { <button type="submit" class="btn btn-link">Logout</button> }</li>
                     </ul>
                 </li>

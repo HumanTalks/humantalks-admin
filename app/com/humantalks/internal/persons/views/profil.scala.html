@@ -1,7 +1,7 @@
 @import com.humantalks.internal.persons.Person
 @import global.views.html.partials._
 @import com.humantalks.internal.views.html.partials._
-@(person: Person)(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
+@(person: Person)(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @main("Mon profil") {
     @header("user")
 

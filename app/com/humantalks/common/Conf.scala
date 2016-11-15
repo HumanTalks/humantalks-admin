@@ -2,6 +2,7 @@ package com.humantalks.common
 
 import com.humantalks.auth.entities.{ Credentials, AuthToken }
 import com.humantalks.exposed.proposals.Proposal
+import com.humantalks.internal.admin.config.Config
 import com.humantalks.internal.meetups.Meetup
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
@@ -34,6 +35,7 @@ case class Conf(configuration: Configuration) {
     val talk = Repository.Collection[Talk]("Talk")
     val meetup = Repository.Collection[Meetup]("Meetup")
     val proposal = Repository.Collection[Proposal]("Proposal")
+    val config = Repository.Collection[Config]("Config")
   }
   object Auth {
     object RememberMe {

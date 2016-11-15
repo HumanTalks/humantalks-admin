@@ -5,7 +5,7 @@
 @import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.proposals.routes.ProposalCtrl
-@(proposalList: List[Proposal], personList: List[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
+@(proposalList: List[Proposal], personList: List[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @main("Proposals") {
     @header("proposal")
 

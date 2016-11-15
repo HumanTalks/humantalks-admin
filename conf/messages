@@ -91,7 +91,11 @@ auth.reset_password.reset.error.expired_token=Le lien n''est plus valide! Merci 
 auth.reset_password.reset.error.invalid_provider=Le lien n''est plus valide! Merci de recommencer la procédure de réinitialisation du mot de passe.
 auth.reset_password.reset.error.no_matching_user=Le lien n''est plus valide! Merci de recommencer la procédure de réinitialisation du mot de passe.
 
-# Person texts
+# Enum texts
+
+person.role.User=User
+person.role.Organizer=Organizer
+person.role.Admin=Admin
 
 person.shirt.S_F=S Femme
 person.shirt.M_F=M Femme
@@ -101,3 +105,20 @@ person.shirt.S_M=S Homme
 person.shirt.M_M=M Homme
 person.shirt.L_M=L Homme
 person.shirt.XL_M=XL Homme
+
+talk.status.Suggested=Suggéré
+talk.status.Suggested.type=info
+talk.status.Suggested.desc=Talk suggéré par un organisateur. Le speaker doit être contacté pour valider avec lui
+talk.status.Proposed=Proposé
+talk.status.Proposed.type=primary
+talk.status.Proposed.desc=Talk proposé par le speaker. Les organisateurs doivent valider le talk et la date
+talk.status.Accepted=Accepté
+talk.status.Accepted.type=success
+talk.status.Accepted.desc=Talk accepté pour un meetup par les orgas & speakers
+talk.status.Rejected=Refusé
+talk.status.Rejected.type=danger
+talk.status.Rejected.desc=Talk refusé, ne sera jamais donné à un meetup
+
+config.contenttype.Text=Text
+config.contenttype.Markdown=Markdown
+config.contenttype.Html=Html

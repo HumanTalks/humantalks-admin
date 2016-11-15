@@ -1,5 +1,4 @@
 @import com.humantalks.internal.persons.Person
-@import com.humantalks.internal.persons.Person.Shirt
 @import global.views.html.form._
 @(personForm: Form[Person.Data])(implicit messagesApi: MessagesApi)
 @fieldHorizontal(personForm("name"), 'label -> "Nom") { field => @inputText(field, 'placeholder -> "ex: John Doe", 'autofocus -> "") }
@@ -7,5 +6,5 @@
 @fieldHorizontal(personForm("twitter"), 'label -> "Compte twitter") { field => @inputText(field, 'twitterScraper -> "", 'avatar -> "avatar", 'fullname -> "name", 'bio -> "description", 'placeholder -> "ex: @johndoe") }
 @fieldHorizontal(personForm("phone"), 'label -> "Téléphone") { field => @inputText(field, 'placeholder -> "ex: 06 04 05 09 08") }
 @fieldHorizontal(personForm("avatar"), 'label -> "Image de profil") { field => @inputImageUrl(field, 'placeholder -> "ex: https://pbs.twimg.com/profile_images/3133057797/81ea4e63c7078eec0a7c7d6ae57a3ce1_400x400.jpeg") }
-@fieldHorizontal(personForm("shirt"), 'label -> "Taille de t-shirt") { field => @inputSelect(field, Shirt.values.toList.map(v => (v.toString, messagesApi("person.shirt."+v))), 'emptyOption -> " ") }
+@fieldHorizontal(personForm("shirt"), 'label -> "Taille de t-shirt") { field => @inputSelect(field, Person.Shirt.values.toList.map(v => (v.toString, messagesApi("person.shirt."+v))), 'emptyOption -> " ") }
 @fieldHorizontal(personForm("description"), 'label -> "Description") { field => @inputTextarea(field, 'rows -> "5", 'placeholder -> "ex: Développeur chez XXX ...") }

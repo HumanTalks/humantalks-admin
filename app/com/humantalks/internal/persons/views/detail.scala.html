@@ -8,7 +8,7 @@
 @import com.humantalks.internal.persons.routes.PersonCtrl
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @import com.humantalks.internal.proposals.routes.ProposalCtrl
-@(person: Person, talkList: List[Talk], proposalList: List[Proposal])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
+@(person: Person, talkList: List[Talk], proposalList: List[Proposal])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @main(person.data.name) {
     @header("person")
 

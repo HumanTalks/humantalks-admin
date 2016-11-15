@@ -4,7 +4,7 @@
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.venues.routes.VenueCtrl
 @import com.humantalks.internal.venues.routes.VenueApiCtrl
-@(venueForm: Form[Venue.Data], venueOpt: Option[Venue], personForm: Form[Person.Data])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
+@(venueForm: Form[Venue.Data], venueOpt: Option[Venue], personForm: Form[Person.Data])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @main("Nouveau lieu") {
     @header("venue")
 

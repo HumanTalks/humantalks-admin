@@ -3,7 +3,7 @@
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.persons.routes.PersonCtrl
 @import com.humantalks.internal.persons.routes.PersonApiCtrl
-@(personForm: Form[Person.Data], personOpt: Option[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
+@(personForm: Form[Person.Data], personOpt: Option[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @main("Nouvelle personne") {
     @header("person")
 

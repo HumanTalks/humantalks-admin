@@ -38,7 +38,7 @@ object Person {
       email: Option[String], // to match existing person when submiting a new talk
       phone: Option[String],
       avatar: Option[String],
-      shirt: Option[Person.Shirt.Value],
+      shirt: Option[Shirt.Value],
       description: Option[String]
   ) {
     def trim: Data = copy(
@@ -110,7 +110,7 @@ object Person {
     "email" -> optional(email),
     "phone" -> optional(text),
     "avatar" -> optional(text),
-    "shirt" -> optional(of[Person.Shirt.Value]),
+    "shirt" -> optional(of[Shirt.Value]),
     "description" -> optional(text)
-  )(Person.Data.apply)(Person.Data.unapply)
+  )(Data.apply)(Data.unapply)
 }

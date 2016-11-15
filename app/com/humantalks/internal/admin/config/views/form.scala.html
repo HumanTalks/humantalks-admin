@@ -1,0 +1,30 @@
+@import com.humantalks.internal.admin.config.Config
+@import com.humantalks.internal.persons.Person
+@import global.views.html.partials._
+@import com.humantalks.internal.views.html.partials._
+@import com.humantalks.internal.admin.config.routes.ConfigCtrl
+@(configForm: Form[Config.Data], configOpt: Option[Config])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@main(configOpt.map(c => "Modifier "+c.data.ref).getOrElse("Ajouter une config")) {
+    @header("config")
+
+    <div class="container">
+        @flash()
+        <div class="page-header">
+            <h1>@configOpt.map{ c => Modifier @c.data.ref}.getOrElse{Ajouter une config}</h1>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+            @helper.form(action=configOpt.map(c => ConfigCtrl.doUpdate(c.id)).getOrElse(ConfigCtrl.doCreate()), 'class->"form-horizontal venue-form") {
+                @partials.fields(configForm)
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        @configOpt.map{c => <a href="@ConfigCtrl.get(c.id)" class="btn btn-default btn-lg">Annuler</a>}
+                        <button type="submit" class="btn btn-primary btn-lg">@configOpt.map{ c => Modifier @c.data.ref}.getOrElse{Ajouter une config}</button>
+                    </div>
+                </div>
+            }
+            </div>
+        </div>
+    </div>
+}

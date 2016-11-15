@@ -10,7 +10,7 @@
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @import com.humantalks.internal.meetups.routes.MeetupCtrl
 @import com.humantalks.internal.proposals.routes.ProposalCtrl
-@(meetup: Meetup, talkForm: Form[Talk.Data], personForm: Form[Person.Data], pendingTalks: List[Talk], allTalks: List[Talk], allPersons: List[Person], venueList: List[Venue], pendingProposals: List[Proposal])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
+@(meetup: Meetup, talkForm: Form[Talk.Data], personForm: Form[Person.Data], pendingTalks: List[Talk], allTalks: List[Talk], allPersons: List[Person], venueList: List[Venue], pendingProposals: List[Proposal])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @getTalks(meetup: Meetup, allTalks: List[Talk]) = @{
     meetup.data.talks.flatMap(id => allTalks.find(_.id == id))
 }

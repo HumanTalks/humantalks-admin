@@ -4,7 +4,7 @@
 @import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.persons.routes.PersonCtrl
-@(personList: List[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
+@(personList: List[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @main("Personnes") {
     @header("person")
 

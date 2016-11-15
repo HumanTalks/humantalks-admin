@@ -7,7 +7,7 @@
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.venues.routes.VenueCtrl
 @import com.humantalks.internal.meetups.routes.MeetupCtrl
-@(meetupList: List[Meetup], venueList: List[Venue])(implicit request: RequestHeader, messagesApi: MessagesApi, user: Option[Person])
+@(meetupList: List[Meetup], venueList: List[Venue])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @main("Meetups") {
     @header("meetup")
 

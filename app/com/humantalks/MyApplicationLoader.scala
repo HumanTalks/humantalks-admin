@@ -12,6 +12,7 @@ import com.humantalks.common.services.sendgrid.SendgridSrv
 import com.humantalks.exposed.PublicApi
 import com.humantalks.exposed.proposals.{ ProposalDbService, ProposalRepository }
 import com.humantalks.internal.admin.AdminCtrl
+import com.humantalks.internal.admin.config.{ ConfigCtrl, ConfigDbService, ConfigRepository }
 import com.humantalks.internal.meetups.{ MeetupApiCtrl, MeetupCtrl, MeetupDbService, MeetupRepository }
 import com.humantalks.internal.persons.{ PersonApiCtrl, PersonCtrl, PersonDbService, PersonRepository }
 import com.humantalks.internal.proposals.ProposalCtrl
@@ -62,12 +63,14 @@ class MyComponents(context: ApplicationLoader.Context)
   val talkRepository = TalkRepository(conf, ctx, mongo, embedSrv)
   val meetupRepository = MeetupRepository(conf, ctx, mongo)
   val proposalRepository = ProposalRepository(conf, ctx, mongo, embedSrv)
+  val configRepository = ConfigRepository(conf, ctx, mongo)
 
   val venueDbService = VenueDbService(venueRepository, meetupRepository)
   val personDbService = PersonDbService(credentialsRepository, personRepository, talkRepository, proposalRepository)
   val talkDbService = TalkDbService(talkRepository, meetupRepository, proposalRepository)
   val meetupDbService = MeetupDbService(talkRepository, meetupRepository)
   val proposalDbService = ProposalDbService(talkRepository, proposalRepository)
+  val configDbService = ConfigDbService(configRepository)
 
   val authSrv = AuthSrv(passwordHasherRegistry, credentialsProvider, authInfoRepository)
 
@@ -91,6 +94,7 @@ class MyComponents(context: ApplicationLoader.Context)
     MeetupCtrl(ctx, silhouette, venueDbService, personDbService, talkDbService, meetupDbService, proposalDbService, meetupSrv, notificationSrv),
     ProposalCtrl(ctx, silhouette, personDbService, proposalDbService, talkDbService),
     AdminCtrl(ctx, silhouette, personDbService, credentialsRepository, authTokenRepository),
+    ConfigCtrl(ctx, silhouette, configDbService),
     PublicApi(ctx, venueDbService, personDbService, talkDbService, meetupDbService),
     Select2Ctrl(ctx, silhouette, venueDbService, personDbService, talkDbService, meetupDbService),
     VenueApiCtrl(ctx, silhouette, venueDbService),
