@@ -23,7 +23,7 @@ class Utils {
         if($form.length === 0){ console.error('Invalid form element :(', $form); }
         var model = {};
         Utils.formInputs($form).each(function(){
-            var value = $(this).attr('type') === 'checkbox' ? $(this).prop('checked') : $(this).val();
+            var value = $(this).attr('type') === 'checkbox' ? $(this).prop('checked') : $(this).val().trim();
             if(value !== ''){
                 Utils.setSafe(model, $(this).attr('name').replace('[]', ''), value);
             }
@@ -391,6 +391,39 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
             header: '<h3>Dataset 2</h3>'
         }
     });
+})();
+
+// live-preview
+(function(){
+    $('.live-preview').each(function(){
+        const $editor = $(this).find('.editor');
+        const $id = $(this).find('.entity-id');
+        const $preview = $(this).find('.preview');
+        updatePreview($editor, $id, $preview);
+        $editor.on('change', function(){
+            updatePreview($editor, $id, $preview);
+        });
+        $id.on('change', function(){
+            updatePreview($editor, $id, $preview);
+        });
+    });
+    function updatePreview($editor, $id, $preview) {
+        const url = $editor.attr('previewUrl').trim();
+        const data: any = Utils.formModel($editor);
+        data.id = $id.val().trim();
+        return $.ajax({
+            type: 'POST',
+            url: url,
+            data: JSON.stringify(data),
+            contentType: 'application/json'
+        }).then(function(res){
+            $preview.parents('.form-group').removeClass('has-error');
+            $preview.val(res);
+        }, function(err){
+            $preview.parents('.form-group').addClass('has-error');
+            $preview.val(err.responseText);
+        });
+    }
 })();
 
 // GMapPlace picker (https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete?hl=fr)

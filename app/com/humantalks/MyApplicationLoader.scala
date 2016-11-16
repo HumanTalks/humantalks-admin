@@ -12,7 +12,7 @@ import com.humantalks.common.services.sendgrid.SendgridSrv
 import com.humantalks.exposed.PublicApi
 import com.humantalks.exposed.proposals.{ ProposalDbService, ProposalRepository }
 import com.humantalks.internal.admin.AdminCtrl
-import com.humantalks.internal.admin.config.{ ConfigCtrl, ConfigDbService, ConfigRepository }
+import com.humantalks.internal.admin.config.{ ConfigApiCtrl, ConfigCtrl, ConfigDbService, ConfigRepository }
 import com.humantalks.internal.meetups.{ MeetupApiCtrl, MeetupCtrl, MeetupDbService, MeetupRepository }
 import com.humantalks.internal.persons.{ PersonApiCtrl, PersonCtrl, PersonDbService, PersonRepository }
 import com.humantalks.internal.proposals.ProposalCtrl
@@ -101,6 +101,7 @@ class MyComponents(context: ApplicationLoader.Context)
     PersonApiCtrl(ctx, silhouette, personDbService),
     TalkApiCtrl(ctx, silhouette, talkDbService),
     MeetupApiCtrl(ctx, silhouette, meetupDbService),
+    ConfigApiCtrl(ctx, silhouette, venueDbService, personDbService, talkDbService, meetupDbService, configDbService),
     com.humantalks.tools.Application(ctx),
     EmbedCtrl(ctx, embedSrv),
     TwitterScraper(ctx, wsClient),

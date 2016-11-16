@@ -5,6 +5,7 @@
 @import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.admin.config.routes.ConfigCtrl
+@import com.humantalks.internal.admin.config.routes.ConfigApiCtrl
 @(config: Config)(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @main(config.data.ref) {
     @header("config")
@@ -21,12 +22,24 @@
             @config.data.ref
         </h1>
         <p>@multiline(config.data.description)</p>
-        @helper.form(action=ConfigCtrl.doUpdateValue(config.id)) {
-            <div class="form-group">
-                <label for="value">Valeur</label>
-                <textarea class="form-control" id="value" name="value" rows="20">@config.data.value</textarea>
+        <div class="row live-preview">
+            <div class="col-md-6">
+                @helper.form(action=ConfigCtrl.doUpdateValue(config.id), 'class -> "editor", 'previewUrl -> ConfigApiCtrl.preview.toString) {
+                    <input type="hidden" name="ref" value="@config.data.ref">
+                    <div class="form-group">
+                        <label class="control-label" for="value">Template :</label>
+                        <textarea class="form-control" id="value" name="value" rows="25">@config.data.value</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-default">Modifier</button>
+                }
             </div>
-            <button type="submit" class="btn btn-default">Modifier</button>
-        }
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label" for="value">Preview :</label>
+                    <input type="text" class="form-control entity-id" name="id" placeholder="Id à utiliser pour générer le template">
+                    <textarea class="form-control preview" rows="23" style="margin-top: 6px;" disabled></textarea>
+                </div>
+            </div>
+        </div>
     </div>
 }

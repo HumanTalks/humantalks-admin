@@ -71,14 +71,13 @@ case class ConfigCtrl(
   }
 
   def doUpdateValue(id: Config.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    val redirectUrl = CtrlHelper.getReferer(req.headers, routes.ConfigCtrl.get(id))
     CtrlHelper.getFieldValue(req.body, "value").map { value =>
       configDbService.setValue(id, value, req.identity.id).map {
         case _ =>
-          Redirect(redirectUrl).flashing("success" -> "Configuration mise à jour")
+          Redirect(routes.ConfigCtrl.find()).flashing("success" -> "Configuration mise à jour")
       }
     }.getOrElse {
-      Future.successful(Redirect(redirectUrl).flashing("error" -> "Bad request: you should set 'value' in form parameters !"))
+      Future.successful(Redirect(routes.ConfigCtrl.find()).flashing("error" -> "Bad request: you should set 'value' in form parameters !"))
     }
   }
 
