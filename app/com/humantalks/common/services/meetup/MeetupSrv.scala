@@ -2,6 +2,7 @@ package com.humantalks.common.services.meetup
 
 import com.humantalks.common.Conf
 import com.humantalks.common.services.meetup.models.{ EventCreate, VenueCreate }
+import com.humantalks.internal.admin.config.{ Config, ConfigDbService }
 import com.humantalks.internal.meetups.{ MeetupDbService, Meetup }
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
@@ -10,7 +11,7 @@ import global.Contexts
 
 import scala.concurrent.Future
 
-case class MeetupSrv(conf: Conf, ctx: Contexts, meetupApi: MeetupApi, venueDbService: VenueDbService, meetupDbService: MeetupDbService) {
+case class MeetupSrv(conf: Conf, ctx: Contexts, meetupApi: MeetupApi, venueDbService: VenueDbService, meetupDbService: MeetupDbService, configDbService: ConfigDbService) {
   import Contexts.wsToEC
   import ctx._
 
@@ -20,12 +21,14 @@ case class MeetupSrv(conf: Conf, ctx: Contexts, meetupApi: MeetupApi, venueDbSer
       Future.successful(Left(List(s"Meetup reference found for ${meetup.data.title} (already created)")))
     }.getOrElse {
       withMeetupRef(group, venueOpt, by).flatMap { venueWithMeetupRefOpt =>
-        val eventCreate = EventCreate.from(meetup, venueWithMeetupRefOpt, talkList, personList)
-        meetupApi.createEvent(group, eventCreate).flatMap {
-          case Right(event) => meetupDbService.setMeetupRef(meetup.id, Meetup.MeetupRef(group, event.id.toLong, announced = false), by).map { _ =>
-            Right(Meetup.MeetupRef(group, event.id.toLong, announced = false))
+        configDbService.getValue(Config.meetupEventDescription).flatMap { template =>
+          val eventCreate = EventCreate.from(template, meetup, venueWithMeetupRefOpt, talkList, personList)
+          meetupApi.createEvent(group, eventCreate).flatMap {
+            case Right(event) => meetupDbService.setMeetupRef(meetup.id, Meetup.MeetupRef(group, event.id.toLong, announced = false), by).map { _ =>
+              Right(Meetup.MeetupRef(group, event.id.toLong, announced = false))
+            }
+            case Left(errs) => Future.successful(Left(errs))
           }
-          case Left(errs) => Future.successful(Left(errs))
         }
       }
     }
@@ -34,10 +37,12 @@ case class MeetupSrv(conf: Conf, ctx: Contexts, meetupApi: MeetupApi, venueDbSer
   def update(meetup: Meetup, venueOpt: Option[Venue], talkList: List[Talk], personList: List[Person], by: Person.Id): Future[Either[List[String], Meetup.MeetupRef]] = {
     meetup.meetupRef.map { ref =>
       withMeetupRef(ref.group, venueOpt, by).flatMap { venueWithMeetupRefOpt =>
-        val eventCreate = EventCreate.from(meetup, venueWithMeetupRefOpt, talkList, personList)
-        meetupApi.updateEvent(ref.group, ref.id, eventCreate).map {
-          case Right(event) => Right(ref)
-          case Left(errs) => Left(errs)
+        configDbService.getValue(Config.meetupEventDescription).flatMap { template =>
+          val eventCreate = EventCreate.from(template, meetup, venueWithMeetupRefOpt, talkList, personList)
+          meetupApi.updateEvent(ref.group, ref.id, eventCreate).map {
+            case Right(event) => Right(ref)
+            case Left(errs) => Left(errs)
+          }
         }
       }
     }.getOrElse {

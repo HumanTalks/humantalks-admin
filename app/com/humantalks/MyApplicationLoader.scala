@@ -78,7 +78,7 @@ class MyComponents(context: ApplicationLoader.Context)
   val mailerSrv = MailerSrv(conf, sendgridSrv)
   val slackSrv = SlackSrv(conf, ctx, wsClient)
   val meetupApi = MeetupApi(conf, ctx, wsClient)
-  val meetupSrv = MeetupSrv(conf, ctx, meetupApi, venueDbService, meetupDbService)
+  val meetupSrv = MeetupSrv(conf, ctx, meetupApi, venueDbService, meetupDbService, configDbService)
   val notificationSrv = NotificationSrv(conf, sendgridSrv, slackSrv, personDbService, talkDbService, meetupDbService)
 
   implicit val messagesApiImp = messagesApi
