@@ -6,7 +6,7 @@
     <ul class="dropdown-menu">
         @Talk.Status.values.map { v =>
             @if(talk.status == v) {
-                <li class="disabled"><a href="#">@v</a></li>
+                <li class="disabled"><a href="#">@messagesApi("talk.status."+v)</a></li>
             } else {
                 <li>@helper.form(action = TalkCtrl.setStatus(talk.id, v), 'class -> "inline") {<button type="submit" class="btn-link" title="Mettre le status '@v'">@messagesApi("talk.status."+v)</button> }</li>
             }

@@ -71,7 +71,7 @@ case class ConfigCtrl(
   }
 
   def doUpdateValue(id: Config.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    CtrlHelper.getFieldValue(req.body, "value").map { value =>
+    CtrlHelper.getFormParam(req.body, "value").map { value =>
       configDbService.setValue(id, value, req.identity.id).map {
         case _ =>
           Redirect(routes.ConfigCtrl.find()).flashing("success" -> "Configuration mise à jour")

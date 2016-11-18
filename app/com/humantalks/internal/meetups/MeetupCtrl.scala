@@ -116,7 +116,7 @@ case class MeetupCtrl(
 
   def doAddTalkForm(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     val redirectUrl = CtrlHelper.getReferer(req.headers, routes.MeetupCtrl.get(id))
-    CtrlHelper.getFieldValue(req.body, "talkId").flatMap(p => Talk.Id.from(p).right.toOption).map { talkId =>
+    CtrlHelper.getFormParam(req.body, "talkId").flatMap(p => Talk.Id.from(p).right.toOption).map { talkId =>
       meetupDbService.addTalk(id, talkId, req.identity.id).map { _ =>
         notificationSrv.addTalkToMeetup(id, talkId, req.identity.id)
         Redirect(redirectUrl)

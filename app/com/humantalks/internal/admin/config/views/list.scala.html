@@ -29,7 +29,7 @@
                     <tr>
                         <td><a href="@ConfigCtrl.get(config.id)">@config.data.ref</a></td>
                         <td>@messagesApi("config.contenttype."+config.data.content)</td>
-                        <td>@config.data.description</td>
+                        <td>@multiline(config.data.description)</td>
                         <td>@multiline(config.data.value)</td>
                     </tr>
                 }

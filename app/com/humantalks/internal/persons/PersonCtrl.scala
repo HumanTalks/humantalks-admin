@@ -28,7 +28,7 @@ case class PersonCtrl(
   def find = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     implicit val user = Some(req.identity)
     // temporary until all persons gets an email...
-    (CtrlHelper.getParamValue(req, "email") match {
+    (CtrlHelper.getQueryParam(req, "email") match {
       case Some("false") => personDbService.find(Json.obj("data.email" -> Json.obj("$exists" -> false)))
       case _ => personDbService.find()
     }).map { personList =>

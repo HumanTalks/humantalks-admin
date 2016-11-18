@@ -101,8 +101,8 @@ case class TalkCtrl(
   def setAttribute(id: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     val redirectUrl = CtrlHelper.getReferer(req.headers, routes.TalkCtrl.get(id))
     (for {
-      attribute <- CtrlHelper.getFieldValue(req.body, "attribute")
-      value <- CtrlHelper.getFieldValue(req.body, "value")
+      attribute <- CtrlHelper.getFormParam(req.body, "attribute")
+      value <- CtrlHelper.getFormParam(req.body, "value")
     } yield {
       talkDbService.updateAttribute(id, attribute, value, req.identity.id)
         .map { _ => Redirect(redirectUrl) }

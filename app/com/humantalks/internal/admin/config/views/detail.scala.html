@@ -36,7 +36,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label class="control-label" for="value">Preview :</label>
-                    <input type="text" class="form-control entity-id" name="id" placeholder="Id à utiliser pour générer le template">
+                    <input type="text" class="form-control entity-id" name="id" value="@request.getQueryString("id")" placeholder="Id à utiliser pour générer le template">
                     <textarea class="form-control preview" rows="23" style="margin-top: 6px;" disabled></textarea>
                 </div>
             </div>

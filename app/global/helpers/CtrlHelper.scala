@@ -10,9 +10,9 @@ object CtrlHelper {
   def getReferer(headers: Headers): Option[String] = headers.get("Referer").orElse(headers.get("Host"))
   def getReferer(headers: Headers, default: Call): String = headers.get("Referer").orElse(headers.get("Host")).getOrElse(default.toString)
 
-  def getParamValue(headers: RequestHeader, name: String): Option[String] = headers.getQueryString(name)
-  def getFieldValue(body: AnyContent, name: String): Option[String] = body.asFormUrlEncoded.flatMap(_.get(name).flatMap(_.headOption))
-  def getFieldValues(body: AnyContent, name: String): Option[Seq[String]] = body.asFormUrlEncoded.flatMap(_.get(name))
+  def getQueryParam(headers: RequestHeader, name: String): Option[String] = headers.getQueryString(name)
+  def getFormParam(body: AnyContent, name: String): Option[String] = body.asFormUrlEncoded.flatMap(_.get(name).flatMap(_.headOption))
+  def getFormParams(body: AnyContent, name: String): Option[Seq[String]] = body.asFormUrlEncoded.flatMap(_.get(name))
 
   def withItem[T, Id, Data, User](srv: DbService[T, Id, Data, User])(id: Id)(block: T => Future[Result])(implicit ec: ExecutionContext): Future[Result] = {
     srv.get(id).flatMap { itemOpt =>
