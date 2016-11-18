@@ -48,18 +48,14 @@ object Config {
   /* Default values for configs */
 
   val meetupEventDescription = Data(
-    "meetup.event.description",
-    ContentType.Html,
-    """Template pour créer la description sur meetup.
-      |
-      |Format utilisable : <a href="https://www.meetup.com/fr-FR/meetup_api/docs/:urlname/events/?uri=%2Fmeetup_api%2Fdocs%2F%3Aurlname%2Fevents%2F#create" target="_blank">sous ensemble de HTML</a>
-      |
-      |Données disponibles :
-      | - <a href="https://humantalksparis.herokuapp.com/api/meetups/6f483568-bd46-4760-88f9-75e88d3b8b79" target="_blank">meetup</a>
-      | - <a href="https://humantalksparis.herokuapp.com/api/venues/4e7ff2ef-94d1-4ace-82d7-31b3e746e43a" target="_blank">venue</a>
-      | - <a href="https://humantalksparis.herokuapp.com/api/talks?include=speaker" target="_blank">talks</a>
+    ref = "meetup.event.description",
+    content = ContentType.Html,
+    description = """
+      |Template pour créer la description sur meetup.
+      |Format utilisable : <a href="https://www.meetup.com/fr-FR/meetup_api/docs/:urlname/events/?uri=%2Fmeetup_api%2Fdocs%2F%3Aurlname%2Fevents%2F#create" target="_blank">HTML autorisé par meetup</a>
     """.stripMargin.trim,
-    """{{#meetup}}
+    value = """
+      |{{#meetup}}
       |{{meetup.description}}
       |{{/meetup}}
       |
@@ -70,7 +66,7 @@ object Config {
       |{{/venue}}
       |
       |{{#talks}}
-      |- <b>{{title}}</b> par {{#speakers}}<b>{{name}}</b>{{#twitter}} (<a href="https://twitter.com/{{twitter}}">@{{twitter}}</a>){{/twitter}}{{/speakers}}
+      |- <b>{{title}}</b> par {{#speakers}}<b>{{name}}</b>{{#twitter}} (<a href="https://twitter.com/{{twitter}}">@{{twitter}}</a>){{/twitter}} {{/speakers}}
       |
       |{{description}}
       |
@@ -79,5 +75,98 @@ object Config {
       |
       |Proposez vos sujets pour les prochaines sessions : <a href="https://humantalksparis.herokuapp.com/submit-talk">https://humantalksparis.herokuapp.com/submit-talk</a>
     """.stripMargin.trim
+  )
+  val proposalSubmittedEmailSubject = Data(
+    ref = "proposal.submitted.email.subject",
+    content = ContentType.Text,
+    description = """
+        |Sujet du mail envoyé aux personnes qui proposent un talk via le formulaire
+        """.stripMargin.trim,
+    value = """
+        |Thanks for submitting to HumanTalks Paris
+      """.stripMargin.trim
+  )
+  val proposalSubmittedEmailContent = Data(
+    ref = "proposal.submitted.email.content",
+    content = ContentType.Html,
+    description = """
+        |Contenu du mail envoyé aux personnes qui proposent un talk via le formulaire
+      """.stripMargin.trim,
+    value = """
+        |<html>
+        |    <body>
+        |        <p>Hello,</p>
+        |        <p>
+        |            Thanks for submitting your proposal <b>{{proposal.data.title}}</b>. We will come back to you soon.<br>
+        |            If you have any question, feel free to reach us at {{emailOrga}}<br>
+        |            Note that you can edit your proposal whenever you want using this link : <a href="{{proposalEditUrl}}">{{proposalEditUrl}}</a>
+        |        </p>
+        |    </body>
+        |</html>
+      """.stripMargin.trim
+  )
+  val proposalSubmittedSlackMessage = Data(
+    ref = "proposal.submitted.slack.message",
+    content = ContentType.Markdown,
+    description = """
+        |Message posté sur slack suite à la soumission d'une proposition via le formulaire
+        |Format utilisable : <a href="https://api.slack.com/docs/message-formatting" target="_blank">Markdown à la sauce slack</a>
+      """.stripMargin.trim,
+    value = """
+        |Nouvelle <{{proposalUrl}}|proposition de talk> par {{#speakers}}*{{name}}* {{/speakers}} :
+      """.stripMargin.trim
+  )
+  val proposalSubmittedSlackTitle = Data(
+    ref = "proposal.submitted.slack.title",
+    content = ContentType.Text,
+    description = """
+        |Titre de la pièce jointe postée sur slack suite à la soumission d'une proposition via le formulaire
+      """.stripMargin.trim,
+    value = """
+        |{{proposal.data.title}}
+      """.stripMargin.trim
+  )
+  val proposalSubmittedSlackText = Data(
+    ref = "proposal.submitted.slack.text",
+    content = ContentType.Markdown,
+    description = """
+        |Contenu de la pièce jointe postée sur slack suite à la soumission d'une proposition via le formulaire
+        |Format utilisable : <a href="https://api.slack.com/docs/message-formatting" target="_blank">Markdown à la sauce slack</a>
+      """.stripMargin.trim,
+    value = """
+        |{{proposal.data.description}}
+      """.stripMargin.trim
+  )
+  val meetupCreatedSlackMessage = Data(
+    ref = "meetup.created.slack.message",
+    content = ContentType.Markdown,
+    description = """
+        |Message posté sur slack dans le channel du mois lorsqu'un meetup est créé
+        |Format utilisable : <a href="https://api.slack.com/docs/message-formatting" target="_blank">Markdown à la sauce slack</a>
+      """.stripMargin.trim,
+    value = """
+        |Meetup <{{meetupUrl}}|{{meetup.title}}> créé !
+      """.stripMargin.trim
+  )
+  val talkAddedToMeetupSlackMessage = Data(
+    ref = "talk.added.to.meetup.slack.message",
+    content = ContentType.Markdown,
+    description = """
+        |Message posté dans le channel correspondant au meetup lorsqu'un talk est ajouté à un meetup
+        |Format utilisable : <a href="https://api.slack.com/docs/message-formatting" target="_blank">Markdown à la sauce slack</a>
+      """.stripMargin.trim,
+    value = """
+        |Talk ajouté par {{addedBy.data.name}} pour les <{{meetupUrl}}|{{meetup.data.title}}> : {{#talk}}*{{title}}* par {{#speakers}}*{{name}}* {{/speakers}}{{/talk}}
+      """.stripMargin.trim
+  )
+  val defaultConfigs = List(
+    meetupEventDescription,
+    proposalSubmittedEmailSubject,
+    proposalSubmittedEmailContent,
+    proposalSubmittedSlackMessage,
+    proposalSubmittedSlackTitle,
+    proposalSubmittedSlackText,
+    meetupCreatedSlackMessage,
+    talkAddedToMeetupSlackMessage
   )
 }

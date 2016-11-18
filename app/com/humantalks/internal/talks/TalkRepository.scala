@@ -39,6 +39,9 @@ case class TalkRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: EmbedS
   def get(id: Talk.Id): Future[Option[Talk]] =
     collection.get(Json.obj("id" -> id))
 
+  def getLastAccepted: Future[Option[Talk]] =
+    collection.getOne(Json.obj("status" -> Talk.Status.Accepted), Json.obj("meta.updated" -> -1))
+
   def create(elt: Talk.Data, by: Person.Id): Future[(WriteResult, Talk.Id)] =
     fillEmbedCode(Talk(Talk.Id.generate(), Talk.Status.Suggested, elt.trim, Meta.from(by))).flatMap { toCreate =>
       collection.create(toCreate).map { res => (res, toCreate.id) }

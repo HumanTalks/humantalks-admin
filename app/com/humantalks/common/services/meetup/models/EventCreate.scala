@@ -1,6 +1,5 @@
 package com.humantalks.common.services.meetup.models
 
-import com.humantalks.common.services.MustacheSrv
 import com.humantalks.internal.meetups.Meetup
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
@@ -56,11 +55,11 @@ object EventCreate {
       "question" -> data.question
     ).flatMap { case (key, valueOpt) => valueOpt.map(value => (key, value)) }
 
-  def from(template: String, meetup: Meetup, venueOpt: Option[com.humantalks.internal.venues.Venue], talkList: List[Talk], personList: List[Person]): EventCreate =
+  def from(meetup: Meetup, description: String, venueOpt: Option[com.humantalks.internal.venues.Venue], talkList: List[Talk], personList: List[Person]): EventCreate =
     EventCreate(
       status = "draft",
       name = meetup.data.title,
-      description = MustacheSrv.buildMeetupEventDescription(template, Some(meetup), venueOpt, talkList, personList),
+      description = description,
       time = meetup.data.date,
       duration = None,
       rsvp_limit = venueOpt.flatMap(_.data.capacity),

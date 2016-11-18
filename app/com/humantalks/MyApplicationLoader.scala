@@ -79,7 +79,7 @@ class MyComponents(context: ApplicationLoader.Context)
   val slackSrv = SlackSrv(conf, ctx, wsClient)
   val meetupApi = MeetupApi(conf, ctx, wsClient)
   val meetupSrv = MeetupSrv(conf, ctx, meetupApi, venueDbService, meetupDbService, configDbService)
-  val notificationSrv = NotificationSrv(conf, sendgridSrv, slackSrv, personDbService, talkDbService, meetupDbService)
+  val notificationSrv = NotificationSrv(conf, sendgridSrv, slackSrv, personDbService, talkDbService, meetupDbService, configDbService)
 
   implicit val messagesApiImp = messagesApi
   val router: Router = new Routes(
@@ -101,7 +101,7 @@ class MyComponents(context: ApplicationLoader.Context)
     PersonApiCtrl(ctx, silhouette, personDbService),
     TalkApiCtrl(ctx, silhouette, talkDbService),
     MeetupApiCtrl(ctx, silhouette, meetupDbService),
-    ConfigApiCtrl(ctx, silhouette, venueDbService, personDbService, talkDbService, meetupDbService, configDbService),
+    ConfigApiCtrl(conf, ctx, silhouette, venueDbService, personDbService, talkDbService, meetupDbService, proposalDbService, configDbService),
     com.humantalks.tools.Application(ctx),
     EmbedCtrl(ctx, embedSrv),
     TwitterScraper(ctx, wsClient),

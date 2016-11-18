@@ -27,7 +27,7 @@
                 @helper.form(action=ConfigCtrl.doUpdateValue(config.id), 'class -> "editor", 'previewUrl -> ConfigApiCtrl.preview.toString) {
                     <input type="hidden" name="ref" value="@config.data.ref">
                     <div class="form-group">
-                        <label class="control-label" for="value">Template :</label>
+                        <label class="control-label" for="value">Template @config.data.content (<a href="http://scalate.github.io/scalate/documentation/mustache.html" target="_blank">Mustache</a>) :</label>
                         <textarea class="form-control" id="value" name="value" rows="25">@config.data.value</textarea>
                     </div>
                     <button type="submit" class="btn btn-default">Modifier</button>
@@ -37,7 +37,11 @@
                 <div class="form-group">
                     <label class="control-label" for="value">Preview :</label>
                     <input type="text" class="form-control entity-id" name="id" value="@request.getQueryString("id")" placeholder="Id à utiliser pour générer le template">
-                    <textarea class="form-control preview" rows="23" style="margin-top: 6px;" disabled></textarea>
+                    <textarea class="form-control result" rows="23" style="margin-top: 6px;" disabled></textarea>
+                </div>
+                <div>
+                    <b>Données :</b>
+                    <pre class="scopes"></pre>
                 </div>
             </div>
         </div>

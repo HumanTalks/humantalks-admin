@@ -17,6 +17,7 @@ case class ProposalDbService(talkRepository: TalkRepository, proposalRepository:
   def findByIds(ids: Seq[Proposal.Id], sort: JsObject = proposalRepository.defaultSort): Future[List[Proposal]] = proposalRepository.findByIds(ids, sort)
   def findForPerson(id: Person.Id, sort: JsObject = proposalRepository.defaultSort): Future[List[Proposal]] = proposalRepository.findForPerson(id, sort)
   def get(id: Proposal.Id): Future[Option[Proposal]] = proposalRepository.get(id)
+  def getLast: Future[Option[Proposal]] = proposalRepository.getLast
   def getForTalk(id: Talk.Id): Future[Option[Proposal]] = proposalRepository.getForTalk(id)
   def create(elt: Proposal.Data, by: Person.Id): Future[(WriteResult, Proposal.Id)] = proposalRepository.create(elt, by)
   def update(elt: Proposal, data: Proposal.Data, by: Person.Id): Future[WriteResult] =

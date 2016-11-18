@@ -398,16 +398,17 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
     $('.live-preview').each(function(){
         const $editor = $(this).find('.editor');
         const $id = $(this).find('.entity-id');
-        const $preview = $(this).find('.preview');
-        updatePreview($editor, $id, $preview);
+        const $result = $(this).find('.result');
+        const $scopes = $(this).find('.scopes');
+        updatePreview($editor, $id, $result, $scopes);
         $editor.on('change', function(){
-            updatePreview($editor, $id, $preview);
+            updatePreview($editor, $id, $result, $scopes);
         });
         $id.on('change', function(){
-            updatePreview($editor, $id, $preview);
+            updatePreview($editor, $id, $result, $scopes);
         });
     });
-    function updatePreview($editor, $id, $preview) {
+    function updatePreview($editor, $id, $result, $scopes) {
         const url = $editor.attr('previewUrl').trim();
         const data: any = Utils.formModel($editor);
         data.id = $id.val().trim();
@@ -416,12 +417,14 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
             url: url,
             data: JSON.stringify(data),
             contentType: 'application/json'
-        }).then(function(res){
-            $preview.parents('.form-group').removeClass('has-error');
-            $preview.val(res);
+        }).then(function(response: any){
+            $result.parents('.form-group').removeClass('has-error');
+            $result.val(response.result);
+            $scopes.html(JSON.stringify(response.scopes, null, 2));
         }, function(err){
-            $preview.parents('.form-group').addClass('has-error');
-            $preview.val(err.responseText);
+            $result.parents('.form-group').addClass('has-error');
+            $result.val(err.responseJSON.error);
+            $scopes.html(err.responseJSON.scopes ? JSON.stringify(err.responseJSON.scopes, null, 2) : '');
         });
     }
 })();

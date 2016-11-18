@@ -17,6 +17,7 @@ case class Meetup(
     meta: Meta
 ) {
   lazy val meetupUrl: Option[String] = meetupRef.map(r => s"http://www.meetup.com/fr-FR/${r.group}/events/${r.id}/")
+  lazy val slackChannel: String = Meetup.slackChannel(data.date)
 }
 object Meetup {
   case class Id(value: String) extends TypedId(value)
@@ -36,6 +37,7 @@ object Meetup {
       roti: Option[String],
       personCount: Option[Int]
   ) {
+    lazy val slackChannel: String = Meetup.slackChannel(date)
     def trim: Data = copy(
       title = title.trim,
       description = description.map(_.trim),

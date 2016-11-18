@@ -18,6 +18,7 @@ case class TalkDbService(talkRepository: TalkRepository, meetupRepository: Meetu
   def findByIds(ids: Seq[Talk.Id], sort: JsObject = talkRepository.defaultSort): Future[List[Talk]] = talkRepository.findByIds(ids, sort)
   def findForPerson(id: Person.Id, sort: JsObject = talkRepository.defaultSort): Future[List[Talk]] = talkRepository.findForPerson(id, sort)
   def get(id: Talk.Id): Future[Option[Talk]] = talkRepository.get(id)
+  def getLastAccepted: Future[Option[Talk]] = talkRepository.getLastAccepted
   def create(elt: Talk.Data, by: Person.Id): Future[(WriteResult, Talk.Id)] = talkRepository.create(elt, by)
   def update(elt: Talk, data: Talk.Data, by: Person.Id): Future[WriteResult] = talkRepository.update(elt, data, by)
   def updateAttribute(id: Talk.Id, attribute: String, value: String, by: Person.Id): Future[WriteResult] = talkRepository.updateAttribute(id, attribute, value, by)

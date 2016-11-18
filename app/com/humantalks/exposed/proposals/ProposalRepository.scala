@@ -39,6 +39,9 @@ case class ProposalRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: Em
   def get(id: Proposal.Id): Future[Option[Proposal]] =
     collection.get(Json.obj("id" -> id))
 
+  def getLast: Future[Option[Proposal]] =
+    collection.getOne(sort = Json.obj("meta.created" -> -1))
+
   def getForTalk(id: Talk.Id): Future[Option[Proposal]] =
     collection.get(Json.obj("talk" -> id))
 

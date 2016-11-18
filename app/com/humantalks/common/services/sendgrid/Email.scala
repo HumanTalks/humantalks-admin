@@ -1,5 +1,6 @@
 package com.humantalks.common.services.sendgrid
 
+import com.humantalks.internal.persons.Person
 import play.api.libs.json.Json
 
 case class Content(
@@ -30,6 +31,7 @@ case class Recipient(
 object Recipient {
   implicit val format = Json.format[Recipient]
   def single(email: String, name: Option[String] = None): Seq[Recipient] = Seq(Recipient(to = Seq(Address(email, name))))
+  def from(persons: List[Person]): Seq[Recipient] = Seq(Recipient(to = persons.flatMap(s => s.data.email.map(email => Address(email, Some(s.data.name))))))
 }
 
 case class Email(

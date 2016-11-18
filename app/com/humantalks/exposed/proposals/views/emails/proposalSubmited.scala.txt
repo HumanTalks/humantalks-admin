@@ -1,7 +1,0 @@
-@import com.humantalks.exposed.proposals.Proposal
-@(proposal: Proposal, url: String, adminEmail: String)(implicit messagesApi: MessagesApi)
-Hello,
-
-Thanks for submitting your proposal '@proposal.data.title'. We will come back to you soon.
-If you have any question, feel free to reach us at @adminEmail
-Note that you can edit your proposal whenever you want using this link : @url

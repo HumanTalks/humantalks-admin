@@ -38,7 +38,7 @@ case class ProposalCtrl(
         proposal <- proposalDbService.get(id).map(_.get)
         speakers <- personDbService.findByIds(proposal.data.speakers)
         success <- notificationSrv.proposalCreated(proposal, speakers)
-      } yield Ok(views.html.submited(proposal.id, proposalData))
+      } yield Ok(views.html.submitted(proposal.id, proposalData))
     )
   }
 
@@ -53,7 +53,7 @@ case class ProposalCtrl(
       formWithErrors => CtrlHelper.withItem(proposalDbService.get _)(id) { proposal => formView(BadRequest, formWithErrors, Some(proposal)) },
       proposalData => CtrlHelper.withItem(proposalDbService.get _)(id) { proposal =>
         proposalDbService.update(proposal, proposalData, proposalData.speakers.head).map { _ =>
-          Ok(views.html.submited(id, proposalData))
+          Ok(views.html.submitted(id, proposalData))
         }
       }
     )
