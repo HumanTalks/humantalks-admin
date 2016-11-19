@@ -61,7 +61,7 @@ case class ConfigDbService(configRepository: ConfigRepository) extends DbService
       "meetupUrl" -> Json.toJson(meetupUrl)
     )))
   def buildTalkAddedToMeetupSlackMessage(talkOpt: Option[Talk], speakers: List[Person], meetupOpt: Option[Meetup], meetupUrl: String, addedByOpt: Option[Person], getTemplate: Config.Data => Future[String] = getValue): Future[(Try[String], Map[String, JsValue])] =
-    getTemplate(Config.meetupCreatedSlackMessage).map(tempate => build(tempate, Map(
+    getTemplate(Config.talkAddedToMeetupSlackMessage).map(tempate => build(tempate, Map(
       "talk" -> Json.toJson(talkOpt.map(talk => PublicTalk.from(talk, Some(speakers), None, None))),
       "meetup" -> Json.toJson(meetupOpt),
       "meetupUrl" -> Json.toJson(meetupUrl),

@@ -27,7 +27,7 @@ case class MeetupDbService(talkRepository: TalkRepository, meetupRepository: Mee
   def addTalk(id: Meetup.Id, talkId: Talk.Id, by: Person.Id): Future[WriteResult] =
     meetupRepository.addTalk(id, talkId, by).map { res =>
       talkRepository.get(talkId).map {
-        _.map { talk => talkRepository.setStatus(talkId, Talk.Status.Accepted, by) }
+        _.map { talk => talkRepository.setStatus(talkId, Talk.Status.Planified, by) }
       }
       res
     }
@@ -36,9 +36,7 @@ case class MeetupDbService(talkRepository: TalkRepository, meetupRepository: Mee
     meetupRepository.removeTalk(id, talkId, by).map { res =>
       talkRepository.get(talkId).map {
         _.map { talk =>
-          if (talk.status == Talk.Status.Accepted) {
-            talkRepository.setStatus(talkId, Talk.Status.Proposed, by)
-          }
+          talkRepository.setStatus(talkId, Talk.Status.Accepted, by)
         }
       }
       res

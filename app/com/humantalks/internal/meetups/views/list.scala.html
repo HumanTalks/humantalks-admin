@@ -26,9 +26,9 @@
                     </h4>
                     <p>
                         @partials.status(meetup)
-                        @venue(meetup.data.venue, venueList)
+                        @venue(meetup.data.venue, venueList, Html("<b class=\"text-danger\">Il manque une salle !</b>"))
                         le @date(meetup.data.date.toLocalDate),
-                        @meetup.data.talks.length talks planifiés
+                        @meetup.data.talks.length talks planifiés @if(meetup.data.talks.length < 4 && meetup.data.date.isAfterNow) {(<b class="text-danger">Il en manque @{4 - meetup.data.talks.length} !</b>)}
                         @meetup.data.roti.map{r => <i class="fa fa-picture-o" title="ROTI added"></i>}
                     </p>
                 </div>

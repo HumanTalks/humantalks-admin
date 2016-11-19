@@ -28,7 +28,7 @@ case class TalkRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: EmbedS
     collection.findPage(index, size, filter, sort)
 
   def findPending(sort: JsObject = defaultSort): Future[List[Talk]] =
-    collection.find(Json.obj("status" -> Json.obj("$in" -> Json.arr(Talk.Status.Suggested, Talk.Status.Proposed))), sort)
+    collection.find(Json.obj("status" -> Json.obj("$in" -> Json.arr(Talk.Status.Proposed, Talk.Status.Accepted))), sort)
 
   def findByIds(ids: Seq[Talk.Id], sort: JsObject = defaultSort): Future[List[Talk]] =
     collection.find(Json.obj("id" -> Json.obj("$in" -> ids.distinct)), sort)
@@ -43,7 +43,7 @@ case class TalkRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: EmbedS
     collection.getOne(Json.obj("status" -> Talk.Status.Accepted), Json.obj("meta.updated" -> -1))
 
   def create(elt: Talk.Data, by: Person.Id): Future[(WriteResult, Talk.Id)] =
-    fillEmbedCode(Talk(Talk.Id.generate(), Talk.Status.Suggested, elt.trim, Meta.from(by))).flatMap { toCreate =>
+    fillEmbedCode(Talk(Talk.Id.generate(), Talk.Status.Proposed, elt.trim, Meta.from(by))).flatMap { toCreate =>
       collection.create(toCreate).map { res => (res, toCreate.id) }
     }
 

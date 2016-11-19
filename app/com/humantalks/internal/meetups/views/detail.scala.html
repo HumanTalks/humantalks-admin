@@ -48,17 +48,17 @@
             @meetup.data.title
             @meetup.meetupUrl.map{url => <a href="@url" target="_blank"><i class="fa fa-external-link"></i></a>}
         </h1>
-        <p>@partials.status(meetup) @venue(meetup.data.venue, venueList) le @date(meetup.data.date.toLocalDate)</p>
+        <p>@partials.status(meetup) @venue(meetup.data.venue, venueList, Html("<b class=\"text-danger\">Il manque une salle !</b>")) le @date(meetup.data.date.toLocalDate)</p>
         <p>@meetup.data.description</p>
         @if(meetup.data.talks.nonEmpty) {
-            <h3>Talks</h3>
+            <h3>Talks @if(meetup.data.talks.length < 4 && meetup.data.date.isAfterNow) {<small>(<b class="text-danger">Il en manque @{4 - meetup.data.talks.length} !</b>)</small>}</h3>
             <ol>
             @getTalks(meetup, allTalks).map { talk =>
                 <li>
                     @helper.form(action=MeetupCtrl.doRemoveTalk(meetup.id, talk.id), 'class->"inline") { <button type="submit" class="btn btn-clear" title="Remove this talk from the meetup" confirm><i class="fa fa-trash"></i></button> }
                     @helper.form(action=MeetupCtrl.doMoveTalk(meetup.id, talk.id, true), 'class->"inline") { <button type="submit" class="btn btn-clear" title="Monter le talk dans la liste"><i class="fa fa-arrow-up"></i></button> }
                     @helper.form(action=MeetupCtrl.doMoveTalk(meetup.id, talk.id, false), 'class->"inline") { <button type="submit" class="btn btn-clear" title="Descendre le talk dans la liste"><i class="fa fa-arrow-down"></i></button> }
-                    @if(talk.status != Talk.Status.Accepted){ @helper.form(action=TalkCtrl.doAccept(talk.id), 'class->"inline") { <button type="submit" class="btn btn-success" title="Confirm this talk"><i class="fa fa-check"></i></button> } }
+                    @if(talk.status != Talk.Status.Finalized){ @helper.form(action=TalkCtrl.doAccept(talk.id), 'class->"inline") { <button type="submit" class="btn btn-success" title="Confirm this talk"><i class="fa fa-check"></i></button> } }
                     @com.humantalks.internal.talks.views.html.partials.status(talk)
                     <a href="@TalkCtrl.get(talk.id)">@talk.data.title</a>
                     @speakers(talk.data.speakers, allPersons)
@@ -93,6 +93,8 @@
               <li>@ids.length @size.map(v => messagesApi("person.shirt."+v)).getOrElse(if(ids.length == 1) "taille inconnue" else "tailles inconnues")</li>
             }
             </ul>
+        } else {
+            <h3 class="text-danger">Aucun talk ajouté !</h3>
         }
         @meetup.data.personCount.map{c => <p>@c participants</p>}
         @meetup.data.roti.map{r => <p><img src="@r" style="width: 100%;"></p>}
@@ -132,8 +134,6 @@
                 </ul>
             }
 
-            <button class="btn btn-default btn-lg" data-toggle="modal" data-target="#create-talk-modal">Créer un talk</button>
-
             @helper.form(action=MeetupCtrl.doAddTalkForm(meetup.id), 'class->"form-inline") {
                 <div class="row">
                     <div class="col-md-8">
@@ -144,8 +144,9 @@
                             }
                         </select>
                     </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-default">Ajouter au meetup</button>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-default">Ajouter le talk</button>
+                        <a href="#" class="btn btn-default" data-toggle="modal" data-target="#create-talk-modal">Créer un talk</a>
                     </div>
                 </div>
             }
