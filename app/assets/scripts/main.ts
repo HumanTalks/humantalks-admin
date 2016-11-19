@@ -23,7 +23,7 @@ class Utils {
         if($form.length === 0){ console.error('Invalid form element :(', $form); }
         var model = {};
         Utils.formInputs($form).each(function(){
-            var value = $(this).attr('type') === 'checkbox' ? $(this).prop('checked') : $(this).val().trim();
+            var value = $(this).attr('type') === 'checkbox' ? $(this).prop('checked') : ($(this).val() || '').trim();
             if(value !== ''){
                 Utils.setSafe(model, $(this).attr('name').replace('[]', ''), value);
             }
@@ -522,8 +522,8 @@ var GMapPlacePicker = (function(){
             country: $elt.find('input[type="hidden"].gmapplace-country').val(),
             formatted: $elt.find('input[type="hidden"].gmapplace-formatted').val(),
             geo: {
-                lat: parseFloat($elt.find('input[type="hidden"].gmapplace-lat').val()),
-                lng: parseFloat($elt.find('input[type="hidden"].gmapplace-lng').val())
+                lat: parseFloat($elt.find('input[type="hidden"].gmapplace-lat').val()) || '',
+                lng: parseFloat($elt.find('input[type="hidden"].gmapplace-lng').val()) || ''
             },
             url: $elt.find('input[type="hidden"].gmapplace-url').val(),
             website: $elt.find('input[type="hidden"].gmapplace-website').val(),

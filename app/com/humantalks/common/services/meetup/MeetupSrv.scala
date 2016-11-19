@@ -10,7 +10,7 @@ import com.humantalks.internal.venues.{ Venue, VenueDbService }
 import global.Contexts
 
 import scala.concurrent.Future
-import scala.util.{Failure, Success}
+import scala.util.{ Failure, Success }
 
 case class MeetupSrv(conf: Conf, ctx: Contexts, meetupApi: MeetupApi, venueDbService: VenueDbService, meetupDbService: MeetupDbService, configDbService: ConfigDbService) {
   import Contexts.wsToEC

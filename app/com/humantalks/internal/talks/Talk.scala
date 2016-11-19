@@ -21,6 +21,7 @@ object Talk {
   }
 
   object Status extends Enumeration {
+    //val Proposed, Accepted, ToBeConfirmed, Planified, Rejected = Value
     val Suggested, Proposed, Accepted, Rejected = Value
   }
   implicit val statusPathBinder = EnumerationHelper.pathBinder(Status)

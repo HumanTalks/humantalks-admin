@@ -4,7 +4,8 @@ constraint.email=Email
 constraint.required=Obligatoire
 error.date=Date invalide
 error.email=Email invalide
-error.required=Ce champ est obligatoire
+error.required=Champ obligatoire
+error.real=Nombre invalide
 
 gbl.form.name.label=Nom
 gbl.form.name.placeholder=ex: John Doe

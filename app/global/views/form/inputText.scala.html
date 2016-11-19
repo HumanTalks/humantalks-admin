@@ -1,5 +1,5 @@
 @import global.views.Helpers
-@(field: Field, args: (Symbol, String)*)
+@(field: Field, args: (Symbol, String)*)(implicit messagesApi: MessagesApi)
 <input
     class="form-control @Helpers.getArg(args, "class")"
     type="@Helpers.getArg(args, "type", "text")"

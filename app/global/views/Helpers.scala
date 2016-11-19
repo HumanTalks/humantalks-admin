@@ -14,7 +14,7 @@ object Helpers {
     getArg(args, "value", field.value.getOrElse(""))
 
   def isRequired(field: Field, args: Seq[(Symbol, String)]): Boolean =
-    field.constraints.exists(_._1 == "constraint.required")
+    field.constraints.exists(_._1 == "constraint.required") && getArg(args, "required", "") != "false"
 
   def isChecked(field: Field, args: Seq[(Symbol, String)]): Boolean =
     field.value.map(_ == "true").getOrElse(hasArg(args, "value", "true"))
@@ -26,7 +26,7 @@ object Helpers {
     args.find(_._1.name == arg).exists(_._2 == expectedValue || expectedValue.length == 0)
 
   def toHtml(args: Seq[(Symbol, String)], exclude: Seq[String] = Seq()): Html = {
-    val toExclude = List("id", "name", "value", "class", "label", "checked", "errors") ++ exclude
+    val toExclude = List("id", "name", "value", "class", "label", "required", "checked", "errors") ++ exclude
     Html(args
       .filterNot(e => toExclude.contains(e._1.name))
       .map { case (symbol, value) => symbol.name + "=\"" + value + "\"" }

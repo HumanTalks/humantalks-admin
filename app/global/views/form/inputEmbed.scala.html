@@ -1,4 +1,4 @@
-@(field: Field, args: (Symbol, String)*)
+@(field: Field, args: (Symbol, String)*)(implicit messagesApi: MessagesApi)
 <div class="input-embed">
     @inputText(field, args:_*)
     <div class="preview" style="display: none;"></div>

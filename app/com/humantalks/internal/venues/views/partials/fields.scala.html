@@ -1,6 +1,5 @@
 @import com.humantalks.internal.venues.Venue
 @import global.views.html.form._
-@import com.humantalks.internal.persons.Person
 @import com.humantalks.common.controllers.routes.Select2Ctrl
 @(venueForm: Form[Venue.Data])(implicit messagesApi: MessagesApi)
 @fieldHorizontal(venueForm("name"), 'label -> "Nom") { field => @inputText(field, 'placeholder -> "ex: Google", 'autofocus -> "") }

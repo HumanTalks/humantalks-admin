@@ -1,2 +1,2 @@
-@(field: Field, args: (Symbol, String)*)
+@(field: Field, args: (Symbol, String)*)(implicit messagesApi: MessagesApi)
 @inputText(field, ('type -> "number") :: args.toList.filter(_._1.name != "type"): _*)

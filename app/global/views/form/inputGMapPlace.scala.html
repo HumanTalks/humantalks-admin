@@ -1,5 +1,5 @@
 @import global.views.Helpers
-@(field: Field, args: (Symbol, String)*)
+@(field: Field, args: (Symbol, String)*)(implicit messagesApi: MessagesApi)
 <div class="input-gmapplace">
     @inputText(field("input"), Helpers.addArg(args, 'id, Helpers.fieldId(field, args)):_*)
     @inputHidden(field("id"), 'class -> "gmapplace-id")
