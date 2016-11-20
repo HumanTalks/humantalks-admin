@@ -1,7 +1,17 @@
 @import com.humantalks.exposed.proposals.Proposal
-@(proposal: Proposal)
-@proposal.status match {
-    case Proposal.Status.Proposed => {<span class="label label-primary" title="Proposition en attente de validation">Proposé</span>}
-    case Proposal.Status.Accepted => {<span class="label label-success" title="Proposition acceptée et transformée en talk">Accepté</span>}
-    case Proposal.Status.Rejected => {<span class="label label-danger" title="Proposition refusée, ne sera pas donnée à un meetup">Refusé</span>}
-}
+@import com.humantalks.exposed.proposals.Proposal.Status._
+@import com.humantalks.internal.proposals.routes.ProposalCtrl
+@(proposal: Proposal)(implicit messagesApi: MessagesApi)
+<div class="dropdown" style="display: inline;">
+    <span class="label label-@messagesApi("proposal.status."+proposal.status+".type") dropdown-toggle" data-toggle="dropdown" title="@messagesApi("proposal.status."+proposal.status+".desc")">@messagesApi("proposal.status."+proposal.status)</span>
+    <ul class="dropdown-menu">
+        @* @Proposal.Status.values.map { v => // random order WTF !!! *@
+        @List(Proposed, Accepted, Rejected).map { v =>
+            @if(proposal.status == v) {
+                <li class="disabled" title="@messagesApi("proposal.status."+proposal.status+".desc")"><a href="#">@messagesApi("proposal.status."+v)</a></li>
+            } else {
+                <li title="Mettre le status @messagesApi("proposal.status."+v) : @messagesApi("proposal.status."+v+".desc")">@helper.form(action = ProposalCtrl.setStatus(proposal.id, v), 'class -> "inline") {<button type="submit" class="btn-link">@messagesApi("proposal.status."+v)</button> }</li>
+            }
+        }
+    </ul>
+</div>

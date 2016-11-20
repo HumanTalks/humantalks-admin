@@ -35,4 +35,6 @@ object Helpers {
 
   def addArg(args: Seq[(Symbol, String)], key: Symbol, value: String): Seq[(Symbol, String)] =
     args.filter(_._1 != key) :+ args.find(_._1 == key).map(a => (a._1, a._2 + " " + value)).getOrElse(key -> value)
+  def addArgs(args: Seq[(Symbol, String)], toAdd: (Symbol, String)*): Seq[(Symbol, String)] =
+    args.filter(a => toAdd.exists(_._1 == a._1)) ++ toAdd.map(a => args.find(_._1 == a._1).map(a2 => (a2._1, a2._2 + " " + a._2)).getOrElse(a))
 }

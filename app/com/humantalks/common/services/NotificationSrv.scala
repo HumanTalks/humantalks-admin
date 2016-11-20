@@ -8,6 +8,7 @@ import com.humantalks.internal.admin.config.{ Config, ConfigDbService }
 import com.humantalks.internal.meetups.{ MeetupDbService, Meetup }
 import com.humantalks.internal.persons.{ PersonDbService, Person }
 import com.humantalks.internal.talks.{ TalkDbService, Talk }
+import com.humantalks.internal.venues.Venue
 import org.jsoup.Jsoup
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Json
@@ -109,5 +110,9 @@ case class NotificationSrv(
         talk <- talkOpt
       } yield internal(meetup, talk, speakers, person)).getOrElse(Future.successful(false))
     }).flatMap(identity).recover { case _ => false }
+  }
+
+  def setVenueToMeetup(meetupId: Meetup.Id, venueId: Venue.Id, by: Person.Id)(implicit request: RequestHeader, ec: ExecutionContext): Future[Boolean] = {
+    Future.successful(true)
   }
 }

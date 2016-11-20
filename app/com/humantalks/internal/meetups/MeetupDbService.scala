@@ -24,6 +24,7 @@ case class MeetupDbService(talkRepository: TalkRepository, meetupRepository: Mee
   def getNext: Future[Option[Meetup]] = meetupRepository.getNext
   def create(data: Meetup.Data, by: Person.Id): Future[(WriteResult, Meetup.Id)] = meetupRepository.create(data, by)
   def update(elt: Meetup, data: Meetup.Data, by: Person.Id): Future[WriteResult] = meetupRepository.update(elt, data, by)
+  def setVenue(id: Meetup.Id, venueId: Venue.Id, by: Person.Id): Future[WriteResult] = meetupRepository.setVenue(id, venueId, by)
   def addTalk(id: Meetup.Id, talkId: Talk.Id, by: Person.Id): Future[WriteResult] =
     meetupRepository.addTalk(id, talkId, by).map { res =>
       talkRepository.get(talkId).map {

@@ -65,6 +65,9 @@ case class MeetupRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   private def partialUpdate(id: Meetup.Id, patch: JsObject, by: Person.Id): Future[WriteResult] =
     collection.partialUpdate(Json.obj("id" -> id), patch.deepMerge(Json.obj("$set" -> Json.obj("meta.updated" -> new DateTime(), "meta.updatedBy" -> by))))
 
+  def setVenue(id: Meetup.Id, venueId: Venue.Id, by: Person.Id): Future[WriteResult] =
+    partialUpdate(id, Json.obj("$set" -> Json.obj("data.venue" -> venueId)), by)
+
   def addTalk(id: Meetup.Id, talkId: Talk.Id, by: Person.Id): Future[WriteResult] =
     partialUpdate(id, Json.obj("$addToSet" -> Json.obj("data.talks" -> talkId)), by)
 

@@ -40,16 +40,8 @@ case class ProposalCtrl(
     }
   }
 
-  def doAccept(id: Proposal.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    val redirectUrl = CtrlHelper.getReferer(req.headers, routes.ProposalCtrl.get(id))
-    proposalDbService.accept(id, req.identity.id).map {
-      case Right(talkId) => Redirect(redirectUrl)
-      case Left(err) => Redirect(redirectUrl).flashing("error" -> err)
-    }
-  }
-
-  def doReject(id: Proposal.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    proposalDbService.reject(id, req.identity.id).map { _ =>
+  def setStatus(id: Proposal.Id, status: Proposal.Status.Value) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    proposalDbService.setStatus(id, status, req.identity.id).map { _ =>
       Redirect(CtrlHelper.getReferer(req.headers, routes.ProposalCtrl.get(id)))
     }
   }

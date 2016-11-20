@@ -4,7 +4,7 @@ import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
 import com.humantalks.internal.meetups.MeetupDbService
 import com.humantalks.internal.persons.{ Person, PersonDbService }
-import com.humantalks.internal.talks.TalkDbService
+import com.humantalks.internal.talks.{ Talk, TalkDbService }
 import com.humantalks.internal.venues.VenueDbService
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
@@ -43,14 +43,17 @@ case class Select2Ctrl(
     })
   }
 
-  def talks = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+  def talks(pending: Boolean) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     ApiHelper.resultList({
-      talkDbService.find().flatMap { talks =>
-        personDbService.findByIds(talks.flatMap(_.data.speakers)).map { speakers =>
-          Right(talks.map(t => Select2Option(
-            t.id.value,
-            t.data.title + t.data.speakers.flatMap(id => speakers.find(_.id == id)).map(_.data.name).mkString(" (", ", ", ")")
-          )))
+      (if (pending) talkDbService.findPending() else talkDbService.find()).flatMap { talks =>
+        personDbService.findByIds(talks.flatMap(_.data.speakers)).map { personList =>
+          Right(talks.map(t => {
+            val speakers = t.data.speakers.flatMap(id => personList.find(_.id == id))
+            Select2Option(
+              t.id.value,
+              t.data.title + (if (speakers.nonEmpty) speakers.map(_.data.name).mkString(" (", ", ", ")") else "")
+            )
+          }))
         }
       }
     })

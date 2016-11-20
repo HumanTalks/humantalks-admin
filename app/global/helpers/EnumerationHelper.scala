@@ -53,6 +53,11 @@ object EnumerationHelper {
       params.get(key).map { values => values.headOption.map(v => from(enum)(key, v).right.map(Some(_))).getOrElse(Left(buildErrMsg(enum)(values.toString))) }
     override def unbind(key: String, value: Option[E#Value]): String = value.map(to(enum)).getOrElse("")
   }
+  implicit def queryBinderList[E <: Enumeration](enum: E): QueryStringBindable[List[E#Value]] = new QueryStringBindable[List[E#Value]] {
+    override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, List[E#Value]]] =
+      params.get(key).map { values => Right(values.mkString(",").split(",").toList.flatMap(v => from(enum)(key, v).right.toOption)) }
+    override def unbind(key: String, value: List[E#Value]): String = value.map(to(enum)).mkString(",")
+  }
 
   // read value from Play Form
   implicit def formMapping[E <: Enumeration](enum: E): Formatter[E#Value] = new Formatter[E#Value] {

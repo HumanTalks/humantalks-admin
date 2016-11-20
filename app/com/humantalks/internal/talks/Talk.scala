@@ -24,6 +24,7 @@ object Talk {
     val Proposed, Accepted, Planified, Finalized, Rejected = Value
   }
   implicit val statusPathBinder = EnumerationHelper.pathBinder(Status)
+  implicit val statusQueryBinderList = EnumerationHelper.queryBinderList(Status)
   implicit val statusFormat = EnumerationHelper.enumFormat(Status)
 
   case class Data(

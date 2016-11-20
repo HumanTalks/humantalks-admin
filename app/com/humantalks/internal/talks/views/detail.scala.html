@@ -18,7 +18,7 @@
         <h1>
             <span class="pull-right">
                 <a href="@TalkCtrl.update(talk.id)" class="btn btn-default" title="Modifier ce talk"><i class="fa fa-pencil-square-o"></i></a>
-                @if(talk.status != Talk.Status.Rejected) { @helper.form(action=TalkCtrl.doReject(talk.id), 'class->"inline") { <button type="submit" class="btn btn-warning" title="Rejeter ce talk" confirm><i class="fa fa-times"></i></button> } }
+                @if(talk.status != Talk.Status.Rejected) { @helper.form(action=TalkCtrl.setStatus(talk.id, Talk.Status.Rejected), 'class->"inline") { <button type="submit" class="btn btn-warning" title="Rejeter ce talk" confirm><i class="fa fa-times"></i></button> } }
                 @helper.form(action=TalkCtrl.doDelete(talk.id), 'class->"inline") { <button type="submit" class="btn btn-danger" title="Supprimer ce talk" confirm><i class="fa fa-trash"></i></button> }
             </span>
             @talk.data.title

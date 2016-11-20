@@ -63,6 +63,11 @@ trait TypedStringHelper[T <: TypedString] {
       params.get(key).map { values => values.headOption.map(v => from(v).right.map(Some(_))).getOrElse(Left(buildErrMsg(values.toString))) }
     override def unbind(key: String, value: Option[T]): String = value.map(to).getOrElse("")
   }
+  implicit val queryBinderList = new QueryStringBindable[List[T]] {
+    override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, List[T]]] =
+      params.get(key).map { values => Right(values.mkString(",").split(",").toList.flatMap(v => from(v).right.toOption)) }
+    override def unbind(key: String, value: List[T]): String = value.map(to).mkString(",")
+  }
 
   // read value from Play Form
   implicit val formMapping = new Formatter[T] {

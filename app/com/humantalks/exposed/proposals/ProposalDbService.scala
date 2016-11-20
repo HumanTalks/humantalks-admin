@@ -30,25 +30,28 @@ case class ProposalDbService(talkRepository: TalkRepository, proposalRepository:
       }
       res
     }
-  def reject(id: Proposal.Id, by: Person.Id): Future[WriteResult] = proposalRepository.setStatus(id, Proposal.Status.Rejected, by)
-  def accept(id: Proposal.Id, by: Person.Id): Future[Either[String, Talk.Id]] = {
-    proposalRepository.get(id).flatMap { proposalOpt =>
-      proposalOpt.map { proposal =>
-        proposal.talk.map { talkId =>
-          Future.successful(Left("This proposal already has a talk !"))
-        }.getOrElse {
-          talkRepository.create(proposal.data, by).flatMap {
-            case (res, talkId) =>
-              if (res.ok) {
-                proposalRepository.setTalk(proposal.id, talkId, by).map(r => Right(talkId))
-              } else {
-                Future.successful(Left("Unable to create talk !"))
-              }
+  def setStatus(id: Proposal.Id, status: Proposal.Status.Value, by: Person.Id): Future[Either[String, Option[Talk.Id]]] = {
+    if (status == Proposal.Status.Accepted) {
+      proposalRepository.get(id).flatMap { proposalOpt =>
+        proposalOpt.map { proposal =>
+          proposal.talk.map { talkId =>
+            Future.successful(Left("This proposal already has a talk !"))
+          }.getOrElse {
+            talkRepository.create(proposal.data, by).flatMap {
+              case (res, talkId) =>
+                if (res.ok) {
+                  proposalRepository.setTalk(proposal.id, talkId, by).map(r => Right(Some(talkId)))
+                } else {
+                  Future.successful(Left("Unable to create talk !"))
+                }
+            }
           }
+        }.getOrElse {
+          Future.successful(Left("Unable to find proposal !"))
         }
-      }.getOrElse {
-        Future.successful(Left("Unable to find proposal !"))
       }
+    } else {
+      proposalRepository.setStatus(id, status, by).map(_ => Right(None))
     }
   }
   def delete(id: Proposal.Id): Future[Either[Nothing, WriteResult]] = proposalRepository.delete(id).map(r => Right(r))

@@ -1,7 +1,7 @@
 @import global.views.Helpers
 @(field: Field, args: (Symbol, String)*)(implicit messagesApi: MessagesApi)
 <div class="input-gmapplace">
-    @inputText(field("input"), Helpers.addArg(args, 'id, Helpers.fieldId(field, args)):_*)
+    @inputText(field, Helpers.addArgs(args, 'name -> Helpers.fieldName(field("input"), args)):_*)
     @inputHidden(field("id"), 'class -> "gmapplace-id")
     @inputHidden(field("name"), 'class -> "gmapplace-name")
     @inputHidden(field("streetNo"), 'class -> "gmapplace-streetNo")

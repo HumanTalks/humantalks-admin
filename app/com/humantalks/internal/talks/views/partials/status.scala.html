@@ -10,7 +10,7 @@
             @if(talk.status == v) {
                 <li class="disabled" title="@messagesApi("talk.status."+talk.status+".desc")"><a href="#">@messagesApi("talk.status."+v)</a></li>
             } else {
-                <li title="Mettre le status @messagesApi("talk.status."+v) : @messagesApi("talk.status."+talk.status+".desc")">@helper.form(action = TalkCtrl.setStatus(talk.id, v), 'class -> "inline") {<button type="submit" class="btn-link">@messagesApi("talk.status."+v)</button> }</li>
+                <li title="Mettre le status @messagesApi("talk.status."+v) : @messagesApi("talk.status."+v+".desc")">@helper.form(action = TalkCtrl.setStatus(talk.id, v), 'class -> "inline") {<button type="submit" class="btn-link">@messagesApi("talk.status."+v)</button> }</li>
             }
         }
     </ul>

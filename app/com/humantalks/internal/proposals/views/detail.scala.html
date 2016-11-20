@@ -20,8 +20,8 @@
         @proposal.data.description.map{d => <p>@multiline(d)</p>}
         @slidesEmbed(proposal.data.slidesEmbedCode, proposal.data.slides)
         @if(proposal.status == Proposal.Status.Proposed) {
-            @helper.form(action=ProposalCtrl.doReject(proposal.id), 'class->"inline") { <button type="submit" class="btn btn-danger" title="Rejeter cette proposition" confirm>Rejeter</button> }
-            @helper.form(action=ProposalCtrl.doAccept(proposal.id), 'class->"inline") { <button type="submit" class="btn btn-success" title="Accepter cette proposition" confirm>Accepter</button> }
+            @helper.form(action=ProposalCtrl.setStatus(proposal.id, Proposal.Status.Rejected), 'class->"inline") { <button type="submit" class="btn btn-danger" title="Rejeter cette proposition" confirm>Rejeter</button> }
+            @helper.form(action=ProposalCtrl.setStatus(proposal.id, Proposal.Status.Accepted), 'class->"inline") { <button type="submit" class="btn btn-success" title="Accepter cette proposition" confirm>Accepter</button> }
         }
         @if(proposal.data.availabilities.length > 0){
             <h3>Disponibilités</h3>

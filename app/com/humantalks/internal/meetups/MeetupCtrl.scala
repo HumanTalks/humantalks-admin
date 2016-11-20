@@ -7,7 +7,7 @@ import com.humantalks.common.services.meetup.MeetupSrv
 import com.humantalks.exposed.proposals.{ Proposal, ProposalDbService }
 import com.humantalks.internal.persons.{ PersonDbService, Person }
 import com.humantalks.internal.talks.{ TalkDbService, Talk }
-import com.humantalks.internal.venues.VenueDbService
+import com.humantalks.internal.venues.{ Venue, VenueDbService }
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
 import global.helpers.CtrlHelper
@@ -32,6 +32,7 @@ case class MeetupCtrl(
   import Contexts.ctrlToEC
   import ctx._
   val meetupForm = Form(Meetup.fields)
+  val venueForm = Form(Venue.fields)
   val talkForm = Form(Talk.fields)
   val personForm = Form(Person.fields)
 
@@ -66,18 +67,14 @@ case class MeetupCtrl(
   def get(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     implicit val user = Some(req.identity)
     CtrlHelper.withItem(meetupDbService)(id) { meetup =>
-      val venueListFut = venueDbService.findByIds(meetup.data.venue.toSeq)
-      val allTalksFut = talkDbService.find()
-      val pendingTalksFut = talkDbService.findPending()
-      val allPersonsFut = personDbService.find()
-      val pendingProposalsFut = proposalDbService.findPending()
       for {
-        venueList <- venueListFut
-        allTalks <- allTalksFut
-        pendingTalks <- pendingTalksFut
-        allPersons <- allPersonsFut
-        pendingProposals <- pendingProposalsFut
-      } yield Ok(views.html.detail(meetup, talkForm, personForm, pendingTalks, allTalks, allPersons, venueList, pendingProposals))
+        meetupVenue <- venueDbService.findByIds(meetup.data.venue.toSeq)
+        meetupTalks <- talkDbService.findByIds(meetup.data.talks)
+        meetupSpeakers <- personDbService.findByIds(meetupTalks.flatMap(_.data.speakers))
+        pendingTalks <- talkDbService.findPending()
+        pendingProposals <- proposalDbService.findPending()
+        pendingSpeakers <- personDbService.findByIds(pendingTalks.flatMap(_.data.speakers) ++ pendingProposals.flatMap(_.data.speakers))
+      } yield Ok(views.html.detail(meetup, venueForm, personForm, talkForm, meetupVenue, meetupTalks, meetupSpeakers, pendingTalks, pendingProposals, pendingSpeakers))
     }
   }
 
@@ -98,6 +95,32 @@ case class MeetupCtrl(
         }
       }
     )
+  }
+
+  def doCreateVenue(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    val redirectUrl = CtrlHelper.getReferer(req.headers, routes.MeetupCtrl.get(id))
+    venueForm.bindFromRequest.fold(
+      formWithErrors => Future.successful(Redirect(redirectUrl).flashing("error" -> "Incorrect form values")),
+      venueData => venueDbService.create(venueData, req.identity.id).flatMap {
+        case (_, venueId) =>
+          meetupDbService.setVenue(id, venueId, req.identity.id).map { _ =>
+            notificationSrv.setVenueToMeetup(id, venueId, req.identity.id)
+            Redirect(redirectUrl)
+          }
+      }
+    )
+  }
+
+  def doAddVenueForm(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    val redirectUrl = CtrlHelper.getReferer(req.headers, routes.MeetupCtrl.get(id))
+    CtrlHelper.getFormParam(req.body, "venueId").flatMap(p => Venue.Id.from(p).right.toOption).map { venueId =>
+      meetupDbService.setVenue(id, venueId, req.identity.id).map { _ =>
+        notificationSrv.setVenueToMeetup(id, venueId, req.identity.id)
+        Redirect(redirectUrl)
+      }
+    }.getOrElse {
+      Future.successful(Redirect(redirectUrl).flashing("error" -> "Unable to find venue :("))
+    }
   }
 
   def doCreateTalk(id: Meetup.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
@@ -147,12 +170,13 @@ case class MeetupCtrl(
 
   def doAddProposal(id: Meetup.Id, proposalId: Proposal.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     val redirectUrl = CtrlHelper.getReferer(req.headers, routes.MeetupCtrl.get(id))
-    proposalDbService.accept(proposalId, req.identity.id).flatMap {
-      case Right(talkId) => meetupDbService.addTalk(id, talkId, req.identity.id).map { _ =>
+    proposalDbService.setStatus(proposalId, Proposal.Status.Accepted, req.identity.id).flatMap {
+      case Right(Some(talkId)) => meetupDbService.addTalk(id, talkId, req.identity.id).map { _ =>
         notificationSrv.addTalkToMeetup(id, talkId, req.identity.id)
         Redirect(redirectUrl).flashing("success" -> "Proposal transformed into a talk and added to meetup :)")
       }
       case Left(err) => Future.successful(Redirect(redirectUrl).flashing("error" -> err))
+      case _ => Future.successful(Redirect(redirectUrl))
     }
   }
 

@@ -50,8 +50,6 @@ GET     /talks/$id<.{36}>                                           com.humantal
 GET     /talks/$id<.{36}>/edit                                      com.humantalks.internal.talks.TalkCtrl.update(id: Talk.Id)
 POST    /talks/$id<.{36}>/edit                                      com.humantalks.internal.talks.TalkCtrl.doUpdate(id: Talk.Id)
 POST    /talks/$id<.{36}>/status/:status                            com.humantalks.internal.talks.TalkCtrl.setStatus(id: Talk.Id, status: Talk.Status.Value)
-POST    /talks/$id<.{36}>/accept                                    com.humantalks.internal.talks.TalkCtrl.doAccept(id: Talk.Id)
-POST    /talks/$id<.{36}>/reject                                    com.humantalks.internal.talks.TalkCtrl.doReject(id: Talk.Id)
 POST    /talks/$id<.{36}>/attribute                                 com.humantalks.internal.talks.TalkCtrl.setAttribute(id: Talk.Id)
 POST    /talks/$id<.{36}>/delete                                    com.humantalks.internal.talks.TalkCtrl.doDelete(id: Talk.Id)
 
@@ -66,6 +64,8 @@ POST    /meetups/$id<.{36}>/updatePublish                           com.humantal
 POST    /meetups/$id<.{36}>/announce                                com.humantalks.internal.meetups.MeetupCtrl.doAnnounce(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/unpublish                               com.humantalks.internal.meetups.MeetupCtrl.doUnpublish(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/delete                                  com.humantalks.internal.meetups.MeetupCtrl.doDelete(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/venue                                   com.humantalks.internal.meetups.MeetupCtrl.doCreateVenue(id: Meetup.Id)
+POST    /meetups/$id<.{36}>/venue/add                               com.humantalks.internal.meetups.MeetupCtrl.doAddVenueForm(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/talks                                   com.humantalks.internal.meetups.MeetupCtrl.doCreateTalk(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/talks/add                               com.humantalks.internal.meetups.MeetupCtrl.doAddTalkForm(id: Meetup.Id)
 POST    /meetups/$id<.{36}>/talks/$talkId<.{36}>/add                com.humantalks.internal.meetups.MeetupCtrl.doAddTalk(id: Meetup.Id, talkId: Talk.Id)
@@ -75,8 +75,7 @@ POST    /meetups/$id<.{36}>/proposals/$proposalId<.{36}>/add        com.humantal
 
 GET     /proposals                                                  com.humantalks.internal.proposals.ProposalCtrl.find
 GET     /proposals/$id<.{36}>                                       com.humantalks.internal.proposals.ProposalCtrl.get(id: Proposal.Id)
-POST    /proposals/$id<.{36}>/accept                                com.humantalks.internal.proposals.ProposalCtrl.doAccept(id: Proposal.Id)
-POST    /proposals/$id<.{36}>/reject                                com.humantalks.internal.proposals.ProposalCtrl.doReject(id: Proposal.Id)
+POST    /proposals/$id<.{36}>/status/:status                        com.humantalks.internal.proposals.ProposalCtrl.setStatus(id: Proposal.Id, status: Proposal.Status.Value)
 
 GET     /admin/users                                                com.humantalks.internal.admin.AdminCtrl.users
 POST    /admin/users/$id<.{36}>/role                                com.humantalks.internal.admin.AdminCtrl.setRole(id: Person.Id)
@@ -104,7 +103,7 @@ POST    /api/persons                                                com.humantal
 
 GET     /api/select2/venues                                         com.humantalks.common.controllers.Select2Ctrl.venues
 GET     /api/select2/persons                                        com.humantalks.common.controllers.Select2Ctrl.persons
-GET     /api/select2/talks                                          com.humantalks.common.controllers.Select2Ctrl.talks
+GET     /api/select2/talks                                          com.humantalks.common.controllers.Select2Ctrl.talks(pending: Boolean ?= false)
 GET     /api/select2/meetups                                        com.humantalks.common.controllers.Select2Ctrl.meetups
 
 GET     /api/internal                                               com.humantalks.internal.Application.apiRoot

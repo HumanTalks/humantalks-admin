@@ -26,6 +26,8 @@ object Proposal {
   object Status extends Enumeration {
     val Proposed, Accepted, Rejected = Value
   }
+  implicit val statusPathBinder = EnumerationHelper.pathBinder(Status)
+  implicit val formatStatus = EnumerationHelper.enumFormat(Status)
 
   case class Data(
       title: String,
@@ -43,7 +45,6 @@ object Proposal {
     def toTalk: Talk.Data = Talk.Data(title, description, speakers, slides, slidesEmbedCode, None, None)
   }
 
-  implicit val formatStatus = EnumerationHelper.enumFormat(Status)
   implicit val formatData = Json.format[Proposal.Data]
   implicit val format = Json.format[Proposal]
   val fields = mapping(
