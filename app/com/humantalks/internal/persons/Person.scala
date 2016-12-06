@@ -59,7 +59,6 @@ object Person {
 
   object Role extends Enumeration {
     val User, Organizer, Admin = Value
-    val default = User
   }
   implicit val formatRole = EnumerationHelper.enumFormat(Role)
 
@@ -85,7 +84,7 @@ object Person {
       ),
       auth = Some(Auth(
         loginInfo = loginInfo,
-        role = Role.default,
+        role = Role.User,
         activated = false
       )),
       meta = Meta.from(id)
