@@ -70,7 +70,7 @@
                     @helper.form(action=MeetupCtrl.doMoveTalk(meetup.id, talk.id, false), 'class->"inline") { <button type="submit" class="btn btn-clear" title="Descendre le talk dans la liste"><i class="fa fa-arrow-down"></i></button> }
                     @com.humantalks.internal.talks.views.html.partials.status(talk)
                     <a href="@TalkCtrl.get(talk.id)">@talk.data.title</a>
-                    @speakers(talk.data.speakers, meetupSpeakers)
+                    @speakers(talk.data.speakers, meetupSpeakers, true)
                     @slidesLink(talk.data.slides)
                     @videoLink(talk.data.video)
                     @if(talk.status != Talk.Status.Finalized){ @helper.form(action=TalkCtrl.setStatus(talk.id, Talk.Status.Finalized), 'class->"inline") { <button type="submit" class="btn btn-success" title="Confirm this talk"><i class="fa fa-check"></i></button> } }
