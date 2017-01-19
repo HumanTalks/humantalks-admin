@@ -23,19 +23,26 @@
 
     <div class="container" role="main">
         <div class="page-header">
-            <h1>@proposalOpt.map{ p => Modifier @p.data.title}.getOrElse{Proposer un talk}</h1>
+            <h1>@proposalOpt.map{p => Modifier @p.data.title}.getOrElse{Proposer un talk}</h1>
         </div>
 
         <div class="row">
             <div class="col-md-12">
-            @helper.form(action=proposalOpt.map(p => ProposalCtrl.doUpdate(p.id)).getOrElse(ProposalCtrl.doCreate()), 'class->"form-horizontal proposal-form") {
-                @partials.fields(proposalForm, personList, nextDates)
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <button type="submit" class="btn btn-primary btn-lg">@proposalOpt.map{ p => Modifier @p.data.title}.getOrElse{Proposer ce talk aux HumanTalks Paris}</button>
-                    </div>
+                <div class="col-md-offset-2 col-md-10">
+                    Les HumanTalks sont un événement pour les développeurs de tous horizons.<br>
+                    Tous les 2ème mardis du mois, on vous présente 4 talks de 10 minutes sur des sujets liés de près et parfois de loin au métier de développeur.<br>
+                    Les HumanTalks se veulent avant tout un événement convivial et permettant à tout le monde (y compris aux débutants) de venir présenter un sujet qui leur tient à coeur.<br>
+                    Pour toute question, n'hésitez pas à nous contacter : <a href="https://twitter.com/HumanTalksParis" target="_blank">@@HumanTalksParis</a> - <a href="https://www.meetup.com/fr-FR/HumanTalks-Paris/" target="_blank">Meetup</a> - <a href="mailto:paris@@humantalks.com" target="_blank">paris@@humantalks.com</a><br>
+                    <br>
                 </div>
-            }
+                @helper.form(action=proposalOpt.map(p => ProposalCtrl.doUpdate(p.id)).getOrElse(ProposalCtrl.doCreate()), 'class->"form-horizontal proposal-form") {
+                    @partials.fields(proposalForm, personList, nextDates)
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="submit" class="btn btn-primary btn-lg">@proposalOpt.map{ p => Modifier @p.data.title}.getOrElse{Proposer ce talk aux HumanTalks Paris}</button>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     </div>
