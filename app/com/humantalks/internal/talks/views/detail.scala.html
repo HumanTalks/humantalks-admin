@@ -1,15 +1,15 @@
 @import com.humantalks.internal.persons.Person
 @import com.humantalks.internal.talks.Talk
-@import com.humantalks.internal.meetups.Meetup
+@import com.humantalks.internal.events.Event
 @import com.humantalks.exposed.proposals.Proposal
 @import global.views.html.format._
 @import global.views.html.partials._
 @import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.talks.routes.TalkCtrl
-@import com.humantalks.internal.meetups.routes.MeetupCtrl
+@import com.humantalks.internal.events.routes.EventCtrl
 @import com.humantalks.internal.proposals.routes.ProposalCtrl
-@(talk: Talk, proposalOpt: Option[Proposal], personList: List[Person], meetupList: List[Meetup])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@(talk: Talk, proposalOpt: Option[Proposal], personList: List[Person], eventList: List[Event])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @main(talk.data.title, talk.data.description.getOrElse("")) {
     @header("talk")
 
@@ -29,11 +29,11 @@
         @talk.data.description.map{d => <p>@multiline(d)</p>}
         @slidesEmbed(talk.data.slidesEmbedCode, talk.data.slides)
         @videoEmbed(talk.data.videoEmbedCode, talk.data.video)
-        @if(meetupList.nonEmpty){
+        @if(eventList.nonEmpty){
             <h3>Meetups</h3>
             <ul>
-            @meetupList.map { meetup =>
-                <li><a href="@MeetupCtrl.get(meetup.id)">@meetup.data.title</a></li>
+            @eventList.map { event =>
+                <li><a href="@EventCtrl.get(event.id)">@event.data.title</a></li>
             }
             </ul>
         }

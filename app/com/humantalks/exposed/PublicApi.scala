@@ -1,14 +1,13 @@
 package com.humantalks.exposed
 
-import com.humantalks.exposed.entities.{ PublicVenue, PublicPerson, PublicMeetup, PublicTalk }
-import com.humantalks.internal.meetups.{ Meetup, MeetupDbService }
+import com.humantalks.exposed.entities.{ PublicVenue, PublicPerson, PublicEvent, PublicTalk }
+import com.humantalks.internal.events.{ Event, EventDbService }
 import com.humantalks.internal.persons.{ Person, PersonDbService }
 import com.humantalks.internal.talks.{ Talk, TalkDbService }
 import com.humantalks.internal.venues.{ Venue, VenueDbService }
 import global.Contexts
 import global.helpers.ApiHelper
 import global.values.ApiError
-import org.joda.time.DateTime
 import play.api.libs.json.Json
 import play.api.mvc.{ Results, Action, Controller }
 
@@ -19,7 +18,7 @@ case class PublicApi(
     venueDbService: VenueDbService,
     personDbService: PersonDbService,
     talkDbService: TalkDbService,
-    meetupDbService: MeetupDbService
+    eventDbService: EventDbService
 ) extends Controller {
   import Contexts.wsToEC
   import ctx._
@@ -27,7 +26,7 @@ case class PublicApi(
   private val includeVenue = "venue"
   private val includeSpeaker = "speaker"
   private val includeTalk = "talk"
-  private val includeMeetup = "meetup"
+  private val includeEvent = "meetup"
 
   def apiRoot = Action.async { implicit req =>
     ApiHelper.resultJson(Future.successful(Right(Json.obj(
@@ -48,17 +47,17 @@ case class PublicApi(
 
   def createPerson = Action.async(parse.json) { implicit req => ApiHelper.create(personDbService, Person.anonymous, req.body) }
 
-  def findMeetups(include: Option[String]) = Action.async { implicit req =>
+  def findEvents(include: Option[String]) = Action.async { implicit req =>
     val includeList = getIncludeList(include)
     ApiHelper.resultList({
       for {
-        meetups <- meetupDbService.findPast()
-        venues <- if (includeList.contains(includeVenue)) venueDbService.findByIds(meetups.flatMap(_.data.venue)) else Future.successful(List())
-        talks <- if (includeList.contains(includeTalk)) talkDbService.findByIds(meetups.flatMap(_.data.talks)) else Future.successful(List())
+        events <- eventDbService.findPast()
+        venues <- if (includeList.contains(includeVenue)) venueDbService.findByIds(events.flatMap(_.data.venue)) else Future.successful(List())
+        talks <- if (includeList.contains(includeTalk)) talkDbService.findByIds(events.flatMap(_.data.talks)) else Future.successful(List())
         speakers <- if (includeList.contains(includeSpeaker)) personDbService.findByIds(talks.flatMap(_.data.speakers)) else Future.successful(List())
-      } yield Right(meetups.map { meetup =>
-        PublicMeetup.from(
-          meetup,
+      } yield Right(events.map { event =>
+        PublicEvent.from(
+          event,
           if (includeList.contains(includeVenue)) Some(venues) else None,
           if (includeList.contains(includeTalk)) Some(talks) else None,
           if (includeList.contains(includeSpeaker)) Some(speakers) else None
@@ -71,15 +70,15 @@ case class PublicApi(
     val includeList = getIncludeList(include)
     ApiHelper.resultList({
       for {
-        meetups <- meetupDbService.findPast()
-        talks <- talkDbService.findByIds(meetups.flatMap(_.data.talks))
+        events <- eventDbService.findPast()
+        talks <- talkDbService.findByIds(events.flatMap(_.data.talks))
         speakers <- if (includeList.contains(includeSpeaker)) personDbService.findByIds(talks.flatMap(_.data.speakers)) else Future.successful(List())
-        venues <- if (includeList.contains(includeVenue)) venueDbService.findByIds(meetups.flatMap(_.data.venue)) else Future.successful(List())
+        venues <- if (includeList.contains(includeVenue)) venueDbService.findByIds(events.flatMap(_.data.venue)) else Future.successful(List())
       } yield Right(talks.map { talk =>
         PublicTalk.from(
           talk,
           if (includeList.contains(includeSpeaker)) Some(speakers) else None,
-          if (includeList.contains(includeMeetup)) Some(meetups) else None,
+          if (includeList.contains(includeEvent)) Some(events) else None,
           if (includeList.contains(includeVenue)) Some(venues) else None
         )
       })
@@ -90,15 +89,15 @@ case class PublicApi(
     val includeList = getIncludeList(include)
     ApiHelper.resultList({
       for {
-        meetups <- meetupDbService.findPast()
-        talks <- talkDbService.findByIds(meetups.flatMap(_.data.talks))
+        events <- eventDbService.findPast()
+        talks <- talkDbService.findByIds(events.flatMap(_.data.talks))
         speakers <- personDbService.findByIds(talks.flatMap(_.data.speakers))
-        venues <- if (includeList.contains(includeVenue)) venueDbService.findByIds(meetups.flatMap(_.data.venue)) else Future.successful(List())
+        venues <- if (includeList.contains(includeVenue)) venueDbService.findByIds(events.flatMap(_.data.venue)) else Future.successful(List())
       } yield Right(speakers.map { speaker =>
         PublicPerson.from(
           speaker,
           if (includeList.contains(includeTalk)) Some(talks) else None,
-          if (includeList.contains(includeMeetup)) Some(meetups) else None,
+          if (includeList.contains(includeEvent)) Some(events) else None,
           if (includeList.contains(includeVenue)) Some(venues) else None
         )
       })
@@ -110,13 +109,13 @@ case class PublicApi(
     ApiHelper.resultList({
       for {
         venues <- venueDbService.find()
-        meetups <- if (includeList.contains(includeMeetup)) meetupDbService.findPast() else Future.successful(List())
-        talks <- if (includeList.contains(includeTalk)) talkDbService.findByIds(meetups.flatMap(_.data.talks)) else Future.successful(List())
+        events <- if (includeList.contains(includeEvent)) eventDbService.findPast() else Future.successful(List())
+        talks <- if (includeList.contains(includeTalk)) talkDbService.findByIds(events.flatMap(_.data.talks)) else Future.successful(List())
         speakers <- if (includeList.contains(includeSpeaker)) personDbService.findByIds(talks.flatMap(_.data.speakers)) else Future.successful(List())
       } yield Right(venues.map { venue =>
         PublicVenue.from(
           venue,
-          if (includeList.contains(includeMeetup)) Some(meetups) else None,
+          if (includeList.contains(includeEvent)) Some(events) else None,
           if (includeList.contains(includeTalk)) Some(talks) else None,
           if (includeList.contains(includeSpeaker)) Some(speakers) else None
         )
@@ -124,17 +123,17 @@ case class PublicApi(
     })
   }
 
-  def findMeetup(id: Meetup.Id, include: Option[String]) = Action.async { implicit req =>
+  def findEvent(id: Event.Id, include: Option[String]) = Action.async { implicit req =>
     val includeList = getIncludeList(include)
     ApiHelper.result({
       for {
-        meetupOpt <- meetupDbService.get(id)
-        venues <- if (includeList.contains(includeVenue)) venueDbService.findByIds(meetupOpt.flatMap(_.data.venue).toList) else Future.successful(List())
-        talks <- if (includeList.contains(includeTalk)) talkDbService.findByIds(meetupOpt.map(_.data.talks).getOrElse(List())) else Future.successful(List())
+        eventOpt <- eventDbService.get(id)
+        venues <- if (includeList.contains(includeVenue)) venueDbService.findByIds(eventOpt.flatMap(_.data.venue).toList) else Future.successful(List())
+        talks <- if (includeList.contains(includeTalk)) talkDbService.findByIds(eventOpt.map(_.data.talks).getOrElse(List())) else Future.successful(List())
         speakers <- if (includeList.contains(includeSpeaker)) personDbService.findByIds(talks.flatMap(_.data.speakers)) else Future.successful(List())
-      } yield meetupOpt.map { meetup =>
-        Right(PublicMeetup.from(
-          meetup,
+      } yield eventOpt.map { event =>
+        Right(PublicEvent.from(
+          event,
           if (includeList.contains(includeVenue)) Some(venues) else None,
           if (includeList.contains(includeTalk)) Some(talks) else None,
           if (includeList.contains(includeSpeaker)) Some(speakers) else None
@@ -151,13 +150,13 @@ case class PublicApi(
       for {
         talkOpt <- talkDbService.get(id)
         speakers <- if (includeList.contains(includeSpeaker)) personDbService.findByIds(talkOpt.map(_.data.speakers).getOrElse(List())) else Future.successful(List())
-        meetups <- if (includeList.contains(includeMeetup)) meetupDbService.findForTalk(id) else Future.successful(List())
-        venues <- if (includeList.contains(includeVenue)) venueDbService.findByIds(meetups.flatMap(_.data.venue)) else Future.successful(List())
+        events <- if (includeList.contains(includeEvent)) eventDbService.findForTalk(id) else Future.successful(List())
+        venues <- if (includeList.contains(includeVenue)) venueDbService.findByIds(events.flatMap(_.data.venue)) else Future.successful(List())
       } yield talkOpt.map { talk =>
         Right(PublicTalk.from(
           talk,
           if (includeList.contains(includeSpeaker)) Some(speakers) else None,
-          if (includeList.contains(includeMeetup)) Some(meetups) else None,
+          if (includeList.contains(includeEvent)) Some(events) else None,
           if (includeList.contains(includeVenue)) Some(venues) else None
         ))
       }.getOrElse {
@@ -172,13 +171,13 @@ case class PublicApi(
       for {
         speakerOpt <- personDbService.get(id)
         talks <- if (includeList.contains(includeTalk)) talkDbService.findForPerson(id) else Future.successful(List())
-        meetups <- if (includeList.contains(includeMeetup)) meetupDbService.findForTalks(talks.map(_.id)) else Future.successful(List())
-        venues <- if (includeList.contains(includeVenue)) venueDbService.findByIds(meetups.flatMap(_.data.venue)) else Future.successful(List())
+        events <- if (includeList.contains(includeEvent)) eventDbService.findForTalks(talks.map(_.id)) else Future.successful(List())
+        venues <- if (includeList.contains(includeVenue)) venueDbService.findByIds(events.flatMap(_.data.venue)) else Future.successful(List())
       } yield speakerOpt.map { speaker =>
         Right(PublicPerson.from(
           speaker,
           if (includeList.contains(includeTalk)) Some(talks) else None,
-          if (includeList.contains(includeMeetup)) Some(meetups) else None,
+          if (includeList.contains(includeEvent)) Some(events) else None,
           if (includeList.contains(includeVenue)) Some(venues) else None
         ))
       }.getOrElse {
@@ -192,13 +191,13 @@ case class PublicApi(
     ApiHelper.result({
       for {
         venueOpt <- venueDbService.get(id)
-        meetups <- if (includeList.contains(includeMeetup)) meetupDbService.findForVenue(id) else Future.successful(List())
-        talks <- if (includeList.contains(includeTalk)) talkDbService.findByIds(meetups.flatMap(_.data.talks)) else Future.successful(List())
+        events <- if (includeList.contains(includeEvent)) eventDbService.findForVenue(id) else Future.successful(List())
+        talks <- if (includeList.contains(includeTalk)) talkDbService.findByIds(events.flatMap(_.data.talks)) else Future.successful(List())
         speakers <- if (includeList.contains(includeSpeaker)) personDbService.findByIds(talks.flatMap(_.data.speakers)) else Future.successful(List())
       } yield venueOpt.map { venue =>
         Right(PublicVenue.from(
           venue,
-          if (includeList.contains(includeMeetup)) Some(meetups) else None,
+          if (includeList.contains(includeEvent)) Some(events) else None,
           if (includeList.contains(includeTalk)) Some(talks) else None,
           if (includeList.contains(includeSpeaker)) Some(speakers) else None
         ))

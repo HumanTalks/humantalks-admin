@@ -1,0 +1,11 @@
+@import com.humantalks.internal.events.Event
+@import global.views.html.form._
+@import com.humantalks.common.controllers.routes.Select2Ctrl
+@(eventForm: Form[Event.Data])(implicit messagesApi: MessagesApi)
+@fieldHorizontal(eventForm("title"), 'label -> "Titre") { field => @inputText(field, 'placeholder -> "ex: HumanTalks Paris Juillet 2016", 'autofocus -> "") }
+@fieldHorizontal(eventForm("venue"), 'label -> "Lieu") { field => @inputSelect2(field, List(), 'remote -> Select2Ctrl.venues.toString, 'placeholder -> "Sélectionner un lieu") }
+@fieldHorizontal(eventForm("date"), 'label -> "Date") { field => @inputDatetime(field, 'placeholder -> "ex: 12/07/2016 19:00") }
+@fieldHorizontal(eventForm("description"), 'label -> "Description") { field => @inputTextarea(field, 'rows -> "5", 'placeholder -> "Ce texte sera intéré au début de la description meetup") }
+@fieldHorizontal(eventForm("talks"), 'label -> "Talks") { field => @inputSelectMulti2(field, List(), 'remote -> Select2Ctrl.talks().toString, 'placeholder -> "Sélectionner les talks", 'onCreate -> "createTalkModal", 'onCreateLabel -> "Nouveau talk") }
+@fieldHorizontal(eventForm("roti"), 'label -> "Roti") { field => @inputText(field, 'placeholder -> "ex: https://pbs.twimg.com/media/Ck8GeIOWUAEgKdG.jpg:large") }
+@fieldHorizontal(eventForm("personCount"), 'label -> "Nombre de participants") { field => @inputNumber(field, 'placeholder -> "ex: 123") }

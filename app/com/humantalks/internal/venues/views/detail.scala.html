@@ -1,13 +1,13 @@
 @import com.humantalks.internal.venues.Venue
 @import com.humantalks.internal.persons.Person
-@import com.humantalks.internal.meetups.Meetup
+@import com.humantalks.internal.events.Event
 @import global.views.html.format._
 @import global.views.html.partials._
 @import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.venues.routes.VenueCtrl
-@import com.humantalks.internal.meetups.routes.MeetupCtrl
-@(venue: Venue, meetupList: List[Meetup])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@import com.humantalks.internal.events.routes.EventCtrl
+@(venue: Venue, eventList: List[Event])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @main(venue.data.name) {
     @header("venue")
 
@@ -23,11 +23,11 @@
         @venue.data.location.map{loc => <p>@loc.formatted</p>}
         @venue.data.comment.map{c => <p>@multiline(c)</p>}
         @twitter(venue.data.twitter)
-        @if(meetupList.nonEmpty){
+        @if(eventList.nonEmpty){
             <h3>Meetups</h3>
             <ul>
-            @meetupList.map { meetup =>
-                <li><a href="@MeetupCtrl.get(meetup.id)">@meetup.data.title</a></li>
+            @eventList.map { event =>
+                <li><a href="@EventCtrl.get(event.id)">@event.data.title</a></li>
             }
             </ul>
         }

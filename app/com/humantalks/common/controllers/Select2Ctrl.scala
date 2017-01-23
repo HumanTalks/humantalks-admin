@@ -2,7 +2,7 @@ package com.humantalks.common.controllers
 
 import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
-import com.humantalks.internal.meetups.MeetupDbService
+import com.humantalks.internal.events.EventDbService
 import com.humantalks.internal.persons.{ Person, PersonDbService }
 import com.humantalks.internal.talks.{ Talk, TalkDbService }
 import com.humantalks.internal.venues.VenueDbService
@@ -21,7 +21,7 @@ case class Select2Ctrl(
     venueDbService: VenueDbService,
     personDbService: PersonDbService,
     talkDbService: TalkDbService,
-    meetupDbService: MeetupDbService
+    eventDbService: EventDbService
 )(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.wsToEC
   import ctx._
@@ -59,10 +59,10 @@ case class Select2Ctrl(
     })
   }
 
-  def meetups = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+  def events = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     ApiHelper.resultList({
-      meetupDbService.find().map { meetups =>
-        Right(meetups.map(m => Select2Option(m.id.value, m.data.title)))
+      eventDbService.find().map { events =>
+        Right(events.map(m => Select2Option(m.id.value, m.data.title)))
       }
     })
   }

@@ -1,8 +1,7 @@
-package com.humantalks.internal.meetups
+package com.humantalks.internal.events
 
 import com.humantalks.common.services.DateSrv
 import com.humantalks.common.values.Meta
-import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
 import com.humantalks.internal.venues.Venue
 import global.values.{ TypedId, TypedIdHelper }
@@ -10,19 +9,19 @@ import org.joda.time.{ DateTimeConstants, LocalTime, DateTime }
 import play.api.data.Forms._
 import play.api.libs.json.Json
 
-case class Meetup(
-    id: Meetup.Id,
-    meetupRef: Option[Meetup.MeetupRef],
-    data: Meetup.Data,
+case class Event(
+    id: Event.Id,
+    meetupRef: Option[Event.MeetupRef],
+    data: Event.Data,
     meta: Meta
 ) {
   lazy val meetupUrl: Option[String] = meetupRef.map(r => s"http://www.meetup.com/fr-FR/${r.group}/events/${r.id}/")
-  lazy val slackChannel: String = Meetup.slackChannel(data.date)
+  lazy val slackChannel: String = Event.slackChannel(data.date)
 }
-object Meetup {
+object Event {
   case class Id(value: String) extends TypedId(value)
   object Id extends TypedIdHelper[Id] {
-    def from(value: String): Either[String, Id] = TypedId.from(value, "Meetup.Id").right.map(Id(_))
+    def from(value: String): Either[String, Id] = TypedId.from(value, "Event.Id").right.map(Id(_))
     def generate(): Id = Id(TypedId.generate())
   }
 
@@ -37,7 +36,7 @@ object Meetup {
       roti: Option[String],
       personCount: Option[Int]
   ) {
-    lazy val slackChannel: String = Meetup.slackChannel(date)
+    lazy val slackChannel: String = Event.slackChannel(date)
     def trim: Data = copy(
       title = title.trim,
       description = description.map(_.trim),
@@ -47,8 +46,8 @@ object Meetup {
   object Data {
     def generate(after: DateTime): Data = {
       val nextDate = DateSrv.nextDate(after, 2, DateTimeConstants.TUESDAY, new LocalTime(19, 0))
-      val nextTitle = Meetup.title(nextDate)
-      Meetup.Data(nextTitle, nextDate, None, List(), None, None, None)
+      val nextTitle = Event.title(nextDate)
+      Event.Data(nextTitle, nextDate, None, List(), None, None, None)
     }
   }
 
@@ -57,7 +56,7 @@ object Meetup {
 
   implicit val formatData = Json.format[Data]
   implicit val formatRef = Json.format[MeetupRef]
-  implicit val format = Json.format[Meetup]
+  implicit val format = Json.format[Event]
   val fields = mapping(
     "title" -> nonEmptyText,
     "date" -> jodaDate(pattern = "dd/MM/yyyy HH:mm"),
@@ -66,5 +65,5 @@ object Meetup {
     "description" -> optional(text),
     "roti" -> optional(text),
     "personCount" -> optional(number)
-  )(Meetup.Data.apply)(Meetup.Data.unapply)
+  )(Event.Data.apply)(Event.Data.unapply)
 }

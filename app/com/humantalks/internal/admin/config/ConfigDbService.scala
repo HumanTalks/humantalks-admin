@@ -1,9 +1,9 @@
 package com.humantalks.internal.admin.config
 
 import com.humantalks.common.services.MustacheSrv
-import com.humantalks.exposed.entities.{ PublicPerson, PublicTalk, PublicVenue, PublicMeetup }
+import com.humantalks.exposed.entities.{ PublicPerson, PublicTalk, PublicVenue, PublicEvent }
 import com.humantalks.exposed.proposals.Proposal
-import com.humantalks.internal.meetups.Meetup
+import com.humantalks.internal.events.Event
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
 import com.humantalks.internal.venues.Venue
@@ -25,9 +25,9 @@ case class ConfigDbService(configRepository: ConfigRepository) extends DbService
   def setValue(id: Config.Id, value: String, by: Person.Id): Future[WriteResult] = configRepository.setValue(id, value, by)
   def delete(id: Config.Id): Future[Either[Nothing, WriteResult]] = configRepository.delete(id).map(res => Right(res))
 
-  def buildMeetupEventDescription(meetupOpt: Option[Meetup], venueOpt: Option[Venue], talks: List[Talk], speakers: List[Person], getTemplate: Config.Data => Future[String] = getValue): Future[(Try[String], Map[String, JsValue])] =
+  def buildMeetupEventDescription(eventOpt: Option[Event], venueOpt: Option[Venue], talks: List[Talk], speakers: List[Person], getTemplate: Config.Data => Future[String] = getValue): Future[(Try[String], Map[String, JsValue])] =
     getTemplate(Config.meetupEventDescription).map(tempate => build(tempate, Map(
-      "meetup" -> Json.toJson(meetupOpt.map(m => PublicMeetup.from(m, None, None, None))),
+      "meetup" -> Json.toJson(eventOpt.map(m => PublicEvent.from(m, None, None, None))),
       "venue" -> Json.toJson(venueOpt.map(v => PublicVenue.from(v, None, None, None))),
       "talks" -> Json.toJson(talks.map(t => PublicTalk.from(t, Some(speakers), None, None)))
     )))
@@ -55,15 +55,15 @@ case class ConfigDbService(configRepository: ConfigRepository) extends DbService
     getTemplate(Config.proposalSubmittedSlackText).map(tempate => build(tempate, Map(
       "proposal" -> Json.toJson(proposalOpt)
     )))
-  def buildMeetupCreatedSlackMessage(meetup: Option[Meetup.Data], meetupUrl: String, getTemplate: Config.Data => Future[String] = getValue): Future[(Try[String], Map[String, JsValue])] =
+  def buildMeetupCreatedSlackMessage(event: Option[Event.Data], meetupUrl: String, getTemplate: Config.Data => Future[String] = getValue): Future[(Try[String], Map[String, JsValue])] =
     getTemplate(Config.meetupCreatedSlackMessage).map(tempate => build(tempate, Map(
-      "meetup" -> Json.toJson(meetup),
+      "meetup" -> Json.toJson(event),
       "meetupUrl" -> Json.toJson(meetupUrl)
     )))
-  def buildTalkAddedToMeetupSlackMessage(talkOpt: Option[Talk], speakers: List[Person], meetupOpt: Option[Meetup], meetupUrl: String, addedByOpt: Option[Person], getTemplate: Config.Data => Future[String] = getValue): Future[(Try[String], Map[String, JsValue])] =
+  def buildTalkAddedToMeetupSlackMessage(talkOpt: Option[Talk], speakers: List[Person], eventOpt: Option[Event], meetupUrl: String, addedByOpt: Option[Person], getTemplate: Config.Data => Future[String] = getValue): Future[(Try[String], Map[String, JsValue])] =
     getTemplate(Config.talkAddedToMeetupSlackMessage).map(tempate => build(tempate, Map(
       "talk" -> Json.toJson(talkOpt.map(talk => PublicTalk.from(talk, Some(speakers), None, None))),
-      "meetup" -> Json.toJson(meetupOpt),
+      "meetup" -> Json.toJson(eventOpt),
       "meetupUrl" -> Json.toJson(meetupUrl),
       "addedBy" -> Json.toJson(addedByOpt)
     )))

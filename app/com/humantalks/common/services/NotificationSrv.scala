@@ -5,7 +5,7 @@ import com.humantalks.common.services.sendgrid._
 import com.humantalks.common.services.slack.SlackSrv
 import com.humantalks.exposed.proposals.Proposal
 import com.humantalks.internal.admin.config.{ Config, ConfigDbService }
-import com.humantalks.internal.meetups.{ MeetupDbService, Meetup }
+import com.humantalks.internal.events.{ EventDbService, Event }
 import com.humantalks.internal.persons.{ PersonDbService, Person }
 import com.humantalks.internal.talks.{ TalkDbService, Talk }
 import com.humantalks.internal.venues.Venue
@@ -23,7 +23,7 @@ case class NotificationSrv(
     slackSrv: SlackSrv,
     personDbService: PersonDbService,
     talkDbService: TalkDbService,
-    meetupDbService: MeetupDbService,
+    eventDbService: EventDbService,
     configDbService: ConfigDbService
 ) {
 
@@ -64,13 +64,13 @@ case class NotificationSrv(
     )).map(_.forall(identity)).recover { case _ => false }
   }
 
-  def meetupCreated(id: Meetup.Id, data: Meetup.Data)(implicit request: RequestHeader, ec: ExecutionContext): Future[Boolean] = {
-    def slackMessage(id: Meetup.Id, meetup: Meetup.Data): Future[Boolean] = {
-      val url = com.humantalks.internal.meetups.routes.MeetupCtrl.get(id).absoluteURL()
+  def eventCreated(id: Event.Id, data: Event.Data)(implicit request: RequestHeader, ec: ExecutionContext): Future[Boolean] = {
+    def slackMessage(id: Event.Id, event: Event.Data): Future[Boolean] = {
+      val url = com.humantalks.internal.events.routes.EventCtrl.get(id).absoluteURL()
       (for {
-        (Success(message), _) <- configDbService.buildMeetupCreatedSlackMessage(Some(meetup), url)
+        (Success(message), _) <- configDbService.buildMeetupCreatedSlackMessage(Some(event), url)
         res <- slackSrv.postMessageAndCreateChannelIfNeeded(
-          channel = meetup.slackChannel,
+          channel = event.slackChannel,
           text = message,
           attachments = None
         )
@@ -81,38 +81,38 @@ case class NotificationSrv(
     )).map(_.forall(identity)).recover { case _ => false }
   }
 
-  def addTalkToMeetup(meetupId: Meetup.Id, talkId: Talk.Id, by: Person.Id)(implicit request: RequestHeader, ec: ExecutionContext): Future[Boolean] = {
-    def slackMessage(meetup: Meetup, talk: Talk, speakers: List[Person], by: Person): Future[Boolean] = {
-      val url = com.humantalks.internal.meetups.routes.MeetupCtrl.get(meetup.id).absoluteURL()
+  def addTalkToEvent(eventId: Event.Id, talkId: Talk.Id, by: Person.Id)(implicit request: RequestHeader, ec: ExecutionContext): Future[Boolean] = {
+    def slackMessage(event: Event, talk: Talk, speakers: List[Person], by: Person): Future[Boolean] = {
+      val url = com.humantalks.internal.events.routes.EventCtrl.get(event.id).absoluteURL()
       (for {
-        (Success(message), _) <- configDbService.buildTalkAddedToMeetupSlackMessage(Some(talk), speakers, Some(meetup), url, Some(by))
+        (Success(message), _) <- configDbService.buildTalkAddedToMeetupSlackMessage(Some(talk), speakers, Some(event), url, Some(by))
         res <- slackSrv.postMessageAndCreateChannelIfNeeded(
-          channel = meetup.slackChannel,
+          channel = event.slackChannel,
           text = message,
           attachments = None
         )
       } yield res.isRight).recover { case _ => false }
     }
-    def internal(meetup: Meetup, talk: Talk, speakers: List[Person], by: Person)(implicit request: RequestHeader, ec: ExecutionContext): Future[Boolean] = {
+    def internal(event: Event, talk: Talk, speakers: List[Person], by: Person)(implicit request: RequestHeader, ec: ExecutionContext): Future[Boolean] = {
       Future.sequence(List(
-        slackMessage(meetup, talk, speakers, by)
+        slackMessage(event, talk, speakers, by)
       )).map(_.forall(identity)).recover { case _ => false }
     }
     (for {
       personOpt <- personDbService.get(by)
-      meetupOpt <- meetupDbService.get(meetupId)
+      eventOpt <- eventDbService.get(eventId)
       talkOpt <- talkDbService.get(talkId)
       speakers <- talkOpt.map(t => personDbService.findByIds(t.data.speakers)).getOrElse(Future.successful(List()))
     } yield {
       (for {
         person <- personOpt
-        meetup <- meetupOpt
+        event <- eventOpt
         talk <- talkOpt
-      } yield internal(meetup, talk, speakers, person)).getOrElse(Future.successful(false))
+      } yield internal(event, talk, speakers, person)).getOrElse(Future.successful(false))
     }).flatMap(identity).recover { case _ => false }
   }
 
-  def setVenueToMeetup(meetupId: Meetup.Id, venueId: Venue.Id, by: Person.Id)(implicit request: RequestHeader, ec: ExecutionContext): Future[Boolean] = {
+  def setVenueToEvent(eventId: Event.Id, venueId: Venue.Id, by: Person.Id)(implicit request: RequestHeader, ec: ExecutionContext): Future[Boolean] = {
     Future.successful(true)
   }
 }

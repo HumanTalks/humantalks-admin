@@ -1,6 +1,6 @@
 package com.humantalks.common.services.meetup.models
 
-import com.humantalks.internal.meetups.Meetup
+import com.humantalks.internal.events
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
 import org.joda.time.DateTime
@@ -55,12 +55,12 @@ object EventCreate {
       "question" -> data.question
     ).flatMap { case (key, valueOpt) => valueOpt.map(value => (key, value)) }
 
-  def from(meetup: Meetup, description: String, venueOpt: Option[com.humantalks.internal.venues.Venue], talkList: List[Talk], personList: List[Person]): EventCreate =
+  def from(event: events.Event, description: String, venueOpt: Option[com.humantalks.internal.venues.Venue], talkList: List[Talk], personList: List[Person]): EventCreate =
     EventCreate(
       status = "draft",
-      name = meetup.data.title,
+      name = event.data.title,
       description = description,
-      time = meetup.data.date,
+      time = event.data.date,
       duration = None,
       rsvp_limit = venueOpt.flatMap(_.data.capacity),
       guest_limit = 0,

@@ -2,8 +2,8 @@ package com.humantalks.common.services.meetup
 
 import com.humantalks.common.Conf
 import com.humantalks.common.services.meetup.models.{ EventCreate, VenueCreate }
-import com.humantalks.internal.admin.config.{ Config, ConfigDbService }
-import com.humantalks.internal.meetups.{ MeetupDbService, Meetup }
+import com.humantalks.internal.admin.config.ConfigDbService
+import com.humantalks.internal.events.{ EventDbService, Event }
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
 import com.humantalks.internal.venues.{ Venue, VenueDbService }
@@ -12,22 +12,22 @@ import global.Contexts
 import scala.concurrent.Future
 import scala.util.{ Failure, Success }
 
-case class MeetupSrv(conf: Conf, ctx: Contexts, meetupApi: MeetupApi, venueDbService: VenueDbService, meetupDbService: MeetupDbService, configDbService: ConfigDbService) {
+case class MeetupSrv(conf: Conf, ctx: Contexts, meetupApi: MeetupApi, venueDbService: VenueDbService, eventDbService: EventDbService, configDbService: ConfigDbService) {
   import Contexts.wsToEC
   import ctx._
 
-  def create(meetup: Meetup, venueOpt: Option[Venue], talkList: List[Talk], personList: List[Person], by: Person.Id): Future[Either[List[String], Meetup.MeetupRef]] = {
+  def create(event: Event, venueOpt: Option[Venue], talkList: List[Talk], personList: List[Person], by: Person.Id): Future[Either[List[String], Event.MeetupRef]] = {
     val group = conf.Meetup.group
-    meetup.meetupRef.map { ref =>
-      Future.successful(Left(List(s"Meetup reference found for ${meetup.data.title} (already created)")))
+    event.meetupRef.map { ref =>
+      Future.successful(Left(List(s"Meetup reference found for ${event.data.title} (already created)")))
     }.getOrElse {
       withMeetupRef(group, venueOpt, by).flatMap { venueWithMeetupRefOpt =>
-        configDbService.buildMeetupEventDescription(Some(meetup), venueWithMeetupRefOpt, talkList, personList).flatMap {
+        configDbService.buildMeetupEventDescription(Some(event), venueWithMeetupRefOpt, talkList, personList).flatMap {
           case (Success(description), _) =>
-            val eventCreate = EventCreate.from(meetup, description, venueWithMeetupRefOpt, talkList, personList)
+            val eventCreate = EventCreate.from(event, description, venueWithMeetupRefOpt, talkList, personList)
             meetupApi.createEvent(group, eventCreate).flatMap {
-              case Right(event) => meetupDbService.setMeetupRef(meetup.id, Meetup.MeetupRef(group, event.id.toLong, announced = false), by).map { _ =>
-                Right(Meetup.MeetupRef(group, event.id.toLong, announced = false))
+              case Right(meetupEvent) => eventDbService.setMeetupRef(event.id, Event.MeetupRef(group, meetupEvent.id.toLong, announced = false), by).map { _ =>
+                Right(Event.MeetupRef(group, meetupEvent.id.toLong, announced = false))
               }
               case Left(errs) => Future.successful(Left(errs))
             }
@@ -37,12 +37,12 @@ case class MeetupSrv(conf: Conf, ctx: Contexts, meetupApi: MeetupApi, venueDbSer
     }
   }
 
-  def update(meetup: Meetup, venueOpt: Option[Venue], talkList: List[Talk], personList: List[Person], by: Person.Id): Future[Either[List[String], Meetup.MeetupRef]] = {
-    meetup.meetupRef.map { ref =>
+  def update(event: Event, venueOpt: Option[Venue], talkList: List[Talk], personList: List[Person], by: Person.Id): Future[Either[List[String], Event.MeetupRef]] = {
+    event.meetupRef.map { ref =>
       withMeetupRef(ref.group, venueOpt, by).flatMap { venueWithMeetupRefOpt =>
-        configDbService.buildMeetupEventDescription(Some(meetup), venueWithMeetupRefOpt, talkList, personList).flatMap {
+        configDbService.buildMeetupEventDescription(Some(event), venueWithMeetupRefOpt, talkList, personList).flatMap {
           case (Success(description), _) =>
-            val eventCreate = EventCreate.from(meetup, description, venueWithMeetupRefOpt, talkList, personList)
+            val eventCreate = EventCreate.from(event, description, venueWithMeetupRefOpt, talkList, personList)
             meetupApi.updateEvent(ref.group, ref.id, eventCreate).map {
               case Right(event) => Right(ref)
               case Left(errs) => Left(errs)
@@ -51,32 +51,32 @@ case class MeetupSrv(conf: Conf, ctx: Contexts, meetupApi: MeetupApi, venueDbSer
         }
       }
     }.getOrElse {
-      Future.successful(Left(List(s"No meetup reference found for ${meetup.data.title}")))
+      Future.successful(Left(List(s"No meetup reference found for ${event.data.title}")))
     }
   }
 
-  def announce(meetup: Meetup, by: Person.Id): Future[Either[List[String], Meetup.MeetupRef]] = {
-    meetup.meetupRef.map { ref =>
+  def announce(event: Event, by: Person.Id): Future[Either[List[String], Event.MeetupRef]] = {
+    event.meetupRef.map { ref =>
       meetupApi.announceEvent(ref.group, ref.id).flatMap {
-        case Right(event) => meetupDbService.setMeetupRef(meetup.id, ref.copy(announced = true), by).map { _ =>
+        case Right(meetupEvent) => eventDbService.setMeetupRef(event.id, ref.copy(announced = true), by).map { _ =>
           Right(ref.copy(announced = true))
         }
         case Left(errs) => Future.successful(Left(errs))
       }
     }.getOrElse {
-      Future.successful(Left(List(s"No meetup reference found for ${meetup.data.title}")))
+      Future.successful(Left(List(s"No meetup reference found for ${event.data.title}")))
     }
   }
 
-  def delete(meetup: Meetup, by: Person.Id): Future[Either[List[String], Unit]] = {
-    meetup.meetupRef.map { ref =>
+  def delete(event: Event, by: Person.Id): Future[Either[List[String], Unit]] = {
+    event.meetupRef.map { ref =>
       meetupApi.deleteEvent(ref.group, ref.id).flatMap { res =>
-        meetupDbService.unsetMeetupRef(meetup.id, by).map { _ =>
+        eventDbService.unsetMeetupRef(event.id, by).map { _ =>
           res
         }
       }
     }.getOrElse {
-      Future.successful(Left(List(s"No meetup reference found for ${meetup.data.title}")))
+      Future.successful(Left(List(s"No meetup reference found for ${event.data.title}")))
     }
   }
 

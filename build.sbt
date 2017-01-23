@@ -41,7 +41,7 @@ play.sbt.routes.RoutesKeys.routesImport ++= Seq(
   "com.humantalks.internal.venues.Venue",
   "com.humantalks.internal.persons.Person",
   "com.humantalks.internal.talks.Talk",
-  "com.humantalks.internal.meetups.Meetup",
+  "com.humantalks.internal.events.Event",
   "com.humantalks.internal.admin.config.Config")
 
 lazy val root =

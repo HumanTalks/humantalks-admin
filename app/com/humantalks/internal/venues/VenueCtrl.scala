@@ -2,7 +2,7 @@ package com.humantalks.internal.venues
 
 import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
-import com.humantalks.internal.meetups.MeetupDbService
+import com.humantalks.internal.events.EventDbService
 import com.humantalks.internal.persons.{ Person, PersonDbService }
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
@@ -18,7 +18,7 @@ case class VenueCtrl(
     silhouette: Silhouette[SilhouetteEnv],
     venueDbService: VenueDbService,
     personDbService: PersonDbService,
-    meetupDbService: MeetupDbService
+    eventDbService: EventDbService
 )(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.ctrlToEC
   import ctx._
@@ -51,8 +51,8 @@ case class VenueCtrl(
     implicit val user = Some(req.identity)
     CtrlHelper.withItem(venueDbService)(id) { venue =>
       for {
-        meetupList <- meetupDbService.findForVenue(id)
-      } yield Ok(views.html.detail(venue, meetupList))
+        eventList <- eventDbService.findForVenue(id)
+      } yield Ok(views.html.detail(venue, eventList))
     }
   }
 
@@ -77,7 +77,7 @@ case class VenueCtrl(
 
   def doDelete(id: Venue.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     venueDbService.delete(id).map {
-      case Left(meetups) => Redirect(routes.VenueCtrl.get(id)).flashing("error" -> s"Unable to delete venue, it's still referenced in ${meetups.length} meetups, delete them first.")
+      case Left(events) => Redirect(routes.VenueCtrl.get(id)).flashing("error" -> s"Unable to delete venue, it's still referenced in ${events.length} meetups, delete them first.")
       case Right(res) => Redirect(routes.VenueCtrl.find()).flashing("success" -> "Venue deleted")
     }
   }

@@ -1,39 +1,39 @@
 package com.humantalks.exposed.entities
 
-import com.humantalks.internal.meetups.Meetup
+import com.humantalks.internal.events.Event
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
 import com.humantalks.internal.venues.Venue
 import org.joda.time.DateTime
 import play.api.libs.json.Json
 
-case class PublicMeetupNoTalks(
-  id: Meetup.Id,
+case class PublicEventNoTalks(
+  id: Event.Id,
   title: String,
   date: DateTime,
   venueId: Option[Venue.Id],
-  venue: Option[PublicVenueNoMeetup],
+  venue: Option[PublicVenueNoEvent],
   description: Option[String],
   roti: Option[String],
   meetupUrl: Option[String]
 )
-object PublicMeetupNoTalks {
-  def from(meetup: Meetup, venuesOpt: Option[List[Venue]]): PublicMeetupNoTalks = PublicMeetupNoTalks(
-    id = meetup.id,
-    title = meetup.data.title,
-    date = meetup.data.date,
-    venueId = if (venuesOpt.isDefined) None else meetup.data.venue,
+object PublicEventNoTalks {
+  def from(event: Event, venuesOpt: Option[List[Venue]]): PublicEventNoTalks = PublicEventNoTalks(
+    id = event.id,
+    title = event.data.title,
+    date = event.data.date,
+    venueId = if (venuesOpt.isDefined) None else event.data.venue,
     venue = venuesOpt.flatMap { venues =>
-      meetup.data.venue.flatMap { venueId =>
-        venues.find(_.id == venueId).map(PublicVenueNoMeetup.from)
+      event.data.venue.flatMap { venueId =>
+        venues.find(_.id == venueId).map(PublicVenueNoEvent.from)
       }
     },
-    description = meetup.data.description,
-    roti = meetup.data.roti,
-    meetupUrl = meetup.meetupUrl
+    description = event.data.description,
+    roti = event.data.roti,
+    meetupUrl = event.meetupUrl
   )
 
-  implicit val format = Json.format[PublicMeetupNoTalks]
+  implicit val format = Json.format[PublicEventNoTalks]
 }
 
 case class PublicTalk(
@@ -46,23 +46,23 @@ case class PublicTalk(
   slidesEmbedCode: Option[String],
   video: Option[String],
   videoEmbedCode: Option[String],
-  meetup: Option[PublicMeetupNoTalks]
+  meetup: Option[PublicEventNoTalks]
 )
 object PublicTalk {
-  def from(talk: Talk, speakersOpt: Option[List[Person]], meetupsOpt: Option[List[Meetup]], venuesOpt: Option[List[Venue]]): PublicTalk = PublicTalk(
+  def from(talk: Talk, speakersOpt: Option[List[Person]], eventsOpt: Option[List[Event]], venuesOpt: Option[List[Venue]]): PublicTalk = PublicTalk(
     id = talk.id,
     title = talk.data.title,
     description = talk.data.description,
     speakerIds = if (speakersOpt.isDefined) None else Some(talk.data.speakers),
     speakers = speakersOpt.map { speakers =>
-      talk.data.speakers.flatMap(id => speakers.find(_.id == id)).map(speaker => PublicPerson.from(speaker, talksOpt = None, meetupsOpt = None, venuesOpt = None))
+      talk.data.speakers.flatMap(id => speakers.find(_.id == id)).map(speaker => PublicPerson.from(speaker, talksOpt = None, eventsOpt = None, venuesOpt = None))
     },
     slides = talk.data.slides,
     slidesEmbedCode = talk.data.slidesEmbedCode,
     video = talk.data.video,
     videoEmbedCode = talk.data.videoEmbedCode,
-    meetup = meetupsOpt.flatMap { meetups =>
-      meetups.find(_.data.talks.contains(talk.id)).map(meetup => PublicMeetupNoTalks.from(meetup, venuesOpt))
+    meetup = eventsOpt.flatMap { events =>
+      events.find(_.data.talks.contains(talk.id)).map(event => PublicEventNoTalks.from(event, venuesOpt))
     }
   )
 
