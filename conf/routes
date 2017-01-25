@@ -26,13 +26,13 @@ POST    /reset-password/:id                                         com.humantal
 
 GET     /home                                                       com.humantalks.internal.Application.index
 
-GET     /venues                                                     com.humantalks.internal.venues.VenueCtrl.find
-GET     /venues/create                                              com.humantalks.internal.venues.VenueCtrl.create
-POST    /venues/create                                              com.humantalks.internal.venues.VenueCtrl.doCreate
-GET     /venues/$id<.{36}>                                          com.humantalks.internal.venues.VenueCtrl.get(id: Venue.Id)
-GET     /venues/$id<.{36}>/edit                                     com.humantalks.internal.venues.VenueCtrl.update(id: Venue.Id)
-POST    /venues/$id<.{36}>/edit                                     com.humantalks.internal.venues.VenueCtrl.doUpdate(id: Venue.Id)
-POST    /venues/$id<.{36}>/delete                                   com.humantalks.internal.venues.VenueCtrl.doDelete(id: Venue.Id)
+GET     /partners                                                   com.humantalks.internal.partners.PartnerCtrl.find
+GET     /partners/create                                            com.humantalks.internal.partners.PartnerCtrl.create
+POST    /partners/create                                            com.humantalks.internal.partners.PartnerCtrl.doCreate
+GET     /partners/$id<.{36}>                                        com.humantalks.internal.partners.PartnerCtrl.get(id: Partner.Id)
+GET     /partners/$id<.{36}>/edit                                   com.humantalks.internal.partners.PartnerCtrl.update(id: Partner.Id)
+POST    /partners/$id<.{36}>/edit                                   com.humantalks.internal.partners.PartnerCtrl.doUpdate(id: Partner.Id)
+POST    /partners/$id<.{36}>/delete                                 com.humantalks.internal.partners.PartnerCtrl.doDelete(id: Partner.Id)
 
 GET     /persons                                                    com.humantalks.internal.persons.PersonCtrl.find
 GET     /persons/create                                             com.humantalks.internal.persons.PersonCtrl.create
@@ -64,8 +64,8 @@ POST    /events/$id<.{36}>/updatePublish                            com.humantal
 POST    /events/$id<.{36}>/announce                                 com.humantalks.internal.events.EventCtrl.doAnnounce(id: Event.Id)
 POST    /events/$id<.{36}>/unpublish                                com.humantalks.internal.events.EventCtrl.doUnpublish(id: Event.Id)
 POST    /events/$id<.{36}>/delete                                   com.humantalks.internal.events.EventCtrl.doDelete(id: Event.Id)
-POST    /events/$id<.{36}>/venue                                    com.humantalks.internal.events.EventCtrl.doCreateVenue(id: Event.Id)
-POST    /events/$id<.{36}>/venue/add                                com.humantalks.internal.events.EventCtrl.doAddVenueForm(id: Event.Id)
+POST    /events/$id<.{36}>/partner                                  com.humantalks.internal.events.EventCtrl.doCreatePartner(id: Event.Id)
+POST    /events/$id<.{36}>/partner/add                              com.humantalks.internal.events.EventCtrl.doAddPartnerForm(id: Event.Id)
 POST    /events/$id<.{36}>/talks                                    com.humantalks.internal.events.EventCtrl.doCreateTalk(id: Event.Id)
 POST    /events/$id<.{36}>/talks/add                                com.humantalks.internal.events.EventCtrl.doAddTalkForm(id: Event.Id)
 POST    /events/$id<.{36}>/talks/$talkId<.{36}>/add                 com.humantalks.internal.events.EventCtrl.doAddTalk(id: Event.Id, talkId: Talk.Id)
@@ -92,23 +92,23 @@ GET     /api/talks                                                  com.humantal
 GET     /api/talks/$id<.{36}>                                       com.humantalks.exposed.PublicApi.findTalk(id: Talk.Id, include: Option[String] ?= None)
 GET     /api/speakers                                               com.humantalks.exposed.PublicApi.findSpeakers(include: Option[String] ?= None)
 GET     /api/speakers/$id<.{36}>                                    com.humantalks.exposed.PublicApi.findSpeaker(id: Person.Id, include: Option[String] ?= None)
-GET     /api/venues                                                 com.humantalks.exposed.PublicApi.findVenues(include: Option[String] ?= None)
-GET     /api/venues/$id<.{36}>                                      com.humantalks.exposed.PublicApi.findVenue(id: Venue.Id, include: Option[String] ?= None)
+GET     /api/venues                                                 com.humantalks.exposed.PublicApi.findPartners(include: Option[String] ?= None)
+GET     /api/venues/$id<.{36}>                                      com.humantalks.exposed.PublicApi.findPartner(id: Partner.Id, include: Option[String] ?= None)
 POST    /api/persons                                                com.humantalks.exposed.PublicApi.createPerson
 
-GET     /api/select2/venues                                         com.humantalks.common.controllers.Select2Ctrl.venues
+GET     /api/select2/partners                                       com.humantalks.common.controllers.Select2Ctrl.partners
 GET     /api/select2/persons                                        com.humantalks.common.controllers.Select2Ctrl.persons
 GET     /api/select2/talks                                          com.humantalks.common.controllers.Select2Ctrl.talks(pending: Boolean ?= false)
 GET     /api/select2/events                                         com.humantalks.common.controllers.Select2Ctrl.events
 
 GET     /api/internal                                               com.humantalks.internal.Application.apiRoot
 
-GET     /api/internal/venues                                        com.humantalks.internal.venues.VenueApiCtrl.find
-POST    /api/internal/venues                                        com.humantalks.internal.venues.VenueApiCtrl.create
-GET     /api/internal/venues/$id<.{36}>                             com.humantalks.internal.venues.VenueApiCtrl.get(id: Venue.Id)
-PUT     /api/internal/venues/$id<.{36}>                             com.humantalks.internal.venues.VenueApiCtrl.update(id: Venue.Id)
-DELETE  /api/internal/venues/$id<.{36}>                             com.humantalks.internal.venues.VenueApiCtrl.delete(id: Venue.Id)
-POST    /api/internal/venues/duplicates                             com.humantalks.internal.venues.VenueApiCtrl.duplicates(id: Option[String] ?= None)
+GET     /api/internal/partners                                      com.humantalks.internal.partners.PartnerApiCtrl.find
+POST    /api/internal/partners                                      com.humantalks.internal.partners.PartnerApiCtrl.create
+GET     /api/internal/partners/$id<.{36}>                           com.humantalks.internal.partners.PartnerApiCtrl.get(id: Partner.Id)
+PUT     /api/internal/partners/$id<.{36}>                           com.humantalks.internal.partners.PartnerApiCtrl.update(id: Partner.Id)
+DELETE  /api/internal/partners/$id<.{36}>                           com.humantalks.internal.partners.PartnerApiCtrl.delete(id: Partner.Id)
+POST    /api/internal/partners/duplicates                           com.humantalks.internal.partners.PartnerApiCtrl.duplicates(id: Option[String] ?= None)
 
 GET     /api/internal/persons                                       com.humantalks.internal.persons.PersonApiCtrl.find
 POST    /api/internal/persons                                       com.humantalks.internal.persons.PersonApiCtrl.create

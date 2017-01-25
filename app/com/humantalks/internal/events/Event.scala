@@ -3,7 +3,7 @@ package com.humantalks.internal.events
 import com.humantalks.common.services.DateSrv
 import com.humantalks.common.values.Meta
 import com.humantalks.internal.talks.Talk
-import com.humantalks.internal.venues.Venue
+import com.humantalks.internal.partners.Partner
 import global.values.{ TypedId, TypedIdHelper }
 import org.joda.time.{ DateTimeConstants, LocalTime, DateTime }
 import play.api.data.Forms._
@@ -30,7 +30,7 @@ object Event {
   case class Data(
       title: String,
       date: DateTime,
-      venue: Option[Venue.Id],
+      venue: Option[Partner.Id],
       talks: List[Talk.Id],
       description: Option[String],
       roti: Option[String],
@@ -60,7 +60,7 @@ object Event {
   val fields = mapping(
     "title" -> nonEmptyText,
     "date" -> jodaDate(pattern = "dd/MM/yyyy HH:mm"),
-    "venue" -> optional(of[Venue.Id]),
+    "venue" -> optional(of[Partner.Id]),
     "talks" -> list(of[Talk.Id]),
     "description" -> optional(text),
     "roti" -> optional(text),

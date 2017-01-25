@@ -6,7 +6,7 @@ import com.humantalks.common.services.NotificationSrv
 import com.humantalks.common.services.meetup.MeetupSrv
 import com.humantalks.internal.persons.{ PersonDbService, Person }
 import com.humantalks.internal.talks.{ TalkDbService, Talk }
-import com.humantalks.internal.venues.{ Venue, VenueDbService }
+import com.humantalks.internal.partners.{ Partner, PartnerDbService }
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
 import global.helpers.CtrlHelper
@@ -20,7 +20,7 @@ import scala.concurrent.Future
 case class EventCtrl(
     ctx: Contexts,
     silhouette: Silhouette[SilhouetteEnv],
-    venueDbService: VenueDbService,
+    partnerDbService: PartnerDbService,
     personDbService: PersonDbService,
     talkDbService: TalkDbService,
     eventDbService: EventDbService,
@@ -30,7 +30,7 @@ case class EventCtrl(
   import Contexts.ctrlToEC
   import ctx._
   val eventForm = Form(Event.fields)
-  val venueForm = Form(Venue.fields)
+  val partnerForm = Form(Partner.fields)
   val talkForm = Form(Talk.fields)
   val personForm = Form(Person.fields)
 
@@ -38,8 +38,8 @@ case class EventCtrl(
     implicit val user = Some(req.identity)
     for {
       eventList <- eventDbService.find()
-      venueList <- venueDbService.findByIds(eventList.flatMap(_.data.venue))
-    } yield Ok(views.html.list(eventList, venueList))
+      partnerList <- partnerDbService.findByIds(eventList.flatMap(_.data.venue))
+    } yield Ok(views.html.list(eventList, partnerList))
   }
 
   def create = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
@@ -66,12 +66,12 @@ case class EventCtrl(
     implicit val user = Some(req.identity)
     CtrlHelper.withItem(eventDbService)(id) { event =>
       for {
-        eventVenue <- venueDbService.findByIds(event.data.venue.toSeq)
+        eventPartners <- partnerDbService.findByIds(event.data.venue.toSeq)
         eventTalks <- talkDbService.findByIds(event.data.talks)
         eventSpeakers <- personDbService.findByIds(eventTalks.flatMap(_.data.speakers))
         pendingTalks <- talkDbService.findPending()
         pendingSpeakers <- personDbService.findByIds(pendingTalks.flatMap(_.data.speakers))
-      } yield Ok(views.html.detail(event, venueForm, personForm, talkForm, eventVenue, eventTalks, eventSpeakers, pendingTalks, pendingSpeakers))
+      } yield Ok(views.html.detail(event, partnerForm, personForm, talkForm, eventPartners, eventTalks, eventSpeakers, pendingTalks, pendingSpeakers))
     }
   }
 
@@ -94,29 +94,29 @@ case class EventCtrl(
     )
   }
 
-  def doCreateVenue(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+  def doCreatePartner(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     val redirectUrl = CtrlHelper.getReferer(req.headers, routes.EventCtrl.get(id))
-    venueForm.bindFromRequest.fold(
+    partnerForm.bindFromRequest.fold(
       formWithErrors => Future.successful(Redirect(redirectUrl).flashing("error" -> "Incorrect form values")),
-      venueData => venueDbService.create(venueData, req.identity.id).flatMap {
-        case (_, venueId) =>
-          eventDbService.setVenue(id, venueId, req.identity.id).map { _ =>
-            notificationSrv.setVenueToEvent(id, venueId, req.identity.id)
+      data => partnerDbService.create(data, req.identity.id).flatMap {
+        case (_, partnerId) =>
+          eventDbService.setVenue(id, partnerId, req.identity.id).map { _ =>
+            notificationSrv.setVenueToEvent(id, partnerId, req.identity.id)
             Redirect(redirectUrl)
           }
       }
     )
   }
 
-  def doAddVenueForm(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+  def doAddPartnerForm(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     val redirectUrl = CtrlHelper.getReferer(req.headers, routes.EventCtrl.get(id))
-    CtrlHelper.getFormParam(req.body, "venueId").flatMap(p => Venue.Id.from(p).right.toOption).map { venueId =>
-      eventDbService.setVenue(id, venueId, req.identity.id).map { _ =>
-        notificationSrv.setVenueToEvent(id, venueId, req.identity.id)
+    CtrlHelper.getFormParam(req.body, "partnerId").flatMap(p => Partner.Id.from(p).right.toOption).map { partnerId =>
+      eventDbService.setVenue(id, partnerId, req.identity.id).map { _ =>
+        notificationSrv.setVenueToEvent(id, partnerId, req.identity.id)
         Redirect(redirectUrl)
       }
     }.getOrElse {
-      Future.successful(Redirect(redirectUrl).flashing("error" -> "Unable to find venue :("))
+      Future.successful(Redirect(redirectUrl).flashing("error" -> "Unable to find partner :("))
     }
   }
 
@@ -169,10 +169,10 @@ case class EventCtrl(
     val redirectUrl = CtrlHelper.getReferer(req.headers, routes.EventCtrl.get(id))
     CtrlHelper.withItem(eventDbService)(id) { event =>
       for {
-        venueOpt <- event.data.venue.map(id => venueDbService.get(id)).getOrElse(Future.successful(None))
+        partnerOpt <- event.data.venue.map(id => partnerDbService.get(id)).getOrElse(Future.successful(None))
         talkList <- talkDbService.findByIds(event.data.talks)
         personList <- personDbService.findByIds(talkList.flatMap(_.data.speakers))
-        res <- meetupSrv.create(event, venueOpt, talkList, personList, req.identity.id)
+        res <- meetupSrv.create(event, partnerOpt, talkList, personList, req.identity.id)
       } yield res match {
         case Right(_) => Redirect(redirectUrl)
         case Left(errs) => Redirect(redirectUrl).flashing("error" -> errs.mkString(", "))
@@ -184,10 +184,10 @@ case class EventCtrl(
     val redirectUrl = CtrlHelper.getReferer(req.headers, routes.EventCtrl.get(id))
     CtrlHelper.withItem(eventDbService)(id) { event =>
       for {
-        venueOpt <- event.data.venue.map(id => venueDbService.get(id)).getOrElse(Future.successful(None))
+        partnerOpt <- event.data.venue.map(id => partnerDbService.get(id)).getOrElse(Future.successful(None))
         talkList <- talkDbService.findByIds(event.data.talks)
         personList <- personDbService.findByIds(talkList.flatMap(_.data.speakers))
-        res <- meetupSrv.update(event, venueOpt, talkList, personList, req.identity.id)
+        res <- meetupSrv.update(event, partnerOpt, talkList, personList, req.identity.id)
       } yield res match {
         case Right(_) => Redirect(redirectUrl)
         case Left(errs) => Redirect(redirectUrl).flashing("error" -> errs.mkString(", "))

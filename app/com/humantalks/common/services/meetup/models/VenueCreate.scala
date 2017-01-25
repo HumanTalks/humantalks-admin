@@ -1,5 +1,7 @@
 package com.humantalks.common.services.meetup.models
 
+import com.humantalks.internal.partners.Partner
+
 case class VenueCreate(
     name: String,
     visibility: String, // TODO enum (private,public)
@@ -29,24 +31,24 @@ object VenueCreate {
       "hours" -> data.hours
     ).flatMap { case (key, valueOpt) => valueOpt.map(value => (key, value)) }
 
-  def from(venue: com.humantalks.internal.venues.Venue): Option[VenueCreate] = {
-    val addressFromStreet = venue.data.location.flatMap(l => l.street.map(street => l.streetNo.map(_ + " ").getOrElse("") + street))
-    val addressFromFormatted = venue.data.location.flatMap(_.formatted.split(",").headOption)
-    val addressFromInput = venue.data.location.flatMap(_.input.split(",").drop(1).headOption)
-    val cityOpt = venue.data.location.flatMap(_.locality)
+  def from(partner: Partner): Option[VenueCreate] = {
+    val addressFromStreet = partner.data.location.flatMap(l => l.street.map(street => l.streetNo.map(_ + " ").getOrElse("") + street))
+    val addressFromFormatted = partner.data.location.flatMap(_.formatted.split(",").headOption)
+    val addressFromInput = partner.data.location.flatMap(_.input.split(",").drop(1).headOption)
+    val cityOpt = partner.data.location.flatMap(_.locality)
     for {
       address <- addressFromStreet.orElse(addressFromFormatted).orElse(addressFromInput)
       city <- cityOpt
     } yield VenueCreate(
-      name = venue.data.name,
+      name = partner.data.name,
       visibility = "public",
       address_1 = address,
       address_2 = None,
       city = city,
       state = None,
-      country = venue.data.location.map(_.countryCode).getOrElse(""),
-      web_url = venue.data.location.map(l => l.website.getOrElse(l.url)),
-      phone = venue.data.location.flatMap(_.phone),
+      country = partner.data.location.map(_.countryCode).getOrElse(""),
+      web_url = partner.data.location.map(l => l.website.getOrElse(l.url)),
+      phone = partner.data.location.flatMap(_.phone),
       hours = None
     )
   }

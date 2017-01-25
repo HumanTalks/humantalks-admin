@@ -7,7 +7,7 @@ import com.humantalks.internal.admin.config.ConfigDbService
 import com.humantalks.internal.events.{ EventDbService, Event }
 import com.humantalks.internal.persons.{ PersonDbService, Person }
 import com.humantalks.internal.talks.{ TalkDbService, Talk }
-import com.humantalks.internal.venues.Venue
+import com.humantalks.internal.partners.Partner
 import org.jsoup.Jsoup
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Json
@@ -111,7 +111,7 @@ case class NotificationSrv(
     }).flatMap(identity).recover { case _ => false }
   }
 
-  def setVenueToEvent(eventId: Event.Id, venueId: Venue.Id, by: Person.Id)(implicit request: RequestHeader, ec: ExecutionContext): Future[Boolean] = {
+  def setVenueToEvent(eventId: Event.Id, partnerId: Partner.Id, by: Person.Id)(implicit request: RequestHeader, ec: ExecutionContext): Future[Boolean] = {
     Future.successful(true)
   }
 }

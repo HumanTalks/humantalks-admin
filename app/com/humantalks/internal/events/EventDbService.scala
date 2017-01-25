@@ -2,7 +2,7 @@ package com.humantalks.internal.events
 
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.{ TalkRepository, Talk }
-import com.humantalks.internal.venues.Venue
+import com.humantalks.internal.partners.Partner
 import global.infrastructure.DbService
 import play.api.libs.json.{ Json, JsObject }
 import reactivemongo.api.commands.WriteResult
@@ -18,13 +18,13 @@ case class EventDbService(talkRepository: TalkRepository, eventRepository: Event
   def findByIds(ids: Seq[Event.Id], sort: JsObject = eventRepository.defaultSort): Future[List[Event]] = eventRepository.findByIds(ids, sort)
   def findForTalk(id: Talk.Id, sort: JsObject = eventRepository.defaultSort): Future[List[Event]] = eventRepository.findForTalk(id, sort)
   def findForTalks(ids: Seq[Talk.Id], sort: JsObject = eventRepository.defaultSort): Future[List[Event]] = eventRepository.findForTalks(ids, sort)
-  def findForVenue(id: Venue.Id, sort: JsObject = eventRepository.defaultSort): Future[List[Event]] = eventRepository.findForVenue(id, sort)
+  def findForPartner(id: Partner.Id, sort: JsObject = eventRepository.defaultSort): Future[List[Event]] = eventRepository.findForPartner(id, sort)
   def get(id: Event.Id): Future[Option[Event]] = eventRepository.get(id)
   def getLast: Future[Option[Event]] = eventRepository.getLast
   def getNext: Future[Option[Event]] = eventRepository.getNext
   def create(data: Event.Data, by: Person.Id): Future[(WriteResult, Event.Id)] = eventRepository.create(data, by)
   def update(elt: Event, data: Event.Data, by: Person.Id): Future[WriteResult] = eventRepository.update(elt, data, by)
-  def setVenue(id: Event.Id, venueId: Venue.Id, by: Person.Id): Future[WriteResult] = eventRepository.setVenue(id, venueId, by)
+  def setVenue(id: Event.Id, partnerId: Partner.Id, by: Person.Id): Future[WriteResult] = eventRepository.setVenue(id, partnerId, by)
   def addTalk(id: Event.Id, talkId: Talk.Id, by: Person.Id): Future[WriteResult] =
     eventRepository.addTalk(id, talkId, by).map { res =>
       talkRepository.get(talkId).map {

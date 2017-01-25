@@ -5,7 +5,7 @@ import com.humantalks.internal.admin.config.Config
 import com.humantalks.internal.events.Event
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
-import com.humantalks.internal.venues.Venue
+import com.humantalks.internal.partners.Partner
 import global.infrastructure.Repository
 import net.ceedubs.ficus.Ficus._
 import play.api.Configuration
@@ -30,7 +30,7 @@ case class Conf(configuration: Configuration) {
     val credentials = Repository.Collection[Credentials]("Credentials")
     val authToken = Repository.Collection[AuthToken]("AuthToken")
     val person = Repository.Collection[Person]("Person")
-    val venue = Repository.Collection[Venue]("Venue")
+    val partner = Repository.Collection[Partner]("Partner")
     val talk = Repository.Collection[Talk]("Talk")
     val event = Repository.Collection[Event]("Event")
     val config = Repository.Collection[Config]("Config")

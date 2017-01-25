@@ -17,7 +17,7 @@ import com.humantalks.internal.persons.{ PersonApiCtrl, PersonCtrl, PersonDbServ
 import com.humantalks.internal.talks.{ TalkApiCtrl, TalkCtrl, TalkDbService, TalkRepository }
 import com.humantalks.tools.EmbedCtrl
 import com.humantalks.tools.scrapers.{ EmailScraper, TwitterScraper }
-import com.humantalks.internal.venues.{ VenueApiCtrl, VenueCtrl, VenueDbService, VenueRepository }
+import com.humantalks.internal.partners.{ PartnerApiCtrl, PartnerCtrl, PartnerDbService, PartnerRepository }
 import global.Contexts
 import global.infrastructure.Mongo
 import play.api.cache.EhCacheComponents
@@ -56,13 +56,13 @@ class MyComponents(context: ApplicationLoader.Context)
   val mongo = Mongo(ctx, reactiveMongoApi)
   val credentialsRepository = CredentialsRepository(conf, ctx, mongo)
   val authTokenRepository = AuthTokenRepository(conf, ctx, mongo)
-  val venueRepository = VenueRepository(conf, ctx, mongo)
+  val partnerRepository = PartnerRepository(conf, ctx, mongo)
   val personRepository = PersonRepository(conf, ctx, mongo)
   val talkRepository = TalkRepository(conf, ctx, mongo, embedSrv)
   val eventRepository = EventRepository(conf, ctx, mongo)
   val configRepository = ConfigRepository(conf, ctx, mongo)
 
-  val venueDbService = VenueDbService(venueRepository, eventRepository)
+  val partnerDbService = PartnerDbService(partnerRepository, eventRepository)
   val personDbService = PersonDbService(credentialsRepository, personRepository, talkRepository)
   val talkDbService = TalkDbService(talkRepository, eventRepository)
   val eventDbService = EventDbService(talkRepository, eventRepository)
@@ -74,7 +74,7 @@ class MyComponents(context: ApplicationLoader.Context)
   val mailerSrv = MailerSrv(conf, sendgridSrv)
   val slackSrv = SlackSrv(conf, ctx, wsClient)
   val meetupApi = MeetupApi(conf, ctx, wsClient)
-  val meetupSrv = MeetupSrv(conf, ctx, meetupApi, venueDbService, eventDbService, configDbService)
+  val meetupSrv = MeetupSrv(conf, ctx, meetupApi, partnerDbService, eventDbService, configDbService)
   val notificationSrv = NotificationSrv(conf, sendgridSrv, slackSrv, personDbService, talkDbService, eventDbService, configDbService)
 
   implicit val messagesApiImp = messagesApi
@@ -84,19 +84,19 @@ class MyComponents(context: ApplicationLoader.Context)
     com.humantalks.exposed.talks.TalkCtrl(conf, ctx, personDbService, talkDbService, notificationSrv),
     com.humantalks.auth.AuthCtrl(ctx, silhouette, conf, authSrv, personRepository, credentialsRepository, authTokenRepository, avatarService, mailerSrv),
     com.humantalks.internal.Application(ctx, silhouette),
-    VenueCtrl(ctx, silhouette, venueDbService, personDbService, eventDbService),
+    PartnerCtrl(ctx, silhouette, partnerDbService, personDbService, eventDbService),
     PersonCtrl(ctx, silhouette, personDbService, talkDbService),
     TalkCtrl(ctx, silhouette, personDbService, talkDbService, eventDbService),
-    EventCtrl(ctx, silhouette, venueDbService, personDbService, talkDbService, eventDbService, meetupSrv, notificationSrv),
+    EventCtrl(ctx, silhouette, partnerDbService, personDbService, talkDbService, eventDbService, meetupSrv, notificationSrv),
     AdminCtrl(ctx, silhouette, personDbService, credentialsRepository, authTokenRepository),
     ConfigCtrl(ctx, silhouette, configDbService),
-    PublicApi(ctx, venueDbService, personDbService, talkDbService, eventDbService),
-    Select2Ctrl(ctx, silhouette, venueDbService, personDbService, talkDbService, eventDbService),
-    VenueApiCtrl(ctx, silhouette, venueDbService),
+    PublicApi(ctx, partnerDbService, personDbService, talkDbService, eventDbService),
+    Select2Ctrl(ctx, silhouette, partnerDbService, personDbService, talkDbService, eventDbService),
+    PartnerApiCtrl(ctx, silhouette, partnerDbService),
     PersonApiCtrl(ctx, silhouette, personDbService),
     TalkApiCtrl(ctx, silhouette, talkDbService),
     EventApiCtrl(ctx, silhouette, eventDbService),
-    ConfigApiCtrl(conf, ctx, silhouette, venueDbService, personDbService, talkDbService, eventDbService, configDbService),
+    ConfigApiCtrl(conf, ctx, silhouette, partnerDbService, personDbService, talkDbService, eventDbService, configDbService),
     com.humantalks.tools.Application(ctx),
     EmbedCtrl(ctx, embedSrv),
     TwitterScraper(ctx, wsClient),

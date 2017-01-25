@@ -6,7 +6,7 @@ import com.humantalks.common.Conf
 import com.humantalks.internal.events.{ Event, EventDbService }
 import com.humantalks.internal.persons.{ PersonDbService, Person }
 import com.humantalks.internal.talks.{ Talk, TalkDbService }
-import com.humantalks.internal.venues.VenueDbService
+import com.humantalks.internal.partners.PartnerDbService
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
 import play.api.i18n.MessagesApi
@@ -20,7 +20,7 @@ case class ConfigApiCtrl(
     conf: Conf,
     ctx: Contexts,
     silhouette: Silhouette[SilhouetteEnv],
-    venueDbService: VenueDbService,
+    partnerDbService: PartnerDbService,
     personDbService: PersonDbService,
     talkDbService: TalkDbService,
     eventDbService: EventDbService,
@@ -36,10 +36,10 @@ case class ConfigApiCtrl(
     } yield ref match {
       case Config.meetupEventDescription.ref => for {
         eventOpt <- eventId(req.body).map(id => eventDbService.get(id)).getOrElse(eventDbService.getNext)
-        venueOpt <- eventOpt.flatMap(_.data.venue).map(venueDbService.get).getOrElse(Future.successful(None))
+        partnerOpt <- eventOpt.flatMap(_.data.venue).map(partnerDbService.get).getOrElse(Future.successful(None))
         talks <- eventOpt.map(event => talkDbService.findByIds(event.data.talks)).getOrElse(Future.successful(List()))
         speakers <- personDbService.findByIds(talks.flatMap(_.data.speakers))
-        res <- configDbService.buildMeetupEventDescription(eventOpt, venueOpt, talks, speakers, _ => Future.successful(value))
+        res <- configDbService.buildMeetupEventDescription(eventOpt, partnerOpt, talks, speakers, _ => Future.successful(value))
       } yield buildResult(res)
       case Config.proposalSubmittedEmailSubject.ref => for {
         talkOpt <- talkId(req.body).map(id => talkDbService.get(id)).getOrElse(talkDbService.getLastProposal)

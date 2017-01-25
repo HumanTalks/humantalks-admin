@@ -1,19 +1,19 @@
 @import com.humantalks.internal.events.Event
 @import com.humantalks.internal.talks.Talk
 @import com.humantalks.internal.persons.Person
-@import com.humantalks.internal.venues.Venue
+@import com.humantalks.internal.partners.Partner
 @import global.views.html.partials._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.events.routes.EventCtrl
 @import com.humantalks.internal.events.routes.EventApiCtrl
 @(eventForm: Form[Event.Data], talkForm: Form[Talk.Data], personForm: Form[Person.Data], eventOpt: Option[Event])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
-@main("Nouveau meetup") {
-    @header("meetup")
+@main("Nouvel événement") {
+    @header("event")
 
     <div class="container">
         @flash()
         <div class="page-header">
-            <h1>@eventOpt.map{ p => Modifier @p.data.title}.getOrElse{Ajouter un meetup}</h1>
+            <h1>@eventOpt.map{ p => Modifier @p.data.title}.getOrElse{Ajouter un événement}</h1>
         </div>
 
         <div class="row">

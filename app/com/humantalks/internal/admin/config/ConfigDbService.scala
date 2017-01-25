@@ -1,11 +1,11 @@
 package com.humantalks.internal.admin.config
 
 import com.humantalks.common.services.MustacheSrv
-import com.humantalks.exposed.entities.{ PublicPerson, PublicTalk, PublicVenue, PublicEvent }
+import com.humantalks.exposed.entities.{ PublicPerson, PublicTalk, PublicPartner, PublicEvent }
 import com.humantalks.internal.events.Event
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
-import com.humantalks.internal.venues.Venue
+import com.humantalks.internal.partners.Partner
 import global.infrastructure.DbService
 import play.api.libs.json.{ JsValue, Json, JsObject }
 import reactivemongo.api.commands.WriteResult
@@ -24,10 +24,10 @@ case class ConfigDbService(configRepository: ConfigRepository) extends DbService
   def setValue(id: Config.Id, value: String, by: Person.Id): Future[WriteResult] = configRepository.setValue(id, value, by)
   def delete(id: Config.Id): Future[Either[Nothing, WriteResult]] = configRepository.delete(id).map(res => Right(res))
 
-  def buildMeetupEventDescription(eventOpt: Option[Event], venueOpt: Option[Venue], talks: List[Talk], speakers: List[Person], getTemplate: Config.Data => Future[String] = getValue): Future[(Try[String], Map[String, JsValue])] =
+  def buildMeetupEventDescription(eventOpt: Option[Event], partnerOpt: Option[Partner], talks: List[Talk], speakers: List[Person], getTemplate: Config.Data => Future[String] = getValue): Future[(Try[String], Map[String, JsValue])] =
     getTemplate(Config.meetupEventDescription).map(tempate => build(tempate, Map(
       "meetup" -> Json.toJson(eventOpt.map(m => PublicEvent.from(m, None, None, None))),
-      "venue" -> Json.toJson(venueOpt.map(v => PublicVenue.from(v, None, None, None))),
+      "venue" -> Json.toJson(partnerOpt.map(v => PublicPartner.from(v, None, None, None))),
       "talks" -> Json.toJson(talks.map(t => PublicTalk.from(t, Some(speakers), None, None)))
     )))
   def buildProposalSubmittedEmailSubject(talkOpt: Option[Talk], getTemplate: Config.Data => Future[String] = getValue): Future[(Try[String], Map[String, JsValue])] =

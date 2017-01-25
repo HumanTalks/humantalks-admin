@@ -4,7 +4,7 @@ import com.humantalks.common.Conf
 import com.humantalks.common.values.Meta
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
-import com.humantalks.internal.venues.Venue
+import com.humantalks.internal.partners.Partner
 import global.Contexts
 import global.infrastructure.{ Mongo, Repository }
 import global.values.Page
@@ -39,7 +39,7 @@ case class EventRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposit
   def findForTalks(ids: Seq[Talk.Id], sort: JsObject = defaultSort): Future[List[Event]] =
     collection.find(Json.obj("data.talks" -> Json.obj("$in" -> ids.distinct)), sort)
 
-  def findForVenue(id: Venue.Id, sort: JsObject = defaultSort): Future[List[Event]] =
+  def findForPartner(id: Partner.Id, sort: JsObject = defaultSort): Future[List[Event]] =
     collection.find(Json.obj("data.venue" -> id), sort)
 
   def findPast(sort: JsObject = defaultSort): Future[List[Event]] =
@@ -65,8 +65,8 @@ case class EventRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposit
   private def partialUpdate(id: Event.Id, patch: JsObject, by: Person.Id): Future[WriteResult] =
     collection.partialUpdate(Json.obj("id" -> id), patch.deepMerge(Json.obj("$set" -> Json.obj("meta.updated" -> new DateTime(), "meta.updatedBy" -> by))))
 
-  def setVenue(id: Event.Id, venueId: Venue.Id, by: Person.Id): Future[WriteResult] =
-    partialUpdate(id, Json.obj("$set" -> Json.obj("data.venue" -> venueId)), by)
+  def setVenue(id: Event.Id, partnerId: Partner.Id, by: Person.Id): Future[WriteResult] =
+    partialUpdate(id, Json.obj("$set" -> Json.obj("data.venue" -> partnerId)), by)
 
   def addTalk(id: Event.Id, talkId: Talk.Id, by: Person.Id): Future[WriteResult] =
     partialUpdate(id, Json.obj("$addToSet" -> Json.obj("data.talks" -> talkId)), by)

@@ -5,7 +5,7 @@ import com.humantalks.auth.silhouette.SilhouetteEnv
 import com.humantalks.internal.events.EventDbService
 import com.humantalks.internal.persons.{ Person, PersonDbService }
 import com.humantalks.internal.talks.{ Talk, TalkDbService }
-import com.humantalks.internal.venues.VenueDbService
+import com.humantalks.internal.partners.PartnerDbService
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
 import global.helpers.ApiHelper
@@ -18,7 +18,7 @@ case class Select2Option(id: String, text: String)
 case class Select2Ctrl(
     ctx: Contexts,
     silhouette: Silhouette[SilhouetteEnv],
-    venueDbService: VenueDbService,
+    partnerDbService: PartnerDbService,
     personDbService: PersonDbService,
     talkDbService: TalkDbService,
     eventDbService: EventDbService
@@ -27,10 +27,10 @@ case class Select2Ctrl(
   import ctx._
   implicit val format = Json.format[Select2Option]
 
-  def venues = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+  def partners = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     ApiHelper.resultList({
-      venueDbService.find().map { venues =>
-        Right(venues.map(v => Select2Option(v.id.value, v.data.name + v.data.location.map(l => " (" + l.formatted + ")").getOrElse(""))))
+      partnerDbService.find().map { partners =>
+        Right(partners.map(v => Select2Option(v.id.value, v.data.name + v.data.location.map(l => " (" + l.formatted + ")").getOrElse(""))))
       }
     })
   }

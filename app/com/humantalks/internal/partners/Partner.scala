@@ -1,4 +1,4 @@
-package com.humantalks.internal.venues
+package com.humantalks.internal.partners
 
 import com.humantalks.common.values.{ GMapPlace, Meta }
 import com.humantalks.common.services.TwitterSrv
@@ -7,16 +7,16 @@ import play.api.data.Forms._
 import play.api.libs.json.Json
 import com.humantalks.internal.persons.Person
 
-case class Venue(
-  id: Venue.Id,
-  meetupRef: Option[Venue.MeetupRef],
-  data: Venue.Data,
+case class Partner(
+  id: Partner.Id,
+  meetupRef: Option[Partner.MeetupRef],
+  data: Partner.Data,
   meta: Meta
 )
-object Venue {
+object Partner {
   case class Id(value: String) extends TypedId(value)
   object Id extends TypedIdHelper[Id] {
-    def from(value: String): Either[String, Id] = TypedId.from(value, "Venue.Id").right.map(Id(_))
+    def from(value: String): Either[String, Id] = TypedId.from(value, "Partner.Id").right.map(Id(_))
     def generate(): Id = Id(TypedId.generate())
   }
 
@@ -41,7 +41,7 @@ object Venue {
 
   implicit val formatData = Json.format[Data]
   implicit val formatMeetupRef = Json.format[MeetupRef]
-  implicit val format = Json.format[Venue]
+  implicit val format = Json.format[Partner]
   val fields = mapping(
     "name" -> nonEmptyText,
     "location" -> optional(GMapPlace.fields),
@@ -50,5 +50,5 @@ object Venue {
     "logo" -> optional(text),
     "contacts" -> list(of[Person.Id]),
     "comment" -> optional(text)
-  )(Venue.Data.apply)(Venue.Data.unapply)
+  )(Partner.Data.apply)(Partner.Data.unapply)
 }

@@ -1,6 +1,7 @@
 package com.humantalks.common.services.meetup.models
 
 import com.humantalks.internal.events
+import com.humantalks.internal.partners.Partner
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
 import org.joda.time.DateTime
@@ -55,23 +56,23 @@ object EventCreate {
       "question" -> data.question
     ).flatMap { case (key, valueOpt) => valueOpt.map(value => (key, value)) }
 
-  def from(event: events.Event, description: String, venueOpt: Option[com.humantalks.internal.venues.Venue], talkList: List[Talk], personList: List[Person]): EventCreate =
+  def from(event: events.Event, description: String, partnerOpt: Option[Partner], talkList: List[Talk], personList: List[Person]): EventCreate =
     EventCreate(
       status = "draft",
       name = event.data.title,
       description = description,
       time = event.data.date,
       duration = None,
-      rsvp_limit = venueOpt.flatMap(_.data.capacity),
+      rsvp_limit = partnerOpt.flatMap(_.data.capacity),
       guest_limit = 0,
       rsvp_open_time = new DateTime(0),
       rsvp_close_time = new DateTime(0),
       hosts = hosts,
       self_rsvp = true,
-      venue_id = venueOpt.flatMap(_.meetupRef).map(_.id),
-      venue_visibility = venueOpt.flatMap(_.meetupRef).map(_ => "public"),
-      lat = venueOpt.flatMap(_.data.location.map(_.coords.lat)),
-      lon = venueOpt.flatMap(_.data.location.map(_.coords.lng)),
+      venue_id = partnerOpt.flatMap(_.meetupRef).map(_.id),
+      venue_visibility = partnerOpt.flatMap(_.meetupRef).map(_ => "public"),
+      lat = partnerOpt.flatMap(_.data.location.map(_.coords.lat)),
+      lon = partnerOpt.flatMap(_.data.location.map(_.coords.lng)),
       how_to_find_us = None,
       question = None
     )

@@ -1,18 +1,18 @@
-@import com.humantalks.internal.venues.Venue
+@import com.humantalks.internal.partners.Partner
 @import play.api.mvc.Call
-@import com.humantalks.internal.venues.routes.VenueCtrl
-@import com.humantalks.internal.venues.routes.VenueApiCtrl
-@(venueForm: Form[Venue.Data], action: Option[Call] = None)(implicit messagesApi: MessagesApi)
-<div class="modal fade" id="create-venue-modal" tabindex="-1" role="dialog" aria-labelledby="createVenueModal">
+@import com.humantalks.internal.partners.routes.PartnerCtrl
+@import com.humantalks.internal.partners.routes.PartnerApiCtrl
+@(partnerForm: Form[Partner.Data], action: Option[Call] = None)(implicit messagesApi: MessagesApi)
+<div class="modal fade" id="create-partner-modal" tabindex="-1" role="dialog" aria-labelledby="createPartnerModal">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            @helper.form(action=action.getOrElse(VenueCtrl.doCreate()), 'duplicates -> VenueApiCtrl.duplicates().toString, 'class->"form-horizontal venue-form") {
+            @helper.form(action=action.getOrElse(PartnerCtrl.doCreate()), 'duplicates -> PartnerApiCtrl.duplicates().toString, 'class->"form-horizontal partner-form") {
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="createVenueModal">Ajouter un lieu</h4>
+                    <h4 class="modal-title" id="createPartnerModal">Ajouter un lieu</h4>
                 </div>
                 <div class="modal-body">
-                    @fields(venueForm)
+                    @fields(partnerForm)
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>

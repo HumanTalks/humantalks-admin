@@ -1,21 +1,21 @@
-@import com.humantalks.internal.venues.Venue
+@import com.humantalks.internal.partners.Partner
 @import com.humantalks.internal.persons.Person
 @import com.humantalks.internal.events.Event
 @import global.views.html.format._
 @import global.views.html.partials._
 @import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
-@import com.humantalks.internal.venues.routes.VenueCtrl
+@import com.humantalks.internal.partners.routes.PartnerCtrl
 @import com.humantalks.internal.events.routes.EventCtrl
-@(eventList: List[Event], venueList: List[Venue])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
-@main("Meetups") {
-    @header("meetup")
+@(eventList: List[Event], partnerList: List[Partner])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@main("Événements") {
+    @header("event")
 
     <div class="container">
         @flash()
         <h1>
             <a href="@EventCtrl.create" class="pull-right"><i class="fa fa-plus"></i></a>
-            Listes des meetups (@eventList.length)
+            Listes des événements (@eventList.length)
         </h1>
         @eventList.map { event =>
             <div class="media card @if(event.data.date.isAfterNow){highlight}">
@@ -26,7 +26,7 @@
                     </h4>
                     <p>
                         @partials.status(event)
-                        @venue(event.data.venue, venueList, Html("<b class=\"text-danger\">Il manque une salle !</b>"))
+                        @partner(event.data.venue, partnerList, Html("<b class=\"text-danger\">Il manque une salle !</b>"))
                         le @date(event.data.date.toLocalDate),
                         @event.data.talks.length talks planifiés @if(event.data.talks.length < 4 && event.data.date.isAfterNow) {(<b class="text-danger">Il en manque @{4 - event.data.talks.length} !</b>)}
                         @event.data.roti.map{r => <i class="fa fa-picture-o" title="ROTI added"></i>}

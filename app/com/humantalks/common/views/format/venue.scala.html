@@ -1,4 +1,0 @@
-@import com.humantalks.internal.venues.Venue
-@import com.humantalks.internal.venues.routes.VenueCtrl
-@(venueOpt: Option[Venue.Id], venueList: List[Venue], default: Html = Html(""))
-@venueOpt.flatMap(id => venueList.find(_.id == id)).map{ venue => chez <a href="@VenueCtrl.get(venue.id)">@venue.data.name</a> }.getOrElse(default)

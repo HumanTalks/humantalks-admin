@@ -4,37 +4,37 @@ import com.humantalks.common.values.GMapPlace
 import com.humantalks.internal.events.Event
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
-import com.humantalks.internal.venues.Venue
+import com.humantalks.internal.partners.Partner
 import org.joda.time.DateTime
 import play.api.libs.json.Json
 
-case class PublicVenueNoEvent(
-  id: Venue.Id,
+case class PublicPartnerNoEvent(
+  id: Partner.Id,
   name: String,
   location: Option[GMapPlace],
   capacity: Option[Int],
   twitter: Option[String],
   logo: Option[String]
 )
-object PublicVenueNoEvent {
-  def from(venue: Venue): PublicVenueNoEvent = PublicVenueNoEvent(
-    id = venue.id,
-    name = venue.data.name,
-    location = venue.data.location,
-    capacity = venue.data.capacity,
-    twitter = venue.data.twitter,
-    logo = venue.data.logo
+object PublicPartnerNoEvent {
+  def from(partner: Partner): PublicPartnerNoEvent = PublicPartnerNoEvent(
+    id = partner.id,
+    name = partner.data.name,
+    location = partner.data.location,
+    capacity = partner.data.capacity,
+    twitter = partner.data.twitter,
+    logo = partner.data.logo
   )
 
-  implicit val format = Json.format[PublicVenueNoEvent]
+  implicit val format = Json.format[PublicPartnerNoEvent]
 }
 
 case class PublicEvent(
   id: Event.Id,
   title: String,
   date: DateTime,
-  venueId: Option[Venue.Id],
-  venue: Option[PublicVenueNoEvent],
+  venueId: Option[Partner.Id],
+  venue: Option[PublicPartnerNoEvent],
   talkIds: Option[List[Talk.Id]],
   talks: Option[List[PublicTalk]],
   description: Option[String],
@@ -43,19 +43,19 @@ case class PublicEvent(
   personCount: Option[Int]
 )
 object PublicEvent {
-  def from(event: Event, venuesOpt: Option[List[Venue]], talksOpt: Option[List[Talk]], speakersOpt: Option[List[Person]]): PublicEvent = PublicEvent(
+  def from(event: Event, partnersOpt: Option[List[Partner]], talksOpt: Option[List[Talk]], speakersOpt: Option[List[Person]]): PublicEvent = PublicEvent(
     id = event.id,
     title = event.data.title,
     date = event.data.date,
-    venueId = if (venuesOpt.isDefined) None else event.data.venue,
-    venue = venuesOpt.flatMap { venues =>
+    venueId = if (partnersOpt.isDefined) None else event.data.venue,
+    venue = partnersOpt.flatMap { partners =>
       event.data.venue.flatMap { venueId =>
-        venues.find(_.id == venueId).map(PublicVenueNoEvent.from)
+        partners.find(_.id == venueId).map(PublicPartnerNoEvent.from)
       }
     },
     talkIds = if (talksOpt.isDefined) None else Some(event.data.talks),
     talks = talksOpt.map { talks =>
-      event.data.talks.flatMap(id => talks.find(_.id == id)).map(talk => PublicTalk.from(talk, speakersOpt, eventsOpt = None, venuesOpt = None))
+      event.data.talks.flatMap(id => talks.find(_.id == id)).map(talk => PublicTalk.from(talk, speakersOpt, eventsOpt = None, partnersOpt = None))
     },
     description = event.data.description,
     roti = event.data.roti,

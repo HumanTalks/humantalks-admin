@@ -1,4 +1,4 @@
-@import com.humantalks.internal.venues.Venue
+@import com.humantalks.internal.partners.Partner
 @import com.humantalks.internal.persons.Person
 @import com.humantalks.internal.talks.Talk
 @import com.humantalks.internal.events.Event
@@ -9,9 +9,9 @@
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @import com.humantalks.internal.events.routes.EventCtrl
 @import com.humantalks.common.controllers.routes.Select2Ctrl
-@(event: Event, venueForm: Form[Venue.Data], personForm: Form[Person.Data], talkForm: Form[Talk.Data], eventVenue: List[Venue], eventTalks: List[Talk], eventSpeakers: List[Person], pendingTalks: List[Talk], pendingSpeakers: List[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@(event: Event, partnerForm: Form[Partner.Data], personForm: Form[Person.Data], talkForm: Form[Talk.Data], eventPartner: List[Partner], eventTalks: List[Talk], eventSpeakers: List[Person], pendingTalks: List[Talk], pendingSpeakers: List[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @main(event.data.title) {
-    @header("meetup")
+    @header("event")
 
     <div class="container">
         @flash()
@@ -41,18 +41,18 @@
             @event.data.title
             @event.meetupUrl.map{url => <a href="@url" target="_blank"><i class="fa fa-external-link"></i></a>}
         </h1>
-        <p>@partials.status(event) @venue(event.data.venue, eventVenue, Html("<b class=\"text-danger\">Il manque une salle !</b>")) le @date(event.data.date.toLocalDate)</p>
+        <p>@partials.status(event) @partner(event.data.venue, eventPartner, Html("<b class=\"text-danger\">Il manque une salle !</b>")) le @date(event.data.date.toLocalDate)</p>
         @if(event.data.venue.isEmpty){
-            @helper.form(action=EventCtrl.doAddVenueForm(event.id), 'class->"form-inline") {
+            @helper.form(action=EventCtrl.doAddPartnerForm(event.id), 'class->"form-inline") {
                 <div class="row">
                     <div class="col-md-8">
-                        <select class="form-control select2" id="venueId" name="venueId" remote="@Select2Ctrl.venues" placeholder="Sélectionner un lieu">
+                        <select class="form-control select2" id="partnerId" name="partnerId" remote="@Select2Ctrl.partners" placeholder="Sélectionner un lieu">
                             <option></option>
                         </select>
                     </div>
                     <div class="col-md-4">
                         <button type="submit" class="btn btn-default">Ajouter le lieu</button>
-                        <a href="#" class="btn btn-default" data-toggle="modal" data-target="#create-venue-modal">Créer un lieu</a>
+                        <a href="#" class="btn btn-default" data-toggle="modal" data-target="#create-partner-modal">Créer un lieu</a>
                     </div>
                 </div>
             }
@@ -142,7 +142,7 @@
         }
     </div>
 
-    @if(event.data.venue.isEmpty){ @com.humantalks.internal.venues.views.html.partials.createModal(venueForm, Some(EventCtrl.doCreateVenue(event.id))) }
+    @if(event.data.venue.isEmpty){ @com.humantalks.internal.partners.views.html.partials.createModal(partnerForm, Some(EventCtrl.doCreatePartner(event.id))) }
     @com.humantalks.internal.talks.views.html.partials.createModal(talkForm, Some(EventCtrl.doCreateTalk(event.id)))
     @com.humantalks.internal.persons.views.html.partials.createModal(personForm)
 }

@@ -1,0 +1,34 @@
+@import com.humantalks.internal.partners.Partner
+@import com.humantalks.internal.persons.Person
+@import global.views.html.format._
+@import global.views.html.partials._
+@import com.humantalks.common.views.html.format._
+@import com.humantalks.internal.views.html.partials._
+@import com.humantalks.internal.partners.routes.PartnerCtrl
+@(partnerList: List[Partner])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@main("Partenaires") {
+    @header("partner")
+
+    <div class="container">
+        @flash()
+        <h1>
+            <a href="@PartnerCtrl.create" class="pull-right"><i class="fa fa-plus"></i></a>
+            Liste des partenaires (@partnerList.length)
+        </h1>
+        @partnerList.map { partner =>
+            <div class="media card">
+                <div class="media-body">
+                    <h4 class="media-heading"><a href="@PartnerCtrl.get(partner.id)">@partner.data.name</a></h4>
+                    @partner.data.location.map{loc => <p>@loc.formatted</p>}
+                    @partner.data.comment.map{c => <p>@multiline(c)</p>}
+                    @twitter(partner.data.twitter)
+                </div>
+                @partner.data.logo.map { logo =>
+                    <div class="media-right">
+                        <a href="@PartnerCtrl.get(partner.id)"><img class="media-object" src="@logo" alt="Logo"></a>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}

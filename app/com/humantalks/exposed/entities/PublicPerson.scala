@@ -3,7 +3,7 @@ package com.humantalks.exposed.entities
 import com.humantalks.internal.events.Event
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
-import com.humantalks.internal.venues.Venue
+import com.humantalks.internal.partners.Partner
 import play.api.libs.json.Json
 
 case class PublicTalkNoSpeakers(
@@ -18,7 +18,7 @@ case class PublicTalkNoSpeakers(
   meetup: Option[PublicEventNoTalks]
 )
 object PublicTalkNoSpeakers {
-  def from(talk: Talk, eventsOpt: Option[List[Event]], venuesOpt: Option[List[Venue]]): PublicTalkNoSpeakers = PublicTalkNoSpeakers(
+  def from(talk: Talk, eventsOpt: Option[List[Event]], partnersOpt: Option[List[Partner]]): PublicTalkNoSpeakers = PublicTalkNoSpeakers(
     id = talk.id,
     title = talk.data.title,
     description = talk.data.description,
@@ -28,7 +28,7 @@ object PublicTalkNoSpeakers {
     video = talk.data.video,
     videoEmbedCode = talk.data.videoEmbedCode,
     meetup = eventsOpt.flatMap { events =>
-      events.find(_.data.talks.contains(talk.id)).map(event => PublicEventNoTalks.from(event, venuesOpt))
+      events.find(_.data.talks.contains(talk.id)).map(event => PublicEventNoTalks.from(event, partnersOpt))
     }
   )
 
@@ -44,14 +44,14 @@ case class PublicPerson(
   talks: Option[List[PublicTalkNoSpeakers]]
 )
 object PublicPerson {
-  def from(person: Person, talksOpt: Option[List[Talk]], eventsOpt: Option[List[Event]], venuesOpt: Option[List[Venue]]): PublicPerson = PublicPerson(
+  def from(person: Person, talksOpt: Option[List[Talk]], eventsOpt: Option[List[Event]], partnersOpt: Option[List[Partner]]): PublicPerson = PublicPerson(
     id = person.id,
     name = person.data.name,
     twitter = person.data.twitter,
     avatar = person.data.avatar,
     description = person.data.description,
     talks = talksOpt.map { talks =>
-      talks.filter(talk => talk.data.speakers.contains(person.id)).map(talk => PublicTalkNoSpeakers.from(talk, eventsOpt, venuesOpt))
+      talks.filter(talk => talk.data.speakers.contains(person.id)).map(talk => PublicTalkNoSpeakers.from(talk, eventsOpt, partnersOpt))
     }
   )
 
