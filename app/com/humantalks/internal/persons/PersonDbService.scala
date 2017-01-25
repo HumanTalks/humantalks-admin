@@ -1,7 +1,6 @@
 package com.humantalks.internal.persons
 
 import com.humantalks.auth.infrastructure.CredentialsRepository
-import com.humantalks.exposed.proposals.{ Proposal, ProposalRepository }
 import com.humantalks.internal.talks.{ Talk, TalkRepository }
 import global.infrastructure.DbService
 import play.api.libs.json.{ Json, JsObject }
@@ -10,7 +9,11 @@ import reactivemongo.api.commands.WriteResult
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-case class PersonDbService(credentialsRepository: CredentialsRepository, personRepository: PersonRepository, talkRepository: TalkRepository, proposalRepository: ProposalRepository) extends DbService[Person, Person.Id, Person.Data, Person.Id] {
+case class PersonDbService(
+    credentialsRepository: CredentialsRepository,
+    personRepository: PersonRepository,
+    talkRepository: TalkRepository
+) extends DbService[Person, Person.Id, Person.Data, Person.Id] {
   val name = personRepository.name
 
   def find(filter: JsObject = Json.obj(), sort: JsObject = personRepository.defaultSort): Future[List[Person]] = personRepository.find(filter, sort)
@@ -40,18 +43,17 @@ case class PersonDbService(credentialsRepository: CredentialsRepository, personR
   }
   def setRole(id: Person.Id, role: Option[Person.Role.Value], by: Person.Id): Future[WriteResult] = personRepository.setRole(id, role, by)
 
-  def delete(id: Person.Id): Future[Either[(List[Talk], List[Proposal]), WriteResult]] = {
+  def delete(id: Person.Id): Future[Either[List[Talk], WriteResult]] = {
     (for {
       personOpt <- personRepository.get(id)
       talks <- talkRepository.findForPerson(id)
-      proposals <- proposalRepository.findForPerson(id)
-    } yield (personOpt, talks, proposals)).flatMap {
-      case (personOpt, talks, proposals) =>
-        if (talks.isEmpty && proposals.isEmpty) {
+    } yield (personOpt, talks)).flatMap {
+      case (personOpt, talks) =>
+        if (talks.isEmpty) {
           personOpt.flatMap(_.auth).map(auth => credentialsRepository.remove(auth.loginInfo))
           personRepository.delete(id).map(r => Right(r))
         } else {
-          Future.successful(Left((talks, proposals)))
+          Future.successful(Left(talks))
         }
     }
   }

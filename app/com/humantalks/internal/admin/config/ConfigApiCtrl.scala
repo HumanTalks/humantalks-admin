@@ -3,7 +3,6 @@ package com.humantalks.internal.admin.config
 import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
 import com.humantalks.common.Conf
-import com.humantalks.exposed.proposals.{ Proposal, ProposalDbService }
 import com.humantalks.internal.events.{ Event, EventDbService }
 import com.humantalks.internal.persons.{ PersonDbService, Person }
 import com.humantalks.internal.talks.{ Talk, TalkDbService }
@@ -25,7 +24,6 @@ case class ConfigApiCtrl(
     personDbService: PersonDbService,
     talkDbService: TalkDbService,
     eventDbService: EventDbService,
-    proposalDbService: ProposalDbService,
     configDbService: ConfigDbService
 )(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.wsToEC
@@ -44,25 +42,25 @@ case class ConfigApiCtrl(
         res <- configDbService.buildMeetupEventDescription(eventOpt, venueOpt, talks, speakers, _ => Future.successful(value))
       } yield buildResult(res)
       case Config.proposalSubmittedEmailSubject.ref => for {
-        proposalOpt <- proposalId(req.body).map(id => proposalDbService.get(id)).getOrElse(proposalDbService.getLast)
-        res <- configDbService.buildProposalSubmittedEmailSubject(proposalOpt, _ => Future.successful(value))
+        talkOpt <- talkId(req.body).map(id => talkDbService.get(id)).getOrElse(talkDbService.getLastProposal)
+        res <- configDbService.buildProposalSubmittedEmailSubject(talkOpt, _ => Future.successful(value))
       } yield buildResult(res)
       case Config.proposalSubmittedEmailContent.ref => for {
-        proposalOpt <- proposalId(req.body).map(id => proposalDbService.get(id)).getOrElse(proposalDbService.getLast)
-        res <- configDbService.buildProposalSubmittedEmailContent(proposalOpt, proposalEditUrl(proposalOpt), conf.Organization.Admin.email, _ => Future.successful(value))
+        talkOpt <- talkId(req.body).map(id => talkDbService.get(id)).getOrElse(talkDbService.getLastProposal)
+        res <- configDbService.buildProposalSubmittedEmailContent(talkOpt, proposalEditUrl(talkOpt), conf.Organization.Admin.email, _ => Future.successful(value))
       } yield buildResult(res)
       case Config.proposalSubmittedSlackMessage.ref => for {
-        proposalOpt <- proposalId(req.body).map(id => proposalDbService.get(id)).getOrElse(proposalDbService.getLast)
-        speakers <- proposalOpt.map(p => personDbService.findByIds(p.data.speakers)).getOrElse(Future.successful(List()))
-        res <- configDbService.buildProposalSubmittedSlackMessage(proposalOpt, speakers, proposalUrl(proposalOpt), _ => Future.successful(value))
+        talkOpt <- talkId(req.body).map(id => talkDbService.get(id)).getOrElse(talkDbService.getLastProposal)
+        speakers <- talkOpt.map(t => personDbService.findByIds(t.data.speakers)).getOrElse(Future.successful(List()))
+        res <- configDbService.buildProposalSubmittedSlackMessage(talkOpt, speakers, talkUrl(talkOpt), _ => Future.successful(value))
       } yield buildResult(res)
       case Config.proposalSubmittedSlackTitle.ref => for {
-        proposalOpt <- proposalId(req.body).map(id => proposalDbService.get(id)).getOrElse(proposalDbService.getLast)
-        res <- configDbService.buildProposalSubmittedSlackTitle(proposalOpt, _ => Future.successful(value))
+        talkOpt <- talkId(req.body).map(id => talkDbService.get(id)).getOrElse(talkDbService.getLastProposal)
+        res <- configDbService.buildProposalSubmittedSlackTitle(talkOpt, _ => Future.successful(value))
       } yield buildResult(res)
       case Config.proposalSubmittedSlackText.ref => for {
-        proposalOpt <- proposalId(req.body).map(id => proposalDbService.get(id)).getOrElse(proposalDbService.getLast)
-        res <- configDbService.buildProposalSubmittedSlackText(proposalOpt, _ => Future.successful(value))
+        talkOpt <- talkId(req.body).map(id => talkDbService.get(id)).getOrElse(talkDbService.getLastProposal)
+        res <- configDbService.buildProposalSubmittedSlackText(talkOpt, _ => Future.successful(value))
       } yield buildResult(res)
       case Config.meetupCreatedSlackMessage.ref => for {
         eventOpt <- eventId(req.body).map(id => eventDbService.get(id)).getOrElse(eventDbService.getNext)
@@ -81,10 +79,9 @@ case class ConfigApiCtrl(
 
   private def eventId(json: JsValue): Option[Event.Id] = (json \ "id").asOpt[String].flatMap(id => Event.Id.from(id).right.toOption)
   private def talkId(json: JsValue): Option[Talk.Id] = (json \ "id").asOpt[String].flatMap(id => Talk.Id.from(id).right.toOption)
-  private def proposalId(json: JsValue): Option[Proposal.Id] = (json \ "id").asOpt[String].flatMap(id => Proposal.Id.from(id).right.toOption)
   private def eventUrl(eventOpt: Option[Event])(implicit request: RequestHeader): String = eventOpt.map(m => com.humantalks.internal.events.routes.EventCtrl.get(m.id).absoluteURL().toString).getOrElse("eventUrl")
-  private def proposalUrl(proposalOpt: Option[Proposal])(implicit request: RequestHeader): String = proposalOpt.map(p => com.humantalks.internal.proposals.routes.ProposalCtrl.get(p.id).absoluteURL().toString).getOrElse("proposalUrl")
-  private def proposalEditUrl(proposalOpt: Option[Proposal])(implicit request: RequestHeader): String = proposalOpt.map(p => com.humantalks.exposed.proposals.routes.ProposalCtrl.update(p.id).absoluteURL().toString).getOrElse("proposalEditUrl")
+  private def talkUrl(talkOpt: Option[Talk])(implicit request: RequestHeader): String = talkOpt.map(t => com.humantalks.internal.talks.routes.TalkCtrl.get(t.id).absoluteURL().toString).getOrElse("talkUrl")
+  private def proposalEditUrl(talkOpt: Option[Talk])(implicit request: RequestHeader): String = talkOpt.map(t => com.humantalks.exposed.talks.routes.TalkCtrl.update(t.id).absoluteURL().toString).getOrElse("proposalEditUrl")
   private def buildResult(res: (Try[String], Map[String, JsValue])): Result = res match {
     case (Success(result), scopes) => Ok(Json.obj("scopes" -> scopes, "result" -> result))
     case (Failure(e), scopes) => BadRequest(Json.obj("scopes" -> scopes, "error" -> e.getMessage))

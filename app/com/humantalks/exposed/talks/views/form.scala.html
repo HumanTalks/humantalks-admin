@@ -1,10 +1,10 @@
 @import org.joda.time.LocalDate
 @import com.humantalks.internal.persons.Person
-@import com.humantalks.exposed.proposals.Proposal
+@import com.humantalks.internal.talks.Talk
 @import com.humantalks.exposed.views.html.partials._
-@import com.humantalks.exposed.proposals.routes.ProposalCtrl
-@(proposalForm: Form[Proposal.Data], proposalOpt: Option[Proposal], personList: List[Person], nextDates: List[LocalDate], personForm: Form[Person.Data])(implicit messagesApi: MessagesApi)
-@main("Nouvelle proposition de talk") {
+@import com.humantalks.exposed.talks.routes.TalkCtrl
+@(talkForm: Form[Talk.Data], talkOpt: Option[Talk], personList: List[Person], nextDates: List[LocalDate], personForm: Form[Person.Data])(implicit messagesApi: MessagesApi)
+@main(talkOpt.map(t => "Modifier sa proposition de talk").getOrElse("Nouvelle proposition de talk")) {
     <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -23,7 +23,7 @@
 
     <div class="container" role="main">
         <div class="page-header">
-            <h1>@proposalOpt.map{p => Modifier @p.data.title}.getOrElse{Proposer un talk}</h1>
+            <h1>@talkOpt.map{p => Modifier @p.data.title}.getOrElse{Proposer un talk}</h1>
         </div>
 
         <div class="row">
@@ -35,11 +35,11 @@
                     Pour toute question, n'hésitez pas à nous contacter : <a href="https://twitter.com/HumanTalksParis" target="_blank">@@HumanTalksParis</a> - <a href="https://www.meetup.com/fr-FR/HumanTalks-Paris/" target="_blank">Meetup</a> - <a href="mailto:paris@@humantalks.com" target="_blank">paris@@humantalks.com</a><br>
                     <br>
                 </div>
-                @helper.form(action=proposalOpt.map(p => ProposalCtrl.doUpdate(p.id)).getOrElse(ProposalCtrl.doCreate()), 'class->"form-horizontal proposal-form") {
-                    @partials.fields(proposalForm, personList, nextDates)
+                @helper.form(action=talkOpt.map(p => TalkCtrl.doUpdate(p.id)).getOrElse(TalkCtrl.doCreate()), 'class->"form-horizontal talk-form") {
+                    @partials.fields(talkForm, personList, nextDates)
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            <button type="submit" class="btn btn-primary btn-lg">@proposalOpt.map{ p => Modifier @p.data.title}.getOrElse{Proposer ce talk aux HumanTalks Paris}</button>
+                            <button type="submit" class="btn btn-primary btn-lg">@talkOpt.map{ p => Modifier @p.data.title}.getOrElse{Proposer ce talk aux HumanTalks Paris}</button>
                         </div>
                     </div>
                 }

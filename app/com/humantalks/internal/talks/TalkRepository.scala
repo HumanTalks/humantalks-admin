@@ -3,7 +3,6 @@ package com.humantalks.internal.talks
 import com.humantalks.common.Conf
 import com.humantalks.common.values.Meta
 import com.humantalks.common.services.EmbedSrv
-import com.humantalks.exposed.proposals.Proposal
 import com.humantalks.internal.persons.Person
 import global.Contexts
 import global.infrastructure.{ Mongo, Repository }
@@ -42,13 +41,11 @@ case class TalkRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: EmbedS
   def getLastAccepted: Future[Option[Talk]] =
     collection.getOne(Json.obj("status" -> Talk.Status.Accepted), Json.obj("meta.updated" -> -1))
 
+  def getLastProposal: Future[Option[Talk]] =
+    collection.getOne(Json.obj("data.proposal" -> Json.obj("$exists" -> true), "meta.updated" -> -1))
+
   def create(elt: Talk.Data, by: Person.Id): Future[(WriteResult, Talk.Id)] =
     fillEmbedCode(Talk(Talk.Id.generate(), Talk.Status.Proposed, elt.trim, Meta.from(by))).flatMap { toCreate =>
-      collection.create(toCreate).map { res => (res, toCreate.id) }
-    }
-
-  def create(elt: Proposal.Data, by: Person.Id): Future[(WriteResult, Talk.Id)] =
-    fillEmbedCode(Talk(Talk.Id.generate(), Talk.Status.Proposed, elt.toTalk.trim, Meta.from(by))).flatMap { toCreate =>
       collection.create(toCreate).map { res => (res, toCreate.id) }
     }
 

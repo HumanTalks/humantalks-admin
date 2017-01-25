@@ -1,0 +1,10 @@
+@import org.joda.time.LocalDate
+@import com.humantalks.internal.persons.Person
+@import com.humantalks.internal.talks.Talk
+@import global.views.html.form._
+@(talkForm: Form[Talk.Data], personList: List[Person], nextDates: List[LocalDate])(implicit messagesApi: MessagesApi)
+@fieldHorizontal(talkForm("title"), 'label -> "Titre") { field => @inputText(field, 'placeholder -> "ex: Ionic2, les développeurs web à l'assaut du mobile", 'autofocus -> "") }
+@fieldHorizontal(talkForm("description"), 'label -> "Description") { field => @inputTextarea(field, 'rows -> "5", 'placeholder -> "ex: Ionic c'est génial !") }
+@fieldHorizontal(talkForm("speakers"), 'label -> "Speakers") { field => @inputSelectMulti2(field, personList.map(p => (p.id.toString, p.data.name)), 'placeholder -> "Sélectionner les speakers", 'onCreate -> "createPersonModal", 'onCreateLabel -> "Nouveau speaker", 'required -> "true") }
+@fieldHorizontal(talkForm("slides"), 'label -> "Slides") { field => @inputEmbed(field, 'placeholder -> "ex: http://www.slideshare.net/inarocket/learn-bem-css-naming-convention") }
+@fieldHorizontal(talkForm("proposal.availabilities"), 'label -> "Disponibilités") { field => @inputSelectMulti(field, nextDates.map(d => (d.toString("dd/MM/yyyy"), d.toString("dd MMMM yyyy"))), 'size -> nextDates.length.toString) }

@@ -10,12 +10,10 @@ import com.humantalks.common.services.slack.SlackSrv
 import com.humantalks.common.services.{ NotificationSrv, EmbedSrv }
 import com.humantalks.common.services.sendgrid.SendgridSrv
 import com.humantalks.exposed.PublicApi
-import com.humantalks.exposed.proposals.{ ProposalDbService, ProposalRepository }
 import com.humantalks.internal.admin.AdminCtrl
 import com.humantalks.internal.admin.config.{ ConfigApiCtrl, ConfigCtrl, ConfigDbService, ConfigRepository }
 import com.humantalks.internal.events.{ EventApiCtrl, EventCtrl, EventDbService, EventRepository }
 import com.humantalks.internal.persons.{ PersonApiCtrl, PersonCtrl, PersonDbService, PersonRepository }
-import com.humantalks.internal.proposals.ProposalCtrl
 import com.humantalks.internal.talks.{ TalkApiCtrl, TalkCtrl, TalkDbService, TalkRepository }
 import com.humantalks.tools.EmbedCtrl
 import com.humantalks.tools.scrapers.{ EmailScraper, TwitterScraper }
@@ -62,14 +60,12 @@ class MyComponents(context: ApplicationLoader.Context)
   val personRepository = PersonRepository(conf, ctx, mongo)
   val talkRepository = TalkRepository(conf, ctx, mongo, embedSrv)
   val eventRepository = EventRepository(conf, ctx, mongo)
-  val proposalRepository = ProposalRepository(conf, ctx, mongo, embedSrv)
   val configRepository = ConfigRepository(conf, ctx, mongo)
 
   val venueDbService = VenueDbService(venueRepository, eventRepository)
-  val personDbService = PersonDbService(credentialsRepository, personRepository, talkRepository, proposalRepository)
-  val talkDbService = TalkDbService(talkRepository, eventRepository, proposalRepository)
+  val personDbService = PersonDbService(credentialsRepository, personRepository, talkRepository)
+  val talkDbService = TalkDbService(talkRepository, eventRepository)
   val eventDbService = EventDbService(talkRepository, eventRepository)
-  val proposalDbService = ProposalDbService(talkRepository, proposalRepository)
   val configDbService = ConfigDbService(configRepository)
 
   val authSrv = AuthSrv(passwordHasherRegistry, credentialsProvider, authInfoRepository)
@@ -85,14 +81,13 @@ class MyComponents(context: ApplicationLoader.Context)
   val router: Router = new Routes(
     httpErrorHandler,
     com.humantalks.exposed.Application(ctx),
-    com.humantalks.exposed.proposals.ProposalCtrl(conf, ctx, personDbService, talkDbService, proposalDbService, notificationSrv),
+    com.humantalks.exposed.talks.TalkCtrl(conf, ctx, personDbService, talkDbService, notificationSrv),
     com.humantalks.auth.AuthCtrl(ctx, silhouette, conf, authSrv, personRepository, credentialsRepository, authTokenRepository, avatarService, mailerSrv),
     com.humantalks.internal.Application(ctx, silhouette),
     VenueCtrl(ctx, silhouette, venueDbService, personDbService, eventDbService),
-    PersonCtrl(ctx, silhouette, personDbService, talkDbService, proposalDbService),
-    TalkCtrl(ctx, silhouette, personDbService, talkDbService, eventDbService, proposalDbService),
-    EventCtrl(ctx, silhouette, venueDbService, personDbService, talkDbService, eventDbService, proposalDbService, meetupSrv, notificationSrv),
-    ProposalCtrl(ctx, silhouette, personDbService, proposalDbService, talkDbService),
+    PersonCtrl(ctx, silhouette, personDbService, talkDbService),
+    TalkCtrl(ctx, silhouette, personDbService, talkDbService, eventDbService),
+    EventCtrl(ctx, silhouette, venueDbService, personDbService, talkDbService, eventDbService, meetupSrv, notificationSrv),
     AdminCtrl(ctx, silhouette, personDbService, credentialsRepository, authTokenRepository),
     ConfigCtrl(ctx, silhouette, configDbService),
     PublicApi(ctx, venueDbService, personDbService, talkDbService, eventDbService),
@@ -101,7 +96,7 @@ class MyComponents(context: ApplicationLoader.Context)
     PersonApiCtrl(ctx, silhouette, personDbService),
     TalkApiCtrl(ctx, silhouette, talkDbService),
     EventApiCtrl(ctx, silhouette, eventDbService),
-    ConfigApiCtrl(conf, ctx, silhouette, venueDbService, personDbService, talkDbService, eventDbService, proposalDbService, configDbService),
+    ConfigApiCtrl(conf, ctx, silhouette, venueDbService, personDbService, talkDbService, eventDbService, configDbService),
     com.humantalks.tools.Application(ctx),
     EmbedCtrl(ctx, embedSrv),
     TwitterScraper(ctx, wsClient),

@@ -1,6 +1,5 @@
 package com.humantalks.internal.talks
 
-import com.humantalks.exposed.proposals.{ ProposalRepository, Proposal }
 import com.humantalks.internal.events.{ Event, EventRepository }
 import com.humantalks.internal.persons.Person
 import global.infrastructure.DbService
@@ -10,7 +9,7 @@ import reactivemongo.api.commands.WriteResult
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-case class TalkDbService(talkRepository: TalkRepository, eventRepository: EventRepository, proposalRepository: ProposalRepository) extends DbService[Talk, Talk.Id, Talk.Data, Person.Id] {
+case class TalkDbService(talkRepository: TalkRepository, eventRepository: EventRepository) extends DbService[Talk, Talk.Id, Talk.Data, Person.Id] {
   val name = talkRepository.name
 
   def find(filter: JsObject = Json.obj(), sort: JsObject = talkRepository.defaultSort): Future[List[Talk]] = talkRepository.find(filter, sort)
@@ -19,6 +18,7 @@ case class TalkDbService(talkRepository: TalkRepository, eventRepository: EventR
   def findForPerson(id: Person.Id, sort: JsObject = talkRepository.defaultSort): Future[List[Talk]] = talkRepository.findForPerson(id, sort)
   def get(id: Talk.Id): Future[Option[Talk]] = talkRepository.get(id)
   def getLastAccepted: Future[Option[Talk]] = talkRepository.getLastAccepted
+  def getLastProposal: Future[Option[Talk]] = talkRepository.getLastProposal
   def create(elt: Talk.Data, by: Person.Id): Future[(WriteResult, Talk.Id)] = talkRepository.create(elt, by)
   def update(elt: Talk, data: Talk.Data, by: Person.Id): Future[WriteResult] = talkRepository.update(elt, data, by)
   def updateAttribute(id: Talk.Id, attribute: String, value: String, by: Person.Id): Future[WriteResult] = talkRepository.updateAttribute(id, attribute, value, by)

@@ -2,16 +2,14 @@
 @import com.humantalks.internal.persons.Person
 @import com.humantalks.internal.talks.Talk
 @import com.humantalks.internal.events.Event
-@import com.humantalks.exposed.proposals.Proposal
 @import global.views.html.format._
 @import global.views.html.partials._
 @import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @import com.humantalks.internal.events.routes.EventCtrl
-@import com.humantalks.internal.proposals.routes.ProposalCtrl
 @import com.humantalks.common.controllers.routes.Select2Ctrl
-@(event: Event, venueForm: Form[Venue.Data], personForm: Form[Person.Data], talkForm: Form[Talk.Data], eventVenue: List[Venue], eventTalks: List[Talk], eventSpeakers: List[Person], pendingTalks: List[Talk], pendingProposals: List[Proposal], pendingSpeakers: List[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@(event: Event, venueForm: Form[Venue.Data], personForm: Form[Person.Data], talkForm: Form[Talk.Data], eventVenue: List[Venue], eventTalks: List[Talk], eventSpeakers: List[Person], pendingTalks: List[Talk], pendingSpeakers: List[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @main(event.data.title) {
     @header("meetup")
 
@@ -123,22 +121,6 @@
                             @speakers(talk.data.speakers, pendingSpeakers)
                             @slidesLink(talk.data.slides)
                             @videoLink(talk.data.video)
-                        </li>
-                    }
-                </ul>
-            }
-            @if(pendingProposals.nonEmpty){
-                <h3>Propositions non planifiées</h3>
-                <ul>
-                    @pendingProposals.map { proposal =>
-                        <li>
-                            @helper.form(action=EventCtrl.doAddProposal(event.id, proposal.id), 'class->"inline") {
-                                <button type="submit" class="btn btn-link" title="Create a talk from this proposal and add it to this meetup"><i class="fa fa-plus"></i></button>
-                            }
-                            @com.humantalks.internal.proposals.views.html.partials.status(proposal)
-                            @if(proposal.data.availabilities.contains(event.data.date.toLocalDate)){<span class="label label-success">Disponible</span>}
-                            <a href="@ProposalCtrl.get(proposal.id)">@proposal.data.title</a>
-                            @speakers(proposal.data.speakers, pendingSpeakers)
                         </li>
                     }
                 </ul>

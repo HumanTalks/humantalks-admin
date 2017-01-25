@@ -1,14 +1,12 @@
 @import com.humantalks.internal.persons.Person
 @import com.humantalks.internal.talks.Talk
-@import com.humantalks.exposed.proposals.Proposal
 @import global.views.html.format._
 @import global.views.html.partials._
 @import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.persons.routes.PersonCtrl
 @import com.humantalks.internal.talks.routes.TalkCtrl
-@import com.humantalks.internal.proposals.routes.ProposalCtrl
-@(person: Person, talkList: List[Talk], proposalList: List[Proposal])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@(person: Person, talkList: List[Talk])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @main(person.data.name) {
     @header("person")
 
@@ -32,17 +30,6 @@
                 <li>
                     @com.humantalks.internal.talks.views.html.partials.status(talk)
                     <a href="@TalkCtrl.get(talk.id)">@talk.data.title</a> à ???
-                </li>
-            }
-            </ul>
-        }
-        @if(proposalList.nonEmpty){
-            <h3>Proposals</h3>
-            <ul>
-            @proposalList.map { proposal =>
-                <li>
-                    @com.humantalks.internal.proposals.views.html.partials.status(proposal)
-                    <a href="@ProposalCtrl.get(proposal.id)">@proposal.data.title</a>
                 </li>
             }
             </ul>

@@ -4,6 +4,7 @@ import com.humantalks.common.values.Meta
 import com.humantalks.internal.persons.Person
 import global.helpers.EnumerationHelper
 import global.values.{ TypedId, TypedIdHelper }
+import org.joda.time.LocalDate
 import play.api.data.Forms._
 import play.api.libs.json.Json
 
@@ -34,7 +35,8 @@ object Talk {
       slides: Option[String],
       slidesEmbedCode: Option[String],
       video: Option[String],
-      videoEmbedCode: Option[String]
+      videoEmbedCode: Option[String],
+      proposal: Option[Proposal]
   ) {
     def trim: Data = copy(
       title = title.trim,
@@ -44,8 +46,16 @@ object Talk {
     )
   }
 
+  case class Proposal(
+    availabilities: List[LocalDate]
+  )
+
+  implicit val formatProposal = Json.format[Proposal]
   implicit val formatData = Json.format[Data]
   implicit val format = Json.format[Talk]
+  val fieldsProposal = mapping(
+    "availabilities" -> list(jodaLocalDate(pattern = "dd/MM/yyyy"))
+  )(Proposal.apply)(Proposal.unapply)
   val fields = mapping(
     "title" -> nonEmptyText,
     "description" -> optional(text),
@@ -53,6 +63,7 @@ object Talk {
     "slides" -> optional(text),
     "slidesEmbedCode" -> ignored(Option.empty[String]),
     "video" -> optional(text),
-    "videoEmbedCode" -> ignored(Option.empty[String])
+    "videoEmbedCode" -> ignored(Option.empty[String]),
+    "proposal" -> optional(fieldsProposal)
   )(Talk.Data.apply)(Talk.Data.unapply)
 }

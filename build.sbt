@@ -37,7 +37,6 @@ libraryDependencies ++= Seq(
 
 play.sbt.routes.RoutesKeys.routesImport ++= Seq(
   "com.humantalks.auth.entities.AuthToken",
-  "com.humantalks.exposed.proposals.Proposal",
   "com.humantalks.internal.venues.Venue",
   "com.humantalks.internal.persons.Person",
   "com.humantalks.internal.talks.Talk",

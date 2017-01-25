@@ -23,15 +23,6 @@ object CtrlHelper {
       }
     }
   }
-  def withItem[T, Id](get: Id => Future[Option[T]])(id: Id)(block: T => Future[Result])(implicit ec: ExecutionContext): Future[Result] = {
-    get(id).flatMap { itemOpt =>
-      itemOpt.map { item =>
-        block(item)
-      }.getOrElse {
-        Future.successful(notFound(id))
-      }
-    }
-  }
 
   def notFound[Id](name: String, id: Id): Result = NotFound(global.views.html.errors.notFound("Unable to find a " + name + " with id " + id))
   def notFound[Id](id: Id): Result = NotFound(global.views.html.errors.notFound("Unable to find a " + id))

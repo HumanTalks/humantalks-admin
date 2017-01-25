@@ -2,7 +2,6 @@ package com.humantalks.internal.talks
 
 import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
-import com.humantalks.exposed.proposals.ProposalDbService
 import com.humantalks.internal.events.EventDbService
 import com.humantalks.internal.persons.{ Person, PersonDbService }
 import com.mohiva.play.silhouette.api.Silhouette
@@ -19,8 +18,7 @@ case class TalkCtrl(
     silhouette: Silhouette[SilhouetteEnv],
     personDbService: PersonDbService,
     talkDbService: TalkDbService,
-    eventDbService: EventDbService,
-    proposalDbService: ProposalDbService
+    eventDbService: EventDbService
 )(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.ctrlToEC
   import ctx._
@@ -54,10 +52,9 @@ case class TalkCtrl(
     implicit val user = Some(req.identity)
     CtrlHelper.withItem(talkDbService)(id) { talk =>
       for {
-        proposalOpt <- proposalDbService.getForTalk(id)
         personList <- personDbService.findByIds(talk.data.speakers)
         eventList <- eventDbService.findForTalk(id)
-      } yield Ok(views.html.detail(talk, proposalOpt, personList, eventList))
+      } yield Ok(views.html.detail(talk, personList, eventList))
     }
   }
 

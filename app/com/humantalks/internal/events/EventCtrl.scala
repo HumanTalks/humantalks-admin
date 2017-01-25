@@ -4,7 +4,6 @@ import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
 import com.humantalks.common.services.NotificationSrv
 import com.humantalks.common.services.meetup.MeetupSrv
-import com.humantalks.exposed.proposals.{ Proposal, ProposalDbService }
 import com.humantalks.internal.persons.{ PersonDbService, Person }
 import com.humantalks.internal.talks.{ TalkDbService, Talk }
 import com.humantalks.internal.venues.{ Venue, VenueDbService }
@@ -25,7 +24,6 @@ case class EventCtrl(
     personDbService: PersonDbService,
     talkDbService: TalkDbService,
     eventDbService: EventDbService,
-    proposalDbService: ProposalDbService,
     meetupSrv: MeetupSrv,
     notificationSrv: NotificationSrv
 )(implicit messageApi: MessagesApi) extends Controller {
@@ -72,9 +70,8 @@ case class EventCtrl(
         eventTalks <- talkDbService.findByIds(event.data.talks)
         eventSpeakers <- personDbService.findByIds(eventTalks.flatMap(_.data.speakers))
         pendingTalks <- talkDbService.findPending()
-        pendingProposals <- proposalDbService.findPending()
-        pendingSpeakers <- personDbService.findByIds(pendingTalks.flatMap(_.data.speakers) ++ pendingProposals.flatMap(_.data.speakers))
-      } yield Ok(views.html.detail(event, venueForm, personForm, talkForm, eventVenue, eventTalks, eventSpeakers, pendingTalks, pendingProposals, pendingSpeakers))
+        pendingSpeakers <- personDbService.findByIds(pendingTalks.flatMap(_.data.speakers))
+      } yield Ok(views.html.detail(event, venueForm, personForm, talkForm, eventVenue, eventTalks, eventSpeakers, pendingTalks, pendingSpeakers))
     }
   }
 
@@ -165,18 +162,6 @@ case class EventCtrl(
   def doRemoveTalk(id: Event.Id, talkId: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     eventDbService.removeTalk(id, talkId, req.identity.id).map { _ =>
       Redirect(CtrlHelper.getReferer(req.headers, routes.EventCtrl.get(id)))
-    }
-  }
-
-  def doAddProposal(id: Event.Id, proposalId: Proposal.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    val redirectUrl = CtrlHelper.getReferer(req.headers, routes.EventCtrl.get(id))
-    proposalDbService.setStatus(proposalId, Proposal.Status.Accepted, req.identity.id).flatMap {
-      case Right(Some(talkId)) => eventDbService.addTalk(id, talkId, req.identity.id).map { _ =>
-        notificationSrv.addTalkToEvent(id, talkId, req.identity.id)
-        Redirect(redirectUrl).flashing("success" -> "Proposal transformed into a talk and added to meetup :)")
-      }
-      case Left(err) => Future.successful(Redirect(redirectUrl).flashing("error" -> err))
-      case _ => Future.successful(Redirect(redirectUrl))
     }
   }
 

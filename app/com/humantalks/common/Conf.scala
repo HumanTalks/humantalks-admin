@@ -1,7 +1,6 @@
 package com.humantalks.common
 
 import com.humantalks.auth.entities.{ Credentials, AuthToken }
-import com.humantalks.exposed.proposals.Proposal
 import com.humantalks.internal.admin.config.Config
 import com.humantalks.internal.events.Event
 import com.humantalks.internal.persons.Person
@@ -34,7 +33,6 @@ case class Conf(configuration: Configuration) {
     val venue = Repository.Collection[Venue]("Venue")
     val talk = Repository.Collection[Talk]("Talk")
     val event = Repository.Collection[Event]("Event")
-    val proposal = Repository.Collection[Proposal]("Proposal")
     val config = Repository.Collection[Config]("Config")
   }
   object Auth {

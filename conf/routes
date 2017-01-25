@@ -4,10 +4,10 @@
 
 GET     /                                                           com.humantalks.exposed.Application.index
 
-GET     /submit-talk                                                com.humantalks.exposed.proposals.ProposalCtrl.create
-POST    /submit-talk                                                com.humantalks.exposed.proposals.ProposalCtrl.doCreate
-GET     /submit-talk/$id<.{36}>/edit                                com.humantalks.exposed.proposals.ProposalCtrl.update(id: Proposal.Id)
-POST    /submit-talk/$id<.{36}>/edit                                com.humantalks.exposed.proposals.ProposalCtrl.doUpdate(id: Proposal.Id)
+GET     /submit-talk                                                com.humantalks.exposed.talks.TalkCtrl.create
+POST    /submit-talk                                                com.humantalks.exposed.talks.TalkCtrl.doCreate
+GET     /submit-talk/$id<.{36}>/edit                                com.humantalks.exposed.talks.TalkCtrl.update(id: Talk.Id)
+POST    /submit-talk/$id<.{36}>/edit                                com.humantalks.exposed.talks.TalkCtrl.doUpdate(id: Talk.Id)
 
 GET     /register                                                   com.humantalks.auth.AuthCtrl.register
 POST    /register                                                   com.humantalks.auth.AuthCtrl.doRegister
@@ -71,11 +71,6 @@ POST    /events/$id<.{36}>/talks/add                                com.humantal
 POST    /events/$id<.{36}>/talks/$talkId<.{36}>/add                 com.humantalks.internal.events.EventCtrl.doAddTalk(id: Event.Id, talkId: Talk.Id)
 POST    /events/$id<.{36}>/talks/$talkId<.{36}>/move                com.humantalks.internal.events.EventCtrl.doMoveTalk(id: Event.Id, talkId: Talk.Id, up: Boolean)
 POST    /events/$id<.{36}>/talks/$talkId<.{36}>/delete              com.humantalks.internal.events.EventCtrl.doRemoveTalk(id: Event.Id, talkId: Talk.Id)
-POST    /events/$id<.{36}>/proposals/$proposalId<.{36}>/add         com.humantalks.internal.events.EventCtrl.doAddProposal(id: Event.Id, proposalId: Proposal.Id)
-
-GET     /proposals                                                  com.humantalks.internal.proposals.ProposalCtrl.find
-GET     /proposals/$id<.{36}>                                       com.humantalks.internal.proposals.ProposalCtrl.get(id: Proposal.Id)
-POST    /proposals/$id<.{36}>/status/:status                        com.humantalks.internal.proposals.ProposalCtrl.setStatus(id: Proposal.Id, status: Proposal.Status.Value)
 
 GET     /admin/users                                                com.humantalks.internal.admin.AdminCtrl.users
 POST    /admin/users/$id<.{36}>/role                                com.humantalks.internal.admin.AdminCtrl.setRole(id: Person.Id)

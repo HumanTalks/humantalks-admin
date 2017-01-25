@@ -1,15 +1,13 @@
 @import com.humantalks.internal.persons.Person
 @import com.humantalks.internal.talks.Talk
 @import com.humantalks.internal.events.Event
-@import com.humantalks.exposed.proposals.Proposal
 @import global.views.html.format._
 @import global.views.html.partials._
 @import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @import com.humantalks.internal.events.routes.EventCtrl
-@import com.humantalks.internal.proposals.routes.ProposalCtrl
-@(talk: Talk, proposalOpt: Option[Proposal], personList: List[Person], eventList: List[Event])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@(talk: Talk, personList: List[Person], eventList: List[Event])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @main(talk.data.title, talk.data.description.getOrElse("")) {
     @header("talk")
 
@@ -25,10 +23,17 @@
             @partials.status(talk)
         </h1>
         <p>@speakers(talk.data.speakers, personList) @created(talk.meta.created)</p>
-        @proposalOpt.map{proposal => <p><b>Proposition associée : <a href="@ProposalCtrl.get(proposal.id)">@proposal.data.title</a></b> @com.humantalks.internal.proposals.views.html.partials.status(proposal)</p>}
         @talk.data.description.map{d => <p>@multiline(d)</p>}
         @slidesEmbed(talk.data.slidesEmbedCode, talk.data.slides)
         @videoEmbed(talk.data.videoEmbedCode, talk.data.video)
+        @talk.data.proposal.map { proposal =>
+            <p>
+                <b>Disponibilités :</b><br>
+                <ul>
+                    @proposal.availabilities.map{a => <li>@date(a)</li>}
+                </ul>
+            </p>
+        }
         @if(eventList.nonEmpty){
             <h3>Meetups</h3>
             <ul>

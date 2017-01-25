@@ -3,8 +3,7 @@ package com.humantalks.common.services
 import com.humantalks.common.Conf
 import com.humantalks.common.services.sendgrid._
 import com.humantalks.common.services.slack.SlackSrv
-import com.humantalks.exposed.proposals.Proposal
-import com.humantalks.internal.admin.config.{ Config, ConfigDbService }
+import com.humantalks.internal.admin.config.ConfigDbService
 import com.humantalks.internal.events.{ EventDbService, Event }
 import com.humantalks.internal.persons.{ PersonDbService, Person }
 import com.humantalks.internal.talks.{ TalkDbService, Talk }
@@ -27,13 +26,13 @@ case class NotificationSrv(
     configDbService: ConfigDbService
 ) {
 
-  def proposalCreated(proposal: Proposal, speakers: List[Person])(implicit request: RequestHeader, messageApi: MessagesApi, ec: ExecutionContext): Future[Boolean] = {
-    def confirmationMail(proposal: Proposal, speakers: List[Person]): Future[Boolean] = {
-      val url = com.humantalks.exposed.proposals.routes.ProposalCtrl.update(proposal.id).absoluteURL()
+  def proposalCreated(talk: Talk, speakers: List[Person])(implicit request: RequestHeader, messageApi: MessagesApi, ec: ExecutionContext): Future[Boolean] = {
+    def confirmationMail(talk: Talk, speakers: List[Person]): Future[Boolean] = {
+      val url = com.humantalks.exposed.talks.routes.TalkCtrl.update(talk.id).absoluteURL()
       val admin = conf.Organization.Admin
       (for {
-        (Success(subject), _) <- configDbService.buildProposalSubmittedEmailSubject(Some(proposal))
-        (Success(content), _) <- configDbService.buildProposalSubmittedEmailContent(Some(proposal), url, admin.email)
+        (Success(subject), _) <- configDbService.buildProposalSubmittedEmailSubject(Some(talk))
+        (Success(content), _) <- configDbService.buildProposalSubmittedEmailContent(Some(talk), url, admin.email)
         res <- sendgridSrv.send(Email(
           personalizations = Recipient.from(speakers),
           from = Address(admin.email, Some(admin.name)),
@@ -45,12 +44,12 @@ case class NotificationSrv(
         ))
       } yield 200 <= res.status && res.status < 300).recover { case _ => false }
     }
-    def slackMessage(proposal: Proposal, speakers: List[Person]): Future[Boolean] = {
-      val url = com.humantalks.internal.proposals.routes.ProposalCtrl.get(proposal.id).absoluteURL()
+    def slackMessage(talk: Talk, speakers: List[Person]): Future[Boolean] = {
+      val url = com.humantalks.internal.talks.routes.TalkCtrl.get(talk.id).absoluteURL()
       (for {
-        (Success(message), _) <- configDbService.buildProposalSubmittedSlackMessage(Some(proposal), speakers, url)
-        (Success(title), _) <- configDbService.buildProposalSubmittedSlackTitle(Some(proposal))
-        (Success(text), _) <- configDbService.buildProposalSubmittedSlackText(Some(proposal))
+        (Success(message), _) <- configDbService.buildProposalSubmittedSlackMessage(Some(talk), speakers, url)
+        (Success(title), _) <- configDbService.buildProposalSubmittedSlackTitle(Some(talk))
+        (Success(text), _) <- configDbService.buildProposalSubmittedSlackText(Some(talk))
         res <- slackSrv.postMessage(
           channel = conf.Slack.proposalChannel,
           text = message,
@@ -59,8 +58,8 @@ case class NotificationSrv(
       } yield res.isRight).recover { case _ => false }
     }
     Future.sequence(List(
-      confirmationMail(proposal, speakers),
-      slackMessage(proposal, speakers)
+      confirmationMail(talk, speakers),
+      slackMessage(talk, speakers)
     )).map(_.forall(identity)).recover { case _ => false }
   }
 
