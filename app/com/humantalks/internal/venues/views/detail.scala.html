@@ -6,8 +6,9 @@
 @import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.venues.routes.VenueCtrl
+@import com.humantalks.internal.persons.routes.PersonCtrl
 @import com.humantalks.internal.events.routes.EventCtrl
-@(venue: Venue, eventList: List[Event])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@(venue: Venue, eventList: List[Event], personList: List[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @main(venue.data.name) {
     @header("venue")
 
@@ -23,6 +24,14 @@
         @venue.data.location.map{loc => <p>@loc.formatted</p>}
         @venue.data.comment.map{c => <p>@multiline(c)</p>}
         @twitter(venue.data.twitter)
+        @if(venue.data.contacts.nonEmpty) {
+            <p>
+                <b>Contacts</b>:
+                @venue.data.contacts.flatMap(id => personList.find(_.id == id)).map { contact =>
+                    <a href="@PersonCtrl.get(contact.id)">@contact.data.name</a>@contact.data.email.map{e=>&lt;@e&gt;}
+                }
+            </p>
+        }
         @if(eventList.nonEmpty){
             <h3>Meetups</h3>
             <ul>

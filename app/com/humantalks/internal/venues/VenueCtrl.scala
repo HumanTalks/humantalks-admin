@@ -52,7 +52,8 @@ case class VenueCtrl(
     CtrlHelper.withItem(venueDbService)(id) { venue =>
       for {
         eventList <- eventDbService.findForVenue(id)
-      } yield Ok(views.html.detail(venue, eventList))
+        personList <- personDbService.findByIds(venue.data.contacts)
+      } yield Ok(views.html.detail(venue, eventList, personList))
     }
   }
 
