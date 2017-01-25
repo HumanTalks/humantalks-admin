@@ -2,7 +2,7 @@ package com.humantalks.common.services.meetup.models
 
 import play.api.libs.json.Json
 
-case class Photo(
+case class MeetupPhoto(
   id: Long,
   `type`: String, // TODO enum (event, member)
   highres_link: Option[String],
@@ -10,6 +10,6 @@ case class Photo(
   thumb_link: String,
   base_url: String
 )
-object Photo {
-  implicit val format = Json.format[Photo]
+object MeetupPhoto {
+  implicit val format = Json.format[MeetupPhoto]
 }

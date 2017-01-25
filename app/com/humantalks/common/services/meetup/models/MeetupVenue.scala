@@ -2,7 +2,7 @@ package com.humantalks.common.services.meetup.models
 
 import play.api.libs.json.Json
 
-case class Venue(
+case class MeetupVenue(
   id: Long,
   name: String,
   visibility: Option[String], // TODO enum (public,private)
@@ -19,6 +19,6 @@ case class Venue(
   country: String,
   localized_country_name: String
 )
-object Venue {
-  implicit val format = Json.format[Venue]
+object MeetupVenue {
+  implicit val format = Json.format[MeetupVenue]
 }

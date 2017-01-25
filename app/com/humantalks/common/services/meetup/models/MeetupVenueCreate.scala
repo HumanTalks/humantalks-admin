@@ -2,7 +2,7 @@ package com.humantalks.common.services.meetup.models
 
 import com.humantalks.internal.partners.Partner
 
-case class VenueCreate(
+case class MeetupVenueCreate(
     name: String,
     visibility: String, // TODO enum (private,public)
     address_1: String,
@@ -14,10 +14,10 @@ case class VenueCreate(
     phone: Option[String],
     hours: Option[String]
 ) {
-  def toParams: Map[String, String] = VenueCreate.toParams(this)
+  def toParams: Map[String, String] = MeetupVenueCreate.toParams(this)
 }
-object VenueCreate {
-  def toParams(data: VenueCreate): Map[String, String] =
+object MeetupVenueCreate {
+  def toParams(data: MeetupVenueCreate): Map[String, String] =
     Map(
       "name" -> Some(data.name),
       "visibility" -> Some(data.visibility),
@@ -31,7 +31,7 @@ object VenueCreate {
       "hours" -> data.hours
     ).flatMap { case (key, valueOpt) => valueOpt.map(value => (key, value)) }
 
-  def from(partner: Partner): Option[VenueCreate] = {
+  def from(partner: Partner): Option[MeetupVenueCreate] = {
     val addressFromStreet = partner.data.location.flatMap(l => l.street.map(street => l.streetNo.map(_ + " ").getOrElse("") + street))
     val addressFromFormatted = partner.data.location.flatMap(_.formatted.split(",").headOption)
     val addressFromInput = partner.data.location.flatMap(_.input.split(",").drop(1).headOption)
@@ -39,7 +39,7 @@ object VenueCreate {
     for {
       address <- addressFromStreet.orElse(addressFromFormatted).orElse(addressFromInput)
       city <- cityOpt
-    } yield VenueCreate(
+    } yield MeetupVenueCreate(
       name = partner.data.name,
       visibility = "public",
       address_1 = address,

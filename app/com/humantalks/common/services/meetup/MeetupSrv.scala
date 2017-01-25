@@ -1,7 +1,7 @@
 package com.humantalks.common.services.meetup
 
 import com.humantalks.common.Conf
-import com.humantalks.common.services.meetup.models.{ EventCreate, VenueCreate }
+import com.humantalks.common.services.meetup.models.{ MeetupEventCreate$, MeetupVenueCreate$ }
 import com.humantalks.internal.admin.config.ConfigDbService
 import com.humantalks.internal.events.{ EventDbService, Event }
 import com.humantalks.internal.persons.Person
@@ -31,7 +31,7 @@ case class MeetupSrv(
       withMeetupRef(group, partnerOpt, by).flatMap { partnerWithMeetupRefOpt =>
         configDbService.buildMeetupEventDescription(Some(event), partnerWithMeetupRefOpt, talkList, personList).flatMap {
           case (Success(description), _) =>
-            val eventCreate = EventCreate.from(event, description, partnerWithMeetupRefOpt, talkList, personList)
+            val eventCreate = MeetupEventCreate.from(event, description, partnerWithMeetupRefOpt, talkList, personList)
             meetupApi.createEvent(group, eventCreate).flatMap {
               case Right(meetupEvent) => eventDbService.setMeetupRef(event.id, Event.MeetupRef(group, meetupEvent.id.toLong, announced = false), by).map { _ =>
                 Right(Event.MeetupRef(group, meetupEvent.id.toLong, announced = false))
@@ -49,7 +49,7 @@ case class MeetupSrv(
       withMeetupRef(ref.group, partnerOpt, by).flatMap { partnerWithMeetupRefOpt =>
         configDbService.buildMeetupEventDescription(Some(event), partnerWithMeetupRefOpt, talkList, personList).flatMap {
           case (Success(description), _) =>
-            val eventCreate = EventCreate.from(event, description, partnerWithMeetupRefOpt, talkList, personList)
+            val eventCreate = MeetupEventCreate.from(event, description, partnerWithMeetupRefOpt, talkList, personList)
             meetupApi.updateEvent(ref.group, ref.id, eventCreate).map {
               case Right(_) => Right(ref)
               case Left(errs) => Left(errs)
@@ -98,7 +98,7 @@ case class MeetupSrv(
       createVenue(group, partner, by).map(_.map(id => (partner.id, id)))
     }
   private def createVenue(group: String, partner: Partner, by: Person.Id): Future[Option[Partner.MeetupRef]] =
-    VenueCreate.from(partner).map { venueCreate =>
+    MeetupVenueCreate.from(partner).map { venueCreate =>
       meetupApi.createVenue(group, venueCreate).flatMap {
         case Right(res) => partnerDbService.setMeetupRef(partner.id, Partner.MeetupRef(group, res.id), by).map { _ =>
           Some(Partner.MeetupRef(group, res.id))

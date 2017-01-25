@@ -6,7 +6,7 @@ import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
 import org.joda.time.DateTime
 
-case class EventCreate(
+case class MeetupEventCreate(
     status: String, // TODO enum (draft, cancelled, suggested, proposed, upcoming, past)
     name: String, // < 80
     description: String, // < 50000
@@ -25,9 +25,9 @@ case class EventCreate(
     how_to_find_us: Option[String],
     question: Option[String] // < 250
 ) {
-  def toParams: Map[String, String] = EventCreate.toParams(this)
+  def toParams: Map[String, String] = MeetupEventCreate.toParams(this)
 }
-object EventCreate {
+object MeetupEventCreate {
   val lkn = 14321102L
   val mpa = 27217322L
   val sbo = 92525632L
@@ -35,7 +35,7 @@ object EventCreate {
   val ape = 185927921L
   val hosts = List(lkn, mpa, sbo, tca, ape)
 
-  def toParams(data: EventCreate): Map[String, String] =
+  def toParams(data: MeetupEventCreate): Map[String, String] =
     Map(
       "publish_status" -> Some(data.status),
       "name" -> Some(data.name),
@@ -56,8 +56,8 @@ object EventCreate {
       "question" -> data.question
     ).flatMap { case (key, valueOpt) => valueOpt.map(value => (key, value)) }
 
-  def from(event: events.Event, description: String, partnerOpt: Option[Partner], talkList: List[Talk], personList: List[Person]): EventCreate =
-    EventCreate(
+  def from(event: events.Event, description: String, partnerOpt: Option[Partner], talkList: List[Talk], personList: List[Person]): MeetupEventCreate =
+    MeetupEventCreate(
       status = "draft",
       name = event.data.title,
       description = description,
