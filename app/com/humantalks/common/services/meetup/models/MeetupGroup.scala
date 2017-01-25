@@ -16,28 +16,28 @@ case class MeetupGroupOrganizer(
   photo: MeetupPhoto
 )
 case class MeetupGroup(
-                        id: Long,
-                        link: String,
-                        name: String,
-                        urlname: String,
-                        category: MeetupGroupCategory,
-                        organizer: MeetupGroupOrganizer,
-                        description: String,
-                        join_mode: String, // TODO enum (open)
-                        visibility: String, // TODO enum (public)
-                        members: Int,
-                        who: String,
-                        lat: Double,
-                        lon: Double,
-                        city: String,
-                        state: String,
-                        country: String,
-                        localized_country_name: String,
-                        timezone: String,
-                        group_photo: MeetupPhoto,
-                        key_photo: MeetupPhoto,
-                        photos: List[MeetupPhoto],
-                        created: DateTime
+  id: Long,
+  link: String,
+  name: String,
+  urlname: String,
+  category: MeetupGroupCategory,
+  organizer: MeetupGroupOrganizer,
+  description: String,
+  join_mode: String, // TODO enum (open)
+  visibility: String, // TODO enum (public)
+  members: Int,
+  who: String,
+  lat: Double,
+  lon: Double,
+  city: String,
+  state: String,
+  country: String,
+  localized_country_name: String,
+  timezone: String,
+  group_photo: MeetupPhoto,
+  key_photo: MeetupPhoto,
+  photos: List[MeetupPhoto],
+  created: DateTime
 )
 object MeetupGroup {
   implicit val formatCategory = Json.format[MeetupGroupCategory]

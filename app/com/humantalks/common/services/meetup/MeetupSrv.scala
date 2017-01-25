@@ -1,16 +1,16 @@
 package com.humantalks.common.services.meetup
 
 import com.humantalks.common.Conf
-import com.humantalks.common.services.meetup.models.{ MeetupEventCreate$, MeetupVenueCreate$ }
+import com.humantalks.common.services.meetup.models.{MeetupEventCreate, MeetupEventCreate$, MeetupVenueCreate, MeetupVenueCreate$}
 import com.humantalks.internal.admin.config.ConfigDbService
-import com.humantalks.internal.events.{ EventDbService, Event }
+import com.humantalks.internal.events.{Event, EventDbService}
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
-import com.humantalks.internal.partners.{ Partner, PartnerDbService }
+import com.humantalks.internal.partners.{Partner, PartnerDbService}
 import global.Contexts
 
 import scala.concurrent.Future
-import scala.util.{ Failure, Success }
+import scala.util.{Failure, Success}
 
 case class MeetupSrv(
     conf: Conf,

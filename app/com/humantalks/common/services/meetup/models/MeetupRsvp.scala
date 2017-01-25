@@ -23,20 +23,20 @@ case class MeetupRsvpMemberContext(
   host: Boolean
 )
 case class MeetupRsvpMember(
-                       id: Long,
-                       name: String,
-                       photo: Option[MeetupPhoto],
-                       event_context: MeetupRsvpMemberContext
+  id: Long,
+  name: String,
+  photo: Option[MeetupPhoto],
+  event_context: MeetupRsvpMemberContext
 )
 case class MeetupRsvp(
-                       member: MeetupRsvpMember,
-                       event: MeetupRsvpEvent,
-                       group: MeetupRsvpGroup,
-                       venue: MeetupVenue,
-                       response: String, // TODO enum (waitlist)
-                       guests: Int,
-                       created: DateTime,
-                       updated: DateTime
+  member: MeetupRsvpMember,
+  event: MeetupRsvpEvent,
+  group: MeetupRsvpGroup,
+  venue: MeetupVenue,
+  response: String, // TODO enum (waitlist)
+  guests: Int,
+  created: DateTime,
+  updated: DateTime
 )
 object MeetupRsvp {
   implicit val formatEvent = Json.format[MeetupRsvpEvent]
