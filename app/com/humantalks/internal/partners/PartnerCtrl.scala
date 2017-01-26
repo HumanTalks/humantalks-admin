@@ -71,8 +71,8 @@ case class PartnerCtrl(
     partnerForm.bindFromRequest.fold(
       formWithErrors => CtrlHelper.withItem(partnerDbService)(id) { partner => formView(BadRequest, formWithErrors, Some(partner)) },
       data => CtrlHelper.withItem(partnerDbService)(id) { partner =>
-        partnerDbService.update(partner, data, req.identity.id).map {
-          case _ => Redirect(routes.PartnerCtrl.get(id))
+        partnerDbService.update(partner, data, req.identity.id).map { _ =>
+          Redirect(routes.PartnerCtrl.get(id))
         }
       }
     )

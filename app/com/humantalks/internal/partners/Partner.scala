@@ -29,36 +29,6 @@ object Partner {
 
   case class MeetupRef(group: String, id: Long)
 
-  /*case class Data(
-      name: String, // nom de la société / salle
-      location: Option[GMapPlace],
-      capacity: Option[Int], // nombre de places
-      twitter: Option[String],
-      logo: Option[String],
-      contacts: List[Person.Id],
-      comment: Option[String] // information supplémentaires
-  ) {
-    def trim: Data = copy(
-      name = name.trim,
-      twitter = twitter.map(TwitterSrv.toAccount),
-      logo = logo.map(_.trim),
-      comment = comment.map(_.trim)
-    )
-  }
-
-  implicit val formatData = Json.format[Data]
-  implicit val formatMeetupRef = Json.format[MeetupRef]
-  implicit val format = Json.format[Partner]
-  val fields = mapping(
-    "name" -> nonEmptyText,
-    "location" -> optional(GMapPlace.fields),
-    "capacity" -> optional(number),
-    "twitter" -> optional(text),
-    "logo" -> optional(text),
-    "contacts" -> list(of[Person.Id]),
-    "comment" -> optional(text)
-  )(Partner.Data.apply)(Partner.Data.unapply)*/
-
   case class Data(
       name: String,
       twitter: Option[String],
@@ -129,8 +99,8 @@ object Partner {
     "twitter" -> optional(text),
     "logo" -> optional(text),
     "contacts" -> list(of[Person.Id]),
-    "venue" -> optional(venueFields),
-    "sponsoring" -> list(sponsorFields),
+    "venue" -> ignored(Option.empty[Venue]),
+    "sponsoring" -> ignored(List[Sponsor]()),
     "sponsorAperitif" -> boolean,
     "comment" -> optional(text)
   )(Partner.Data.apply)(Partner.Data.unapply)

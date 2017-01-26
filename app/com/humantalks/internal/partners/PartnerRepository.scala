@@ -7,7 +7,7 @@ import global.Contexts
 import global.infrastructure.{ Mongo, Repository }
 import global.values.Page
 import org.joda.time.DateTime
-import play.api.libs.json.{ JsNull, JsObject, Json }
+import play.api.libs.json._
 import reactivemongo.api.commands.WriteResult
 
 import scala.concurrent.Future
@@ -36,8 +36,18 @@ case class PartnerRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Repos
     collection.create(toCreate).map { res => (res, toCreate.id) }
   }
 
-  def update(elt: Partner, data: Partner.Data, by: Person.Id): Future[WriteResult] =
-    collection.update(Json.obj("id" -> elt.id), elt.copy(data = data.trim, meta = elt.meta.update(by)))
+  def update(elt: Partner, data: Partner.Data, by: Person.Id): Future[WriteResult] = {
+    val flattenData = (__ \ 'data).read[JsObject].flatMap(
+      _.fields.foldLeft((__ \ 'data).json.prune) {
+        case (acc, (k, v)) => acc andThen __.json.update(
+          Reads.of[JsObject].map(_ + (s"data.$k" -> v))
+        )
+      }
+    )
+    val json = Json.toJson(data).as[JsObject] - "venue" - "sponsoring"
+    val $set = Json.obj("data" -> json).transform(flattenData).get
+    partialUpdate(elt.id, Json.obj("$set" -> $set), by)
+  }
 
   def updateVenue(id: Partner.Id, venue: Partner.Venue, by: Person.Id): Future[WriteResult] =
     partialUpdate(id, Json.obj("$set" -> Json.obj("data.venue" -> venue)), by)
