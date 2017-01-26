@@ -7,7 +7,7 @@ import global.Contexts
 import global.infrastructure.{ Mongo, Repository }
 import global.values.Page
 import org.joda.time.DateTime
-import play.api.libs.json.{ JsObject, Json }
+import play.api.libs.json.{ JsNull, JsObject, Json }
 import reactivemongo.api.commands.WriteResult
 
 import scala.concurrent.Future
@@ -41,6 +41,14 @@ case class PartnerRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Repos
 
   def updateVenue(id: Partner.Id, venue: Partner.Venue, by: Person.Id): Future[WriteResult] =
     partialUpdate(id, Json.obj("$set" -> Json.obj("data.venue" -> venue)), by)
+
+  def addSponsor(id: Partner.Id, sponsor: Partner.Sponsor, by: Person.Id): Future[WriteResult] =
+    partialUpdate(id, Json.obj("$addToSet" -> Json.obj("data.sponsoring" -> sponsor)), by)
+
+  def removeSponsor(id: Partner.Id, index: Int, by: Person.Id): Future[WriteResult] =
+    partialUpdate(id, Json.obj("$unset" -> Json.obj(s"data.sponsoring.$index" -> 1)), by).flatMap { _ =>
+      partialUpdate(id, Json.obj("$pull" -> Json.obj(s"data.sponsoring" -> JsNull)), by)
+    }
 
   private def partialUpdate(id: Partner.Id, patch: JsObject, by: Person.Id): Future[WriteResult] =
     collection.partialUpdate(Json.obj("id" -> id), patch.deepMerge(Json.obj("$set" -> Json.obj("meta.updated" -> new DateTime(), "meta.updatedBy" -> by))))

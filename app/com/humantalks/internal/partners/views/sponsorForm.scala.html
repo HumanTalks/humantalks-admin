@@ -4,24 +4,24 @@
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.partners.routes.PartnerCtrl
 @import com.humantalks.internal.partners.routes.PartnerApiCtrl
-@(partnerForm: Form[Partner.Data], partnerOpt: Option[Partner], personForm: Form[Person.Data])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
-@main("Nouveau partenaire") {
+@(sponsorForm: Form[Partner.Sponsor], partner: Partner, personForm: Form[Person.Data])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@main("Modifier partenaire") {
     @header("partner")
 
     <div class="container">
         @flash()
         <div class="page-header">
-            <h1>@partnerOpt.map{ p => Modifier @p.data.name}.getOrElse{Ajouter un partenaire}</h1>
+            <h1>Ajouter un sponsor pour @partner.data.name</h1>
         </div>
 
         <div class="row">
             <div class="col-md-12">
-            @helper.form(action=partnerOpt.map(p => PartnerCtrl.doUpdate(p.id)).getOrElse(PartnerCtrl.doCreate()), 'duplicates -> PartnerApiCtrl.duplicates(partnerOpt.map(_.id.toString)).toString, 'class->"form-horizontal partner-form") {
-                @partials.fields(partnerForm)
+            @helper.form(action=PartnerCtrl.doCreateSponsor(partner.id), 'duplicates -> PartnerApiCtrl.duplicates(Some(partner.id.toString)).toString, 'class->"form-horizontal partner-form") {
+                @partials.sponsorFields(sponsorForm)
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
-                        @partnerOpt.map{p => <a href="@PartnerCtrl.get(p.id)" class="btn btn-default btn-lg">Annuler</a>}
-                        <button type="submit" class="btn btn-primary btn-lg">@partnerOpt.map{ p => Modifier @p.data.name}.getOrElse{Ajouter le lieu}</button>
+                        <a href="@PartnerCtrl.get(partner.id)" class="btn btn-default btn-lg">Annuler</a>
+                        <button type="submit" class="btn btn-primary btn-lg">Ajouter un sponsor</button>
                     </div>
                 </div>
             }

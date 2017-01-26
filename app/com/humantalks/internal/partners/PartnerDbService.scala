@@ -21,6 +21,8 @@ case class PartnerDbService(
   def create(elt: Partner.Data, by: Person.Id): Future[(WriteResult, Partner.Id)] = partnerRepository.create(elt, by)
   def update(elt: Partner, data: Partner.Data, by: Person.Id): Future[WriteResult] = partnerRepository.update(elt, data, by)
   def updateVenue(id: Partner.Id, venue: Partner.Venue, by: Person.Id): Future[WriteResult] = partnerRepository.updateVenue(id, venue, by)
+  def addSponsor(id: Partner.Id, sponsor: Partner.Sponsor, by: Person.Id): Future[WriteResult] = partnerRepository.addSponsor(id, sponsor, by)
+  def removeSponsor(id: Partner.Id, index: Int, by: Person.Id): Future[WriteResult] = partnerRepository.removeSponsor(id, index, by)
   def setMeetupRef(id: Partner.Id, meetupRef: Partner.MeetupRef, by: Person.Id): Future[WriteResult] = partnerRepository.setMeetupRef(id, meetupRef, by)
 
   def delete(id: Partner.Id): Future[Either[List[Event], WriteResult]] = {

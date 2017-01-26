@@ -97,8 +97,8 @@ case class PartnerCtrl(
     venueForm.bindFromRequest.fold(
       formWithErrors => CtrlHelper.withItem(partnerDbService)(id) { partner => venueFormView(BadRequest, formWithErrors, partner.data.venue, partner) },
       data => CtrlHelper.withItem(partnerDbService)(id) { partner =>
-        partnerDbService.updateVenue(partner.id, data, req.identity.id).map {
-          case _ => Redirect(routes.PartnerCtrl.get(id))
+        partnerDbService.updateVenue(partner.id, data, req.identity.id).map { _ =>
+          Redirect(routes.PartnerCtrl.get(id))
         }
       }
     )
@@ -106,23 +106,24 @@ case class PartnerCtrl(
 
   def createSponsor(id: Partner.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     implicit val user = Some(req.identity)
-    formView(Ok, partnerForm, None)
+    CtrlHelper.withItem(partnerDbService)(id) { partner =>
+      sponsorFormView(Ok, sponsorForm, partner)
+    }
   }
 
   def doCreateSponsor(id: Partner.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     implicit val user = Some(req.identity)
-    partnerForm.bindFromRequest.fold(
-      formWithErrors => formView(BadRequest, formWithErrors, None),
-      data => partnerDbService.create(data, req.identity.id).map {
-        case (_, id) => Redirect(routes.PartnerCtrl.get(id))
+    sponsorForm.bindFromRequest.fold(
+      formWithErrors => CtrlHelper.withItem(partnerDbService)(id) { partner => sponsorFormView(BadRequest, formWithErrors, partner) },
+      data => partnerDbService.addSponsor(id, data, req.identity.id).map { _ =>
+        Redirect(routes.PartnerCtrl.get(id))
       }
     )
   }
 
   def doDeleteSponsor(id: Partner.Id, index: Int) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    partnerDbService.delete(id).map {
-      case Left(events) => Redirect(routes.PartnerCtrl.get(id)).flashing("error" -> s"Unable to delete partner, it's still referenced in ${events.length} meetups, delete them first.")
-      case Right(res) => Redirect(routes.PartnerCtrl.find()).flashing("success" -> "Partner deleted")
+    partnerDbService.removeSponsor(id, index, req.identity.id).map { _ =>
+      Redirect(routes.PartnerCtrl.get(id))
     }
   }
 
@@ -132,5 +133,9 @@ case class PartnerCtrl(
 
   private def venueFormView(status: Status, venueForm: Form[Partner.Venue], venueOpt: Option[Partner.Venue], partner: Partner)(implicit request: RequestHeader, userOpt: Option[Person]): Future[Result] = {
     Future.successful(status(views.html.venueForm(venueForm, venueOpt, partner, personForm)))
+  }
+
+  private def sponsorFormView(status: Status, sponsorForm: Form[Partner.Sponsor], partner: Partner)(implicit request: RequestHeader, userOpt: Option[Person]): Future[Result] = {
+    Future.successful(status(views.html.sponsorForm(sponsorForm, partner, personForm)))
   }
 }

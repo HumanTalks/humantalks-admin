@@ -1,0 +1,3 @@
+@import global.views.Helpers
+@(field: Field, args: (Symbol, String)*)(implicit messagesApi: MessagesApi)
+@inputText(field, Helpers.addArg(args, 'class, "input-date").filter(_._1 != 'type): _*)

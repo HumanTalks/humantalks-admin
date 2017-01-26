@@ -94,8 +94,8 @@ object Partner {
   }
 
   case class Sponsor(
-    from: LocalDate,
-    to: LocalDate,
+    start: LocalDate,
+    end: LocalDate,
     level: String, // strandard, premium
     amount: Int,
     contact: Option[Person.Id]
@@ -108,8 +108,8 @@ object Partner {
   implicit val format = Json.format[Partner]
 
   val sponsorFields = mapping(
-    "from" -> jodaLocalDate,
-    "to" -> jodaLocalDate,
+    "start" -> jodaLocalDate("dd/MM/yyyy"),
+    "end" -> jodaLocalDate("dd/MM/yyyy"),
     "level" -> nonEmptyText,
     "amount" -> number,
     "contact" -> optional(of[Person.Id])
@@ -117,7 +117,7 @@ object Partner {
   val venueFields = mapping(
     "location" -> GMapPlace.fields,
     "capacity" -> optional(number),
-    "closeTime" -> optional(jodaDate(pattern = "HH:mm")), // localTime
+    "closeTime" -> optional(jodaDate(pattern = "dd/MM/yyyy HH:mm")), // localTime
     "attendeeList" -> optional(boolean),
     "entranceCheck" -> optional(boolean),
     "offeredAperitif" -> optional(boolean),

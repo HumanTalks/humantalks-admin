@@ -32,12 +32,29 @@
                 }
             </p>
         }
+
         @partner.data.venue.map { venue =>
             <p>@venue.location.formatted</p>
             <a href="@PartnerCtrl.updateVenue(partner.id)" class="btn btn-default">Modifier le lieu</a>
         }.getOrElse {
             <a href="@PartnerCtrl.updateVenue(partner.id)" class="btn btn-default">Ajouter un lieu</a>
         }
+
+        <p>
+            @if(partner.data.sponsoring.nonEmpty) {
+                <h3>Sponsors</h3>
+                <ul>
+                @partner.data.sponsoring.zipWithIndex.map { case (sponsor, index) =>
+                    <li>
+                        @sponsor.level, jusqu'à @date(sponsor.end)
+                        @helper.form(action=PartnerCtrl.doDeleteSponsor(partner.id, index), 'class->"inline") { <button type="submit" class="btn btn-danger" title="Supprimer ce sponsor" confirm>&times;</button> }
+                    </li>
+                }
+                </ul>
+            }
+            <a href="@PartnerCtrl.createSponsor(partner.id)" class="btn btn-default">Ajouter un sponsor</a>
+        </p>
+
         @if(eventList.nonEmpty){
             <h3>Meetups</h3>
             <ul>

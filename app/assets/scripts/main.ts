@@ -207,6 +207,14 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
             initialDate: $(this).attr('startDate')
         });
     });
+    $('input.input-date').each(function(){
+        $(this).datetimepicker({
+            format: 'dd/mm/yyyy',
+            language: 'fr',
+            autoclose: true,
+            initialDate: $(this).attr('startDate')
+        });
+    });
 })();
 
 // inputImageUrl
