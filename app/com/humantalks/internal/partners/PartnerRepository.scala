@@ -39,6 +39,9 @@ case class PartnerRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Repos
   def update(elt: Partner, data: Partner.Data, by: Person.Id): Future[WriteResult] =
     collection.update(Json.obj("id" -> elt.id), elt.copy(data = data.trim, meta = elt.meta.update(by)))
 
+  def updateVenue(id: Partner.Id, venue: Partner.Venue, by: Person.Id): Future[WriteResult] =
+    partialUpdate(id, Json.obj("$set" -> Json.obj("data.venue" -> venue)), by)
+
   private def partialUpdate(id: Partner.Id, patch: JsObject, by: Person.Id): Future[WriteResult] =
     collection.partialUpdate(Json.obj("id" -> id), patch.deepMerge(Json.obj("$set" -> Json.obj("meta.updated" -> new DateTime(), "meta.updatedBy" -> by))))
 

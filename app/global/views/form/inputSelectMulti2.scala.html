@@ -1,6 +1,6 @@
 @import global.views.Helpers
 @(field: Field, options: Seq[(String, String)], args: (Symbol, String)*)
-@defining(if(field.indexes.isEmpty) field.value.toSet else field.indexes.map( i => field("[%s]".format(i)).value ).flatten.toSet) { values =>
+@defining(if(field.indexes.isEmpty) field.value.toSet else field.indexes.flatMap(i => field("[%s]".format(i)).value).toSet){ values =>
     <select
         class="form-control select2-multi @Helpers.getArg(args, "class")"
         id="@Helpers.fieldId(field, args)"
@@ -8,12 +8,13 @@
         value="@values.mkString(",")"
         multiple="multiple"
         @Helpers.toHtml(args, Seq("emptyOption"))
-        @if(Helpers.isRequired(field, args)) {required} >
+        @if(Helpers.isRequired(field, args)){required="required"}
+        size="1">
         @if(Helpers.getArg(args, "emptyOption").length > 0) {
             <option class="blank" value="">@Helpers.getArg(args, "emptyOption")</option>
         }
         @for((value, label) <- options) {
-            <option value="@value" @if(values.contains(value)) {selected} > @label </option>
+            <option value="@value" @if(values.contains(value)){selected="selected"}>@label</option>
         }
     </select>
 }

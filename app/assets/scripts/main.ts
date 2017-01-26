@@ -23,8 +23,11 @@ class Utils {
         if($form.length === 0){ console.error('Invalid form element :(', $form); }
         var model = {};
         Utils.formInputs($form).each(function(){
-            var value = $(this).attr('type') === 'checkbox' ? $(this).prop('checked') : ($(this).val() || '').trim();
-            if(value !== ''){
+            var value;
+            if     ($(this).attr('type') === 'checkbox') { value = $(this).prop('checked'); }
+            else if(typeof $(this).val() === 'string')   { value = $(this).val().trim(); }
+            else                                         { value = $(this).val(); }
+            if(value && value !== ''){
                 Utils.setSafe(model, $(this).attr('name').replace('[]', ''), value);
             }
         });

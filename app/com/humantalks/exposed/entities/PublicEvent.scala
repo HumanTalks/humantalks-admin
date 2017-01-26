@@ -20,8 +20,8 @@ object PublicPartnerNoEvent {
   def from(partner: Partner): PublicPartnerNoEvent = PublicPartnerNoEvent(
     id = partner.id,
     name = partner.data.name,
-    location = partner.data.location,
-    capacity = partner.data.capacity,
+    location = partner.data.venue.map(_.location),
+    capacity = partner.data.venue.flatMap(_.capacity),
     twitter = partner.data.twitter,
     logo = partner.data.logo
   )

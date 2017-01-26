@@ -8,3 +8,7 @@
 @fieldHorizontal(partnerForm("contacts"), 'label -> "Contact(s)") { field => @inputSelectMulti2(field, List(), 'remote -> Select2Ctrl.persons.toString, 'placeholder -> "Sélectionner les contacts", 'onCreate -> "createPersonModal", 'onCreateLabel -> "Nouveau contact") }
 @fieldHorizontal(partnerForm("comment"), 'label -> "Commentaire") { field => @inputTextarea(field, 'rows -> "5", 'placeholder -> "ex: Super ambiance, à refaire !") }
 @fieldHorizontal(partnerForm("sponsorAperitif"), 'label -> "", 'constraints -> "false") { field => @inputCheckbox(field, 'label -> "sponsor apéro potentiel") }
+@*
+@fieldHorizontal(partnerForm("capacity"), 'label -> "Taille de la salle") { field => @inputNumber(field, 'placeholder -> "ex: 80") }
+@fieldHorizontal(partnerForm("location"), 'label -> "Adresse") { field => @inputGMapPlace(field, 'placeholder -> "ex: CPE Lyon, Boulevard du 11 Novembre 1918, Villeurbanne, France") }
+*@

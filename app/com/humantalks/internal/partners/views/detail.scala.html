@@ -21,7 +21,7 @@
             </span>
             @partner.data.name
         </h1>
-        @partner.data.location.map{loc => <p>@loc.formatted</p>}
+        @if(partner.data.sponsorAperitif){<span class="label label-success">Sponsor apéro</span>}
         @partner.data.comment.map{c => <p>@multiline(c)</p>}
         @twitter(partner.data.twitter)
         @if(partner.data.contacts.nonEmpty) {
@@ -31,6 +31,12 @@
                     <a href="@PersonCtrl.get(contact.id)">@contact.data.name</a>@contact.data.email.map{e=>&lt;@e&gt;}
                 }
             </p>
+        }
+        @partner.data.venue.map { venue =>
+            <p>@venue.location.formatted</p>
+            <a href="@PartnerCtrl.updateVenue(partner.id)" class="btn btn-default">Modifier le lieu</a>
+        }.getOrElse {
+            <a href="@PartnerCtrl.updateVenue(partner.id)" class="btn btn-default">Ajouter un lieu</a>
         }
         @if(eventList.nonEmpty){
             <h3>Meetups</h3>

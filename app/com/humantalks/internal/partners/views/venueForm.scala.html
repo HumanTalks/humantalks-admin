@@ -1,0 +1,33 @@
+@import com.humantalks.internal.partners.Partner
+@import com.humantalks.internal.persons.Person
+@import global.views.html.partials._
+@import com.humantalks.internal.views.html.partials._
+@import com.humantalks.internal.partners.routes.PartnerCtrl
+@import com.humantalks.internal.partners.routes.PartnerApiCtrl
+@(venueForm: Form[Partner.Venue], venueOpt: Option[Partner.Venue], partner: Partner, personForm: Form[Person.Data])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@main("Modifier partenaire") {
+    @header("partner")
+
+    <div class="container">
+        @flash()
+        <div class="page-header">
+            <h1>@venueOpt.map{_ => Modifier le lieux de}.getOrElse{Ajouter un lieux à} @partner.data.name</h1>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+            @helper.form(action=PartnerCtrl.doUpdateVenue(partner.id), 'duplicates -> PartnerApiCtrl.duplicates(Some(partner.id.toString)).toString, 'class->"form-horizontal partner-form") {
+                @partials.venueFields(venueForm)
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <a href="@PartnerCtrl.get(partner.id)" class="btn btn-default btn-lg">Annuler</a>
+                        <button type="submit" class="btn btn-primary btn-lg">@venueOpt.map{_ => Modifier}.getOrElse{Ajouter} le lieu</button>
+                    </div>
+                </div>
+            }
+            </div>
+        </div>
+    </div>
+
+    @com.humantalks.internal.persons.views.html.partials.createModal(personForm)
+}

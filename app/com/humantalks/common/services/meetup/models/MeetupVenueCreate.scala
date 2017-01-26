@@ -32,10 +32,10 @@ object MeetupVenueCreate {
     ).flatMap { case (key, valueOpt) => valueOpt.map(value => (key, value)) }
 
   def from(partner: Partner): Option[MeetupVenueCreate] = {
-    val addressFromStreet = partner.data.location.flatMap(l => l.street.map(street => l.streetNo.map(_ + " ").getOrElse("") + street))
-    val addressFromFormatted = partner.data.location.flatMap(_.formatted.split(",").headOption)
-    val addressFromInput = partner.data.location.flatMap(_.input.split(",").drop(1).headOption)
-    val cityOpt = partner.data.location.flatMap(_.locality)
+    val addressFromStreet = partner.data.venue.flatMap(v => v.location.street.map(street => v.location.streetNo.map(_ + " ").getOrElse("") + street))
+    val addressFromFormatted = partner.data.venue.flatMap(_.location.formatted.split(",").headOption)
+    val addressFromInput = partner.data.venue.flatMap(_.location.input.split(",").drop(1).headOption)
+    val cityOpt = partner.data.venue.flatMap(_.location.locality)
     for {
       address <- addressFromStreet.orElse(addressFromFormatted).orElse(addressFromInput)
       city <- cityOpt
@@ -46,9 +46,9 @@ object MeetupVenueCreate {
       address_2 = None,
       city = city,
       state = None,
-      country = partner.data.location.map(_.countryCode).getOrElse(""),
-      web_url = partner.data.location.map(l => l.website.getOrElse(l.url)),
-      phone = partner.data.location.flatMap(_.phone),
+      country = partner.data.venue.map(_.location.countryCode).getOrElse(""),
+      web_url = partner.data.venue.map(v => v.location.website.getOrElse(v.location.url)),
+      phone = partner.data.venue.flatMap(_.location.phone),
       hours = None
     )
   }

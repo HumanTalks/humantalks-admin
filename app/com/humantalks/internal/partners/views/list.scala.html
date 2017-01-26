@@ -19,9 +19,9 @@
             <div class="media card">
                 <div class="media-body">
                     <h4 class="media-heading"><a href="@PartnerCtrl.get(partner.id)">@partner.data.name</a></h4>
-                    @partner.data.location.map{loc => <p>@loc.formatted</p>}
+                    @partner.data.venue.map{v => <p>@v.location.formatted</p>}
                     @partner.data.comment.map{c => <p>@multiline(c)</p>}
-                    @twitter(partner.data.twitter)
+                    @if(partner.data.sponsorAperitif){<span class="label label-success">Sponsor apéro</span> }@twitter(partner.data.twitter)
                 </div>
                 @partner.data.logo.map { logo =>
                     <div class="media-right">

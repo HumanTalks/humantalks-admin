@@ -1,0 +1,14 @@
+@import com.humantalks.internal.partners.Partner
+@import global.views.html.form._
+@import com.humantalks.common.controllers.routes.Select2Ctrl
+@(venueForm: Form[Partner.Venue])(implicit messagesApi: MessagesApi)
+@fieldHorizontal(venueForm("location"), 'label -> "Adresse") { field => @inputGMapPlace(field, 'placeholder -> "ex: CPE Lyon, Boulevard du 11 Novembre 1918, Villeurbanne, France") }
+@fieldHorizontal(venueForm("capacity"), 'label -> "Taille de la salle") { field => @inputNumber(field, 'placeholder -> "ex: 80") }
+@*
+closeTime
+attendeeList
+entranceCheck
+offeredAperitif
+*@
+@fieldHorizontal(venueForm("contact"), 'label -> "Contact") { field => @inputSelect2(field, List(), 'remote -> Select2Ctrl.persons.toString, 'placeholder -> "Sélectionner le contact principal", 'onCreate -> "createPersonModal", 'onCreateLabel -> "Nouveau contact") }
+@fieldHorizontal(venueForm("comment"), 'label -> "Commentaire") { field => @inputTextarea(field, 'rows -> "5", 'placeholder -> "ex: Super ambiance, à refaire !") }
