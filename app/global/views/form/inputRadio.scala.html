@@ -1,0 +1,13 @@
+@import global.views.Helpers
+@(field: Field, options: Seq[(String, String)], args: (Symbol, String)*)
+@for((value, label) <- options) {
+    <label class="radio-inline">
+        <input
+            type="radio"
+            id="@Helpers.fieldId(field, args)"
+            name="@Helpers.fieldName(field, args)"
+            value="@value"
+            @if(field.value.map(_ == value).getOrElse(Helpers.hasArg(args, "value", value))){checked="checked"}>
+        @label
+    </label>
+}

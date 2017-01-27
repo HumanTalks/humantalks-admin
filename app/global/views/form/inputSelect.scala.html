@@ -5,9 +5,9 @@
     id="@Helpers.fieldId(field, args)"
     name="@Helpers.fieldName(field, args)"
     @Helpers.toHtml(args, Seq("emptyOption"))
-    @if(Helpers.isRequired(field, args)){required}>
+    @if(Helpers.isRequired(field, args)){required="required"}>
     @if(Helpers.getArg(args, "emptyOption").length > 0){ <option class="blank" value="">@Helpers.getArg(args, "emptyOption")</option> }
     @for((value, label) <- options) {
-        <option value="@value" @if(Helpers.fieldValue(field, args) == value){selected}>@label</option>
+        <option value="@value" @if(Helpers.fieldValue(field, args) == value){selected="selected"}>@label</option>
     }
 </select>

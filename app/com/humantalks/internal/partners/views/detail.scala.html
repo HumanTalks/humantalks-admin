@@ -35,6 +35,11 @@
 
         @partner.data.venue.map { venue =>
             <p>@venue.location.formatted</p>
+            <p>
+                @venue.attendeeList.map{b => <span class="label @if(b){label-success}else{label-danger}">Liste des participants</span>}
+                @venue.entranceCheck.map{b => <span class="label @if(b){label-success}else{label-danger}">Vérification à l'entrée</span>}
+                @venue.offeredAperitif.map{b => <span class="label @if(b){label-success}else{label-danger}">Apéro offert</span>}
+            </p>
             <a href="@PartnerCtrl.updateVenue(partner.id)" class="btn btn-default">Modifier le lieu</a>
         }.getOrElse {
             <a href="@PartnerCtrl.updateVenue(partner.id)" class="btn btn-default">Ajouter un lieu</a>
