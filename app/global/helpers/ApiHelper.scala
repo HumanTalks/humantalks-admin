@@ -66,7 +66,7 @@ object ApiHelper {
       if (queries.length > 1) Some(Json.obj("$or" -> queries))
       else if (queries.length == 1) Some(queries.head)
       else None
-    def $and(queries: List[JsObject]): Option[JsObject] =
+    def $and(queries: JsObject*): Option[JsObject] =
       if (queries.length > 1) Some(Json.obj("$and" -> queries))
       else if (queries.length == 1) Some(queries.head)
       else None
@@ -75,15 +75,19 @@ object ApiHelper {
     }
 
     resultJson({
-      $and(List($or(fields.flatMap(field => fieldToQuery(body, field))), idOpt.map(id => Json.obj("id" -> Json.obj("$ne" -> id)))).flatten).map { query =>
-        find(query).map { elts =>
-          Right(Json.toJson(elts.map { elt =>
-            Json.obj(
-              "name" -> name(elt),
-              "similarities" -> matching(body, data(elt), fields),
-              "url" -> url(elt)
-            )
-          }))
+      $or(fields.flatMap(field => fieldToQuery(body, field))).flatMap { duplicateFilter =>
+        val excludeFilter = idOpt.map(id => Json.obj("id" -> Json.obj("$ne" -> id))).getOrElse(Json.obj())
+        $and(duplicateFilter, excludeFilter).map { query =>
+          play.Logger.info("query: " + query)
+          find(query).map { elts =>
+            Right(Json.toJson(elts.map { elt =>
+              Json.obj(
+                "name" -> name(elt),
+                "similarities" -> matching(body, data(elt), fields),
+                "url" -> url(elt)
+              )
+            }))
+          }
         }
       }.getOrElse {
         Future.successful(Right(Json.arr()))
