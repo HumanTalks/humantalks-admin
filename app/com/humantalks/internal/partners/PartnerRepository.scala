@@ -4,6 +4,7 @@ import com.humantalks.common.Conf
 import com.humantalks.common.values.Meta
 import com.humantalks.internal.persons.Person
 import global.Contexts
+import global.helpers.JsonHelper
 import global.infrastructure.{ Mongo, Repository }
 import global.values.Page
 import org.joda.time.DateTime
@@ -37,16 +38,8 @@ case class PartnerRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Repos
   }
 
   def update(elt: Partner, data: Partner.Data, by: Person.Id): Future[WriteResult] = {
-    val flattenData = (__ \ 'data).read[JsObject].flatMap(
-      _.fields.foldLeft((__ \ 'data).json.prune) {
-        case (acc, (k, v)) => acc andThen __.json.update(
-          Reads.of[JsObject].map(_ + (s"data.$k" -> v))
-        )
-      }
-    )
     val json = Json.toJson(data).as[JsObject] - "venue" - "sponsoring"
-    val $set = Json.obj("data" -> json).transform(flattenData).get
-    partialUpdate(elt.id, Json.obj("$set" -> $set), by)
+    partialUpdate(elt.id, Json.obj("$set" -> JsonHelper.prefixKeys(json, 'data)), by)
   }
 
   def updateVenue(id: Partner.Id, venue: Partner.Venue, by: Person.Id): Future[WriteResult] =
