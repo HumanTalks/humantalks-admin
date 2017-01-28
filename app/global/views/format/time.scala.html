@@ -1,0 +1,3 @@
+@import org.joda.time.LocalTime
+@(time: LocalTime, template: Option[String] = None)(implicit lang: Lang)
+@time.toString(template.getOrElse("HH:mm"), lang.toLocale)

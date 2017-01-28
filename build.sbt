@@ -27,6 +27,8 @@ libraryDependencies ++= Seq(
   "org.webjars" % "font-awesome" % "4.6.3",
   "org.webjars.npm" % "select2" % "4.0.3",
   "org.webjars.npm" % "select2-bootstrap-theme" % "0.1.0-beta.9",
+  "org.webjars" % "bootstrap-datepicker" % "1.6.4",
+  "org.webjars" % "bootstrap-timepicker" % "0.5.2",
   "org.webjars" % "bootstrap-datetimepicker" % "2.3.8",
   "org.webjars" % "typeaheadjs" % "0.11.1",
   "org.webjars" % "jquery-throttle-debounce-plugin" % "1.1",

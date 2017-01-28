@@ -54,7 +54,7 @@ case class PartnerCtrl(
     CtrlHelper.withItem(partnerDbService)(id) { partner =>
       for {
         eventList <- eventDbService.findForPartner(id)
-        personList <- personDbService.findByIds(partner.data.contacts)
+        personList <- personDbService.findByIds(partner.data.allContacts)
       } yield Ok(views.html.detail(partner, eventList, personList))
     }
   }

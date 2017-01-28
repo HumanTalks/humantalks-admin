@@ -108,6 +108,9 @@ person.shirt.M_M=M Homme
 person.shirt.L_M=L Homme
 person.shirt.XL_M=XL Homme
 
+sponsor.level.Standard=Standard
+sponsor.level.Premium=Premium
+
 proposal.status.Proposed=Proposé
 proposal.status.Proposed.type=primary
 proposal.status.Proposed.desc=Proposition non validée pour le moment

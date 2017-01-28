@@ -4,9 +4,7 @@
 @(venueForm: Form[Partner.Venue])(implicit messagesApi: MessagesApi)
 @fieldHorizontal(venueForm("location"), 'label -> "Adresse") { field => @inputGMapPlace(field, 'placeholder -> "ex: CPE Lyon, Boulevard du 11 Novembre 1918, Villeurbanne, France", 'autofocus -> "") }
 @fieldHorizontal(venueForm("capacity"), 'label -> "Taille de la salle") { field => @inputNumber(field, 'placeholder -> "ex: 80") }
-@*
-closeTime
-*@
+@fieldHorizontal(venueForm("closeTime"), 'label -> "Heure de fermeture") { field => @inputTime(field, 'placeholder -> "HH:mm") }
 @fieldHorizontal(venueForm("attendeeList"), 'label -> "Liste des participants") { field => @inputRadio(field, Seq(("true", "Oui"), ("false", "Non"))) }
 @fieldHorizontal(venueForm("entranceCheck"), 'label -> "Vérification à l'entrée") { field => @inputRadio(field, Seq(("true", "Oui"), ("false", "Non"))) }
 @fieldHorizontal(venueForm("offeredAperitif"), 'label -> "Apéro offert") { field => @inputRadio(field, Seq(("true", "Oui"), ("false", "Non"))) }

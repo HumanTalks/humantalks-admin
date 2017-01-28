@@ -25,16 +25,15 @@
         @partner.data.comment.map{c => <p>@multiline(c)</p>}
         @twitter(partner.data.twitter)
         @if(partner.data.contacts.nonEmpty) {
-            <p>
-                <b>Contacts</b>:
-                @partner.data.contacts.flatMap(id => personList.find(_.id == id)).map { contact =>
-                    <a href="@PersonCtrl.get(contact.id)">@contact.data.name</a>@contact.data.email.map{e=>&lt;@e&gt;}
-                }
-            </p>
+            <p><b>Contacts</b>: @partner.data.contacts.map{id => @person(Some(id), personList)}</p>
         }
 
         @partner.data.venue.map { venue =>
-            <p>@venue.location.formatted</p>
+            <p>
+                @venue.location.formatted<br>
+                @venue.capacity.map{c => @c places}@venue.closeTime.map{t =>, fermeture à @time(t)}@person(venue.contact, personList)
+            </p>
+            @venue.comment.map{c => <p>@c</p>}
             <p>
                 @venue.attendeeList.map{b => <span class="label @if(b){label-success}else{label-danger}">Liste des participants</span>}
                 @venue.entranceCheck.map{b => <span class="label @if(b){label-success}else{label-danger}">Vérification à l'entrée</span>}
@@ -49,9 +48,9 @@
             @if(partner.data.sponsoring.nonEmpty) {
                 <h3>Sponsors</h3>
                 <ul>
-                @partner.data.sponsoring.zipWithIndex.map { case (sponsor, index) =>
+                @partner.data.sponsoring.sortBy(_.end.toDate.getTime).zipWithIndex.map { case (sponsor, index) =>
                     <li>
-                        @sponsor.level, jusqu'à @date(sponsor.end)
+                        @messagesApi("sponsor.level."+sponsor.level), jusqu'au @date(sponsor.end), @person(sponsor.contact, personList)
                         @helper.form(action=PartnerCtrl.doDeleteSponsor(partner.id, index), 'class->"inline") { <button type="submit" class="btn btn-danger" title="Supprimer ce sponsor" confirm>&times;</button> }
                     </li>
                 }

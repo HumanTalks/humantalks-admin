@@ -1,12 +1,12 @@
 package com.humantalks.internal.partners
 
-import java.time.LocalTime
-
 import com.humantalks.common.services.TwitterSrv
 import com.humantalks.common.values.{ GMapPlace, Meta }
 import com.humantalks.internal.persons.Person
+import global.helpers.EnumerationHelper
+import global.helpers.FormHelper._
 import global.values.{ TypedId, TypedIdHelper }
-import org.joda.time.{ DateTime, LocalDate }
+import org.joda.time.{ LocalTime, LocalDate }
 import play.api.data.Forms._
 import play.api.libs.json.Json
 
@@ -18,12 +18,9 @@ case class Partner(
 )
 
 object Partner {
-
   case class Id(value: String) extends TypedId(value)
-
   object Id extends TypedIdHelper[Id] {
     def from(value: String): Either[String, Id] = TypedId.from(value, "Partner.Id").right.map(Id(_))
-
     def generate(): Id = Id(TypedId.generate())
   }
 
@@ -39,6 +36,7 @@ object Partner {
       sponsorAperitif: Boolean,
       comment: Option[String]
   ) {
+    lazy val allContacts: List[Person.Id] = contacts ++ venue.flatMap(_.contact).toList ++ sponsoring.flatMap(_.contact)
     def trim: Data = copy(
       name = name.trim,
       twitter = twitter.map(TwitterSrv.toAccount),
@@ -51,7 +49,7 @@ object Partner {
   case class Venue(
       location: GMapPlace,
       capacity: Option[Int],
-      closeTime: Option[DateTime], // LocalTime
+      closeTime: Option[LocalTime],
       attendeeList: Option[Boolean],
       entranceCheck: Option[Boolean],
       offeredAperitif: Option[Boolean],
@@ -66,10 +64,15 @@ object Partner {
   case class Sponsor(
     start: LocalDate,
     end: LocalDate,
-    level: String, // strandard, premium
-    amount: Int,
+    level: SponsorLevel.Value,
     contact: Option[Person.Id]
   )
+
+  object SponsorLevel extends Enumeration {
+    val Standard, Premium = Value
+  }
+  implicit val formatSponsorLevel = EnumerationHelper.enumFormat(SponsorLevel)
+  implicit val mappingSponsorLevel = EnumerationHelper.formMapping(SponsorLevel)
 
   implicit val formatSponsor = Json.format[Sponsor]
   implicit val formatVenue = Json.format[Venue]
@@ -80,14 +83,13 @@ object Partner {
   val sponsorFields = mapping(
     "start" -> jodaLocalDate("dd/MM/yyyy"),
     "end" -> jodaLocalDate("dd/MM/yyyy"),
-    "level" -> nonEmptyText,
-    "amount" -> number,
+    "level" -> of[SponsorLevel.Value],
     "contact" -> optional(of[Person.Id])
   )(Partner.Sponsor.apply)(Partner.Sponsor.unapply)
   val venueFields = mapping(
     "location" -> GMapPlace.fields,
     "capacity" -> optional(number),
-    "closeTime" -> optional(jodaDate(pattern = "dd/MM/yyyy HH:mm")), // localTime
+    "closeTime" -> optional(jodaLocalTime("HH:mm")),
     "attendeeList" -> optional(boolean),
     "entranceCheck" -> optional(boolean),
     "offeredAperitif" -> optional(boolean),

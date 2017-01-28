@@ -1,0 +1,4 @@
+@import com.humantalks.internal.persons.Person
+@import com.humantalks.internal.persons.routes.PersonCtrl
+@(personOpt: Option[Person.Id], personList: List[Person], default: Html = Html(""))
+@personOpt.flatMap(id => personList.find(_.id == id)).map{p => <a href="@PersonCtrl.get(p.id)">@p.data.name</a>@p.data.email.map{e=>&lt;@e&gt;}}.getOrElse(default)

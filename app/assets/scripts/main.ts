@@ -207,12 +207,56 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
             initialDate: $(this).attr('startDate')
         });
     });
+})();
+
+// https://uxsolutions.github.io/bootstrap-datepicker/
+(function(){
+    const defaultConfig = {
+        format: "dd/mm/yyyy",
+        weekStart: 1,
+        maxViewMode: 2,
+        language: "fr",
+        autoclose: true,
+        todayHighlight: true,
+        toggleActive: true
+    };
+    const addInterval = (date, interval) => {
+        if(interval.years) { date.setFullYear(date.getFullYear() + interval.years); }
+        if(interval.months) { date.setMonth(date.getMonth() + interval.months); }
+        if(interval.days) { date.setDate(date.getDate() + interval.days); }
+        return date;
+    };
     $('input.input-date').each(function(){
-        $(this).datetimepicker({
-            format: 'dd/mm/yyyy',
-            language: 'fr',
-            autoclose: true,
-            initialDate: $(this).attr('startDate')
+        $(this).datepicker((<any>Object).assign({}, defaultConfig, {
+            defaultViewDate: $(this).attr('startDate')
+        }));
+    });
+    $('.input-daterange').each(function(){
+        const days = parseInt($(this).attr('dayInterval'));
+        const months = parseInt($(this).attr('monthInterval'));
+        const years = parseInt($(this).attr('yearInterval'));
+        const $start = $(this).find('input.date-start');
+        const $end = $(this).find('input.date-end');
+        $start.datepicker((<any>Object).assign({}, defaultConfig, {
+            defaultViewDate: $(this).attr('startDate')
+        })).on('changeDate', e => {
+            if(days || months || years) {
+                $end.datepicker('setDate', addInterval(e.date, {days, months, years}));
+            }
+        });
+        $end.datepicker((<any>Object).assign({}, defaultConfig, {
+            defaultViewDate: $(this).attr('startDate')
+        }));
+    });
+})();
+
+// http://jdewit.github.io/bootstrap-timepicker/
+(function(){
+    $('input.input-time').each(function(){
+        $(this).timepicker({
+            minuteStep: 5,
+            showMeridian: false,
+            defaultTime: '22:00'
         });
     });
 })();

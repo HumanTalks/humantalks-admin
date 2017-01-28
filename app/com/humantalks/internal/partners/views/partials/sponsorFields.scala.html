@@ -2,8 +2,6 @@
 @import global.views.html.form._
 @import com.humantalks.common.controllers.routes.Select2Ctrl
 @(sponsorForm: Form[Partner.Sponsor])(implicit messagesApi: MessagesApi)
-@fieldHorizontal(sponsorForm("start"), 'label -> "Début") { field => @inputDate(field, 'placeholder -> "ex: 01/07/2016") }
-@fieldHorizontal(sponsorForm("end"), 'label -> "Fin") { field => @inputDate(field, 'placeholder -> "ex: 01/07/2017") }
-@fieldHorizontal(sponsorForm("level"), 'label -> "Niveau") { field => @inputSelect(field, List(("strandard", "Strandard"), ("premium", "Premium")), 'emptyOption -> " ") }
-@fieldHorizontal(sponsorForm("amount"), 'label -> "Montant") { field => @inputNumber(field, 'placeholder -> "ex: 500") }
+@fieldHorizontal(sponsorForm("start"), 'label -> "Période") { field => @inputDateRange(field, sponsorForm("end"), 'yearInterval -> "1") }
+@fieldHorizontal(sponsorForm("level"), 'label -> "Niveau") { field => @inputRadio(field, Partner.SponsorLevel.values.toList.map(v => (v.toString, messagesApi("sponsor.level."+v)))) }
 @fieldHorizontal(sponsorForm("contact"), 'label -> "Contact") { field => @inputSelect2(field, List(), 'remote -> Select2Ctrl.persons.toString, 'placeholder -> "Sélectionner le contact principal", 'onCreate -> "createPersonModal", 'onCreateLabel -> "Nouveau contact") }

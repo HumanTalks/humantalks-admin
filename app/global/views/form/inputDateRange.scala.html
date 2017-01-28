@@ -1,0 +1,9 @@
+@import global.views.Helpers
+@(fieldStart: Field, fieldEnd: Field, args: (Symbol, String)*)(implicit messagesApi: MessagesApi)
+@defining(Seq('dayInterval, 'monthInterval, 'yearInterval)) { rangeAttr =>
+    <div class="input-daterange input-group" @Helpers.toHtml(args.filter(a => rangeAttr.contains(a._1)))>
+        @inputText(fieldStart, Helpers.addArg(args.filter(a => !rangeAttr.contains(a._1)), 'class, "date-start"): _*)
+        <span class="input-group-addon">à</span>
+        @inputText(fieldEnd, Helpers.addArg(args.filter(a => !rangeAttr.contains(a._1)), 'class, "date-end"): _*)
+    </div>
+}
