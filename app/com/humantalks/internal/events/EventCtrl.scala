@@ -195,18 +195,6 @@ case class EventCtrl(
     }
   }
 
-  def doAnnounce(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
-    val redirectUrl = CtrlHelper.getReferer(req.headers, routes.EventCtrl.get(id))
-    CtrlHelper.withItem(eventDbService)(id) { event =>
-      for {
-        res <- meetupSrv.announce(event, req.identity.id)
-      } yield res match {
-        case Right(_) => Redirect(redirectUrl)
-        case Left(errs) => Redirect(redirectUrl).flashing("error" -> errs.mkString(", "))
-      }
-    }
-  }
-
   def doUnpublish(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     val redirectUrl = CtrlHelper.getReferer(req.headers, routes.EventCtrl.get(id))
     CtrlHelper.withItem(eventDbService)(id) { event =>

@@ -33,8 +33,8 @@ case class MeetupSrv(
           case (Success(description), _) =>
             val eventCreate = MeetupEventCreate.from(event, description, partnerWithMeetupRefOpt, talkList, personList)
             meetupApi.createEvent(group, eventCreate).flatMap {
-              case Right(meetupEvent) => eventDbService.setMeetupRef(event.id, Event.MeetupRef(group, meetupEvent.id.toLong, announced = false), by).map { _ =>
-                Right(Event.MeetupRef(group, meetupEvent.id.toLong, announced = false))
+              case Right(meetupEvent) => eventDbService.setMeetupRef(event.id, Event.MeetupRef(group, meetupEvent.id.toLong), by).map { _ =>
+                Right(Event.MeetupRef(group, meetupEvent.id.toLong))
               }
               case Left(errs) => Future.successful(Left(errs))
             }
@@ -56,19 +56,6 @@ case class MeetupSrv(
             }
           case (Failure(e), _) => Future.successful(Left(List(e.getMessage)))
         }
-      }
-    }.getOrElse {
-      Future.successful(Left(List(s"No meetup reference found for ${event.data.title}")))
-    }
-  }
-
-  def announce(event: Event, by: Person.Id): Future[Either[List[String], Event.MeetupRef]] = {
-    event.meetupRef.map { ref =>
-      meetupApi.announceEvent(ref.group, ref.id).flatMap {
-        case Right(meetupEvent) => eventDbService.setMeetupRef(event.id, ref.copy(announced = true), by).map { _ =>
-          Right(ref.copy(announced = true))
-        }
-        case Left(errs) => Future.successful(Left(errs))
       }
     }.getOrElse {
       Future.successful(Left(List(s"No meetup reference found for ${event.data.title}")))

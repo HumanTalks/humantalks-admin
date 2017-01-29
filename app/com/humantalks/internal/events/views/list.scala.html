@@ -25,7 +25,6 @@
                         @event.meetupUrl.map{url => <a href="@url" target="_blank"><i class="fa fa-external-link"></i></a>}
                     </h4>
                     <p>
-                        @partials.status(event)
                         @partner(event.data.venue, partnerList, Html("<b class=\"text-danger\">Il manque une salle !</b>"))
                         le @date(event.data.date.toLocalDate),
                         @event.data.talks.length talks planifiés @if(event.data.talks.length < 4 && event.data.date.isAfterNow) {(<b class="text-danger">Il en manque @{4 - event.data.talks.length} !</b>)}

@@ -66,7 +66,6 @@ GET     /events/$id<.{36}>/edit                                     com.humantal
 POST    /events/$id<.{36}>/edit                                     com.humantalks.internal.events.EventCtrl.doUpdate(id: Event.Id)
 POST    /events/$id<.{36}>/publish                                  com.humantalks.internal.events.EventCtrl.doPublish(id: Event.Id)
 POST    /events/$id<.{36}>/updatePublish                            com.humantalks.internal.events.EventCtrl.doUpdatePublish(id: Event.Id)
-POST    /events/$id<.{36}>/announce                                 com.humantalks.internal.events.EventCtrl.doAnnounce(id: Event.Id)
 POST    /events/$id<.{36}>/unpublish                                com.humantalks.internal.events.EventCtrl.doUnpublish(id: Event.Id)
 POST    /events/$id<.{36}>/delete                                   com.humantalks.internal.events.EventCtrl.doDelete(id: Event.Id)
 POST    /events/$id<.{36}>/partner                                  com.humantalks.internal.events.EventCtrl.doCreatePartner(id: Event.Id)

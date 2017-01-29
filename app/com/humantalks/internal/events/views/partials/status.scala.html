@@ -1,7 +1,0 @@
-@import com.humantalks.internal.events.Event
-@(event: Event)
-@event.meetupRef match {
-    case Some(Event.MeetupRef(_, _, true)) => {<a href="@event.meetupUrl" target="_blank" class="label label-success">Annoncé</a>}
-    case Some(Event.MeetupRef(_, _, false)) => {<a href="@event.meetupUrl" target="_blank" class="label label-warning">Publié</a>}
-    case None => {}
-}

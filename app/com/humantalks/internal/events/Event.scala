@@ -25,7 +25,7 @@ object Event {
     def generate(): Id = Id(TypedId.generate())
   }
 
-  case class MeetupRef(group: String, id: Long, announced: Boolean)
+  case class MeetupRef(group: String, id: Long)
 
   case class Data(
       title: String,

@@ -29,6 +29,7 @@
         }
 
         @partner.data.venue.map { venue =>
+            <h3>Salle</h3>
             <p>
                 @venue.location.formatted<br>
                 @venue.capacity.map{c => @c places}@venue.closeTime.map{t =>, fermeture à @time(t)}@person(venue.contact, personList)
@@ -46,7 +47,7 @@
 
         <p>
             @if(partner.data.sponsoring.nonEmpty) {
-                <h3>Sponsors</h3>
+                <h3>Sponsoring</h3>
                 <ul>
                 @partner.data.sponsoring.sortBy(_.end.toDate.getTime).zipWithIndex.map { case (sponsor, index) =>
                     <li>

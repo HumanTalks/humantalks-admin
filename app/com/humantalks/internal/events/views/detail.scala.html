@@ -24,11 +24,6 @@
                         <ul class="dropdown-menu dropdown-menu-right">
                             @event.meetupRef.map { ref =>
                                 <li>@helper.form(action = EventCtrl.doUpdatePublish(event.id), 'class -> "inline") { <button type="submit" class="btn-link" title="Mettre à jour sur meetup.com" confirm>Mettre à jour sur meetup.com</button> }</li>
-                                @if(ref.announced) {
-                                    <li class="disabled"><a href="#">Déjà annoncé</a></li>
-                                } else {
-                                    <li>@helper.form(action = EventCtrl.doAnnounce(event.id), 'class -> "inline") {<button type="submit" class="btn-link" title="Annoncer sur meetup.com" confirm>Annoncer sur meetup.com</button> }</li>
-                                }
                                 <li>@helper.form(action = EventCtrl.doUnpublish(event.id), 'class -> "inline") { <button type="submit" class="btn-link" title="Supprimer de meetup.com" confirm>Supprimer de meetup.com</button> }</li>
                             }.getOrElse {
                                 <li>@helper.form(action = EventCtrl.doPublish(event.id), 'class -> "inline") { <button type="submit" class="btn-link" title="Créer sur meetup.com" confirm>Créer sur meetup.com (draft)</button> }</li>
@@ -41,7 +36,7 @@
             @event.data.title
             @event.meetupUrl.map{url => <a href="@url" target="_blank"><i class="fa fa-external-link"></i></a>}
         </h1>
-        <p>@partials.status(event) @partner(event.data.venue, eventPartner, Html("<b class=\"text-danger\">Il manque une salle !</b>")) le @date(event.data.date.toLocalDate)</p>
+        <p>@partner(event.data.venue, eventPartner, Html("<b class=\"text-danger\">Il manque une salle !</b>")) le @date(event.data.date.toLocalDate)</p>
         @if(event.data.venue.isEmpty){
             @helper.form(action=EventCtrl.doAddPartnerForm(event.id), 'class->"form-inline") {
                 <div class="row">
