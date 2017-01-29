@@ -2,6 +2,7 @@ package com.humantalks.internal.events
 
 import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
+import com.humantalks.common.Conf
 import com.humantalks.common.services.NotificationSrv
 import com.humantalks.common.services.meetup.MeetupSrv
 import com.humantalks.internal.persons.{ PersonDbService, Person }
@@ -18,6 +19,7 @@ import play.api.mvc._
 import scala.concurrent.Future
 
 case class EventCtrl(
+    conf: Conf,
     ctx: Contexts,
     silhouette: Silhouette[SilhouetteEnv],
     partnerDbService: PartnerDbService,
@@ -162,6 +164,19 @@ case class EventCtrl(
   def doRemoveTalk(id: Event.Id, talkId: Talk.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     eventDbService.removeTalk(id, talkId, req.identity.id).map { _ =>
       Redirect(CtrlHelper.getReferer(req.headers, routes.EventCtrl.get(id)))
+    }
+  }
+
+  def doAddMeetupRef(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    val redirectUrl = CtrlHelper.getReferer(req.headers, routes.EventCtrl.get(id))
+    CtrlHelper.getFormParam(req.body, "meetupId").map { meetupId =>
+      val ref = Event.MeetupRef(conf.Meetup.group, meetupId.toLong)
+      eventDbService.setMeetupRef(id, ref, req.identity.id).map { _ =>
+        notificationSrv.addEventRef(id, ref, req.identity.id)
+        Redirect(redirectUrl)
+      }
+    }.getOrElse {
+      Future.successful(Redirect(redirectUrl).flashing("error" -> "Missing parameter meetupId :("))
     }
   }
 

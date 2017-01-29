@@ -17,23 +17,29 @@
     <div class="container">
         @flash()
         <h1>
-            @if(event.data.date.isAfterNow) {
-                <span class="pull-right">
-                    <a href="@EventCtrl.update(event.id)" class="btn btn-default" title="Modifier ce meetup"><i class="fa fa-pencil-square-o"></i></a>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Publier <span class="caret"></span></button>
-                        <ul class="dropdown-menu dropdown-menu-right">
-                            @event.meetupRef.map { ref =>
-                                <li>@helper.form(action = EventCtrl.doUpdatePublish(event.id), 'class -> "inline") { <button type="submit" class="btn-link" title="Mettre à jour sur meetup.com" confirm>Mettre à jour sur meetup.com</button> }</li>
-                                <li>@helper.form(action = EventCtrl.doUnpublish(event.id), 'class -> "inline") { <button type="submit" class="btn-link" title="Supprimer de meetup.com" confirm>Supprimer de meetup.com</button> }</li>
-                            }.getOrElse {
-                                <li>@helper.form(action = EventCtrl.doPublish(event.id), 'class -> "inline") { <button type="submit" class="btn-link" title="Créer sur meetup.com" confirm>Créer sur meetup.com (draft)</button> }</li>
+            <span class="pull-right">
+                <a href="@EventCtrl.update(event.id)" class="btn btn-default" title="Modifier ce meetup"><i class="fa fa-pencil-square-o"></i></a>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Publier <span class="caret"></span></button>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                        <li style="padding: 0 10px;">
+                            @helper.form(action = EventCtrl.doAddMeetupRef(event.id), 'class -> "form-inline") {
+                                <div class="form-group form-group-sm">
+                                    <input type="text" class="form-control" id="meetupId" name="meetupId" value="@event.meetupRef.map(_.id)" placeholder="meetup event id">
+                                </div>
+                                <button type="submit" class="btn btn-default">OK</button>
                             }
-                        </ul>
-                    </div>
-                    @helper.form(action = EventCtrl.doDelete(event.id), 'class -> "inline") { <button type="submit" class="btn btn-danger" title="Supprimer ce meetup" confirm><i class="fa fa-trash"></i></button> }
-                </span>
-            }
+                        </li>
+                        @event.meetupRef.map { ref =>
+                            <li>@helper.form(action = EventCtrl.doUpdatePublish(event.id), 'class -> "inline") { <button type="submit" class="btn-link" title="Mettre à jour sur meetup.com" confirm>Mettre à jour sur meetup.com</button> }</li>
+                            <li>@helper.form(action = EventCtrl.doUnpublish(event.id), 'class -> "inline") { <button type="submit" class="btn-link" title="Supprimer de meetup.com" confirm>Supprimer de meetup.com</button> }</li>
+                        }.getOrElse {
+                            <li>@helper.form(action = EventCtrl.doPublish(event.id), 'class -> "inline") { <button type="submit" class="btn-link" title="Créer sur meetup.com" confirm>Créer sur meetup.com (draft)</button> }</li>
+                        }
+                    </ul>
+                </div>
+                @helper.form(action = EventCtrl.doDelete(event.id), 'class -> "inline") { <button type="submit" class="btn btn-danger" title="Supprimer ce meetup" confirm><i class="fa fa-trash"></i></button> }
+            </span>
             @event.data.title
             @event.meetupUrl.map{url => <a href="@url" target="_blank"><i class="fa fa-external-link"></i></a>}
         </h1>
@@ -112,38 +118,36 @@
         @event.data.personCount.map{c => <p>@c participants</p>}
         @event.data.roti.map{r => <p><img src="@r" style="width: 100%;"></p>}
 
-        @if(event.data.date.isAfterNow){
-            @if(pendingTalks.nonEmpty) {
-                <h3>Talks non planifiés</h3>
-                <ul>
-                    @pendingTalks.map { talk =>
-                        <li>
-                            @helper.form(action=EventCtrl.doAddTalk(event.id, talk.id), 'class->"inline") {
-                                <button type="submit" class="btn btn-link" title="Add talk to this meetup"><i class="fa fa-plus"></i></button>
-                            }
-                            @com.humantalks.internal.talks.views.html.partials.status(talk)
-                            <a href="@TalkCtrl.get(talk.id)">@talk.data.title</a>
-                            @speakers(talk.data.speakers, pendingSpeakers)
-                            @slidesLink(talk.data.slides)
-                            @videoLink(talk.data.video)
-                        </li>
-                    }
-                </ul>
-            }
+        @if(pendingTalks.nonEmpty) {
+            <h3>Talks non planifiés</h3>
+            <ul>
+                @pendingTalks.map { talk =>
+                    <li>
+                        @helper.form(action=EventCtrl.doAddTalk(event.id, talk.id), 'class->"inline") {
+                            <button type="submit" class="btn btn-link" title="Add talk to this meetup"><i class="fa fa-plus"></i></button>
+                        }
+                        @com.humantalks.internal.talks.views.html.partials.status(talk)
+                        <a href="@TalkCtrl.get(talk.id)">@talk.data.title</a>
+                        @speakers(talk.data.speakers, pendingSpeakers)
+                        @slidesLink(talk.data.slides)
+                        @videoLink(talk.data.video)
+                    </li>
+                }
+            </ul>
+        }
 
-            @helper.form(action=EventCtrl.doAddTalkForm(event.id), 'class->"form-inline") {
-                <div class="row">
-                    <div class="col-md-8">
-                        <select class="form-control select2" id="talkId" name="talkId" remote="@Select2Ctrl.talks(pending = true)" placeholder="Sélectionner un talk">
-                            <option></option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <button type="submit" class="btn btn-default">Ajouter le talk</button>
-                        <a href="#" class="btn btn-default" data-toggle="modal" data-target="#create-talk-modal">Créer un talk</a>
-                    </div>
+        @helper.form(action=EventCtrl.doAddTalkForm(event.id), 'class->"form-inline") {
+            <div class="row">
+                <div class="col-md-8">
+                    <select class="form-control select2" id="talkId" name="talkId" remote="@Select2Ctrl.talks(pending = true)" placeholder="Sélectionner un talk">
+                        <option></option>
+                    </select>
                 </div>
-            }
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-default">Ajouter le talk</button>
+                    <a href="#" class="btn btn-default" data-toggle="modal" data-target="#create-talk-modal">Créer un talk</a>
+                </div>
+            </div>
         }
     </div>
 

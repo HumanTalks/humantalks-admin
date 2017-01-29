@@ -114,4 +114,8 @@ case class NotificationSrv(
   def setVenueToEvent(eventId: Event.Id, partnerId: Partner.Id, by: Person.Id)(implicit request: RequestHeader, ec: ExecutionContext): Future[Boolean] = {
     Future.successful(true)
   }
+
+  def addEventRef(eventId: Event.Id, ref: Event.MeetupRef, by: Person.Id)(implicit request: RequestHeader, ec: ExecutionContext): Future[Boolean] = {
+    Future.successful(true)
+  }
 }
