@@ -62,6 +62,7 @@ GET     /events                                                     com.humantal
 GET     /events/create                                              com.humantalks.internal.events.EventCtrl.create
 POST    /events/create                                              com.humantalks.internal.events.EventCtrl.doCreate
 GET     /events/$id<.{36}>                                          com.humantalks.internal.events.EventCtrl.get(id: Event.Id)
+GET     /events/$id<.{36}>/description                              com.humantalks.internal.events.EventCtrl.getDescription(id: Event.Id)
 GET     /events/$id<.{36}>/edit                                     com.humantalks.internal.events.EventCtrl.update(id: Event.Id)
 POST    /events/$id<.{36}>/edit                                     com.humantalks.internal.events.EventCtrl.doUpdate(id: Event.Id)
 POST    /events/$id<.{36}>/publish                                  com.humantalks.internal.events.EventCtrl.doPublish(id: Event.Id)

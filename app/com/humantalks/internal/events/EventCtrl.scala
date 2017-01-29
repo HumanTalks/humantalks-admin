@@ -5,6 +5,7 @@ import com.humantalks.auth.silhouette.SilhouetteEnv
 import com.humantalks.common.Conf
 import com.humantalks.common.services.NotificationSrv
 import com.humantalks.common.services.meetup.MeetupSrv
+import com.humantalks.internal.admin.config.ConfigDbService
 import com.humantalks.internal.persons.{ PersonDbService, Person }
 import com.humantalks.internal.talks.{ TalkDbService, Talk }
 import com.humantalks.internal.partners.{ Partner, PartnerDbService }
@@ -17,11 +18,13 @@ import play.api.i18n.MessagesApi
 import play.api.mvc._
 
 import scala.concurrent.Future
+import scala.util.{ Success, Try }
 
 case class EventCtrl(
     conf: Conf,
     ctx: Contexts,
     silhouette: Silhouette[SilhouetteEnv],
+    configDbService: ConfigDbService,
     partnerDbService: PartnerDbService,
     personDbService: PersonDbService,
     talkDbService: TalkDbService,
@@ -74,6 +77,18 @@ case class EventCtrl(
         pendingTalks <- talkDbService.findPending()
         pendingSpeakers <- personDbService.findByIds(pendingTalks.flatMap(_.data.speakers))
       } yield Ok(views.html.detail(event, partnerForm, personForm, talkForm, partnerList, eventTalks, eventSpeakers, pendingTalks, pendingSpeakers))
+    }
+  }
+
+  def getDescription(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
+    CtrlHelper.withItem(eventDbService)(id) { event =>
+      for {
+        partnerOpt <- event.data.venue.map(id => partnerDbService.get(id)).getOrElse(Future.successful(None))
+        talkList <- talkDbService.findByIds(event.data.talks)
+        personList <- personDbService.findByIds(talkList.flatMap(_.data.speakers))
+        (Success(description), _) <- configDbService.buildMeetupEventDescription(Some(event), partnerOpt, talkList, personList)
+      } yield Ok(views.html.description(event, description))
     }
   }
 
@@ -170,10 +185,16 @@ case class EventCtrl(
   def doAddMeetupRef(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     val redirectUrl = CtrlHelper.getReferer(req.headers, routes.EventCtrl.get(id))
     CtrlHelper.getFormParam(req.body, "meetupId").map { meetupId =>
-      val ref = Event.MeetupRef(conf.Meetup.group, meetupId.toLong)
-      eventDbService.setMeetupRef(id, ref, req.identity.id).map { _ =>
-        notificationSrv.addEventRef(id, ref, req.identity.id)
-        Redirect(redirectUrl)
+      Try {
+        val ref = Event.MeetupRef(conf.Meetup.group, meetupId.toLong)
+        eventDbService.setMeetupRef(id, ref, req.identity.id).map { _ =>
+          notificationSrv.addEventRef(id, ref, req.identity.id)
+          Redirect(redirectUrl)
+        }
+      }.getOrElse {
+        eventDbService.unsetMeetupRef(id, req.identity.id).map { _ =>
+          Redirect(redirectUrl)
+        }
       }
     }.getOrElse {
       Future.successful(Redirect(redirectUrl).flashing("error" -> "Missing parameter meetupId :("))

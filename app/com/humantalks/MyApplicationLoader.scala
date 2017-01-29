@@ -87,7 +87,7 @@ class MyComponents(context: ApplicationLoader.Context)
     PartnerCtrl(ctx, silhouette, partnerDbService, personDbService, eventDbService),
     PersonCtrl(ctx, silhouette, personDbService, talkDbService),
     TalkCtrl(ctx, silhouette, personDbService, talkDbService, eventDbService),
-    EventCtrl(conf, ctx, silhouette, partnerDbService, personDbService, talkDbService, eventDbService, meetupSrv, notificationSrv),
+    EventCtrl(conf, ctx, silhouette, configDbService, partnerDbService, personDbService, talkDbService, eventDbService, meetupSrv, notificationSrv),
     AdminCtrl(ctx, silhouette, personDbService, credentialsRepository, authTokenRepository),
     ConfigCtrl(ctx, silhouette, configDbService),
     PublicApi(ctx, partnerDbService, personDbService, talkDbService, eventDbService),

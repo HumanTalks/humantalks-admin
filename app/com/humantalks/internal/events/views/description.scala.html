@@ -1,0 +1,19 @@
+@import com.humantalks.internal.persons.Person
+@import com.humantalks.internal.events.Event
+@import global.views.html.partials._
+@import com.humantalks.internal.views.html.partials._
+@(event: Event, description: String)(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@main(event.data.title) {
+    @header("event")
+
+    <div class="container">
+        @flash()
+        <h1>Description pour @event.data.title</h1>
+        <form>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea class="form-control" rows="30">@description</textarea>
+            </div>
+        </form>
+    </div>
+}

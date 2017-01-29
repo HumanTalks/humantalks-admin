@@ -30,6 +30,7 @@
                                 <button type="submit" class="btn btn-default">OK</button>
                             }
                         </li>
+                        <li><a href="@EventCtrl.getDescription(event.id)">Générer description</a></li>
                         @event.meetupRef.map { ref =>
                             <li>@helper.form(action = EventCtrl.doUpdatePublish(event.id), 'class -> "inline") { <button type="submit" class="btn-link" title="Mettre à jour sur meetup.com" confirm>Mettre à jour sur meetup.com</button> }</li>
                             <li>@helper.form(action = EventCtrl.doUnpublish(event.id), 'class -> "inline") { <button type="submit" class="btn-link" title="Supprimer de meetup.com" confirm>Supprimer de meetup.com</button> }</li>
