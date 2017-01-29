@@ -38,7 +38,7 @@ case class EventCtrl(
     implicit val user = Some(req.identity)
     for {
       eventList <- eventDbService.find()
-      partnerList <- partnerDbService.findByIds(eventList.flatMap(_.data.venue))
+      partnerList <- partnerDbService.findByIds(eventList.flatMap(_.data.venue) ++ eventList.flatMap(_.data.apero))
     } yield Ok(views.html.list(eventList, partnerList))
   }
 
@@ -66,12 +66,12 @@ case class EventCtrl(
     implicit val user = Some(req.identity)
     CtrlHelper.withItem(eventDbService)(id) { event =>
       for {
-        eventPartners <- partnerDbService.findByIds(event.data.venue.toSeq)
+        partnerList <- partnerDbService.findByIds(event.data.venue.toSeq ++ event.data.apero.toSeq)
         eventTalks <- talkDbService.findByIds(event.data.talks)
         eventSpeakers <- personDbService.findByIds(eventTalks.flatMap(_.data.speakers))
         pendingTalks <- talkDbService.findPending()
         pendingSpeakers <- personDbService.findByIds(pendingTalks.flatMap(_.data.speakers))
-      } yield Ok(views.html.detail(event, partnerForm, personForm, talkForm, eventPartners, eventTalks, eventSpeakers, pendingTalks, pendingSpeakers))
+      } yield Ok(views.html.detail(event, partnerForm, personForm, talkForm, partnerList, eventTalks, eventSpeakers, pendingTalks, pendingSpeakers))
     }
   }
 
@@ -94,7 +94,7 @@ case class EventCtrl(
     )
   }
 
-  def doCreatePartner(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+  def doCreateVenue(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     val redirectUrl = CtrlHelper.getReferer(req.headers, routes.EventCtrl.get(id))
     partnerForm.bindFromRequest.fold(
       formWithErrors => Future.successful(Redirect(redirectUrl).flashing("error" -> "Incorrect form values")),
@@ -108,7 +108,7 @@ case class EventCtrl(
     )
   }
 
-  def doAddPartnerForm(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+  def doAddVenueForm(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     val redirectUrl = CtrlHelper.getReferer(req.headers, routes.EventCtrl.get(id))
     CtrlHelper.getFormParam(req.body, "partnerId").flatMap(p => Partner.Id.from(p).right.toOption).map { partnerId =>
       eventDbService.setVenue(id, partnerId, req.identity.id).map { _ =>

@@ -6,10 +6,11 @@
 @import global.views.html.partials._
 @import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
+@import com.humantalks.internal.partners.routes.PartnerCtrl
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @import com.humantalks.internal.events.routes.EventCtrl
 @import com.humantalks.common.controllers.routes.Select2Ctrl
-@(event: Event, partnerForm: Form[Partner.Data], personForm: Form[Person.Data], talkForm: Form[Talk.Data], eventPartner: List[Partner], eventTalks: List[Talk], eventSpeakers: List[Person], pendingTalks: List[Talk], pendingSpeakers: List[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@(event: Event, partnerForm: Form[Partner.Data], personForm: Form[Person.Data], talkForm: Form[Talk.Data], partnerList: List[Partner], eventTalks: List[Talk], eventSpeakers: List[Person], pendingTalks: List[Talk], pendingSpeakers: List[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @main(event.data.title) {
     @header("event")
 
@@ -36,9 +37,18 @@
             @event.data.title
             @event.meetupUrl.map{url => <a href="@url" target="_blank"><i class="fa fa-external-link"></i></a>}
         </h1>
-        <p>@partner(event.data.venue, eventPartner, Html("<b class=\"text-danger\">Il manque une salle !</b>")) le @date(event.data.date.toLocalDate)</p>
+        <p>
+            @event.data.venue.flatMap(id => partnerList.find(_.id == id)).map{ partner =>
+                chez <a href="@PartnerCtrl.get(partner.id)">@partner.data.name</a>
+            }.getOrElse{<b class="text-danger">Il manque une salle !</b>}
+            @event.data.location.map { location => (@location.formatted) }
+            @event.data.apero.flatMap(id => partnerList.find(_.id == id)).map{ partner =>
+                apéro par <a href="@PartnerCtrl.get(partner.id)">@partner.data.name</a>
+            }
+            le @date(event.data.date.toLocalDate)
+        </p>
         @if(event.data.venue.isEmpty){
-            @helper.form(action=EventCtrl.doAddPartnerForm(event.id), 'class->"form-inline") {
+            @helper.form(action=EventCtrl.doAddVenueForm(event.id), 'class->"form-inline") {
                 <div class="row">
                     <div class="col-md-8">
                         <select class="form-control select2" id="partnerId" name="partnerId" remote="@Select2Ctrl.partners" placeholder="Sélectionner un lieu">
@@ -137,7 +147,7 @@
         }
     </div>
 
-    @if(event.data.venue.isEmpty){ @com.humantalks.internal.partners.views.html.partials.createModal(partnerForm, Some(EventCtrl.doCreatePartner(event.id))) }
+    @if(event.data.venue.isEmpty){ @com.humantalks.internal.partners.views.html.partials.createModal(partnerForm, Some(EventCtrl.doCreateVenue(event.id))) }
     @com.humantalks.internal.talks.views.html.partials.createModal(talkForm, Some(EventCtrl.doCreateTalk(event.id)))
     @com.humantalks.internal.persons.views.html.partials.createModal(personForm)
 }

@@ -1,7 +1,7 @@
 package com.humantalks.internal.events
 
 import com.humantalks.common.services.DateSrv
-import com.humantalks.common.values.Meta
+import com.humantalks.common.values.{ GMapPlace, Meta }
 import com.humantalks.internal.talks.Talk
 import com.humantalks.internal.partners.Partner
 import global.values.{ TypedId, TypedIdHelper }
@@ -31,6 +31,8 @@ object Event {
       title: String,
       date: DateTime,
       venue: Option[Partner.Id],
+      location: Option[GMapPlace],
+      apero: Option[Partner.Id],
       talks: List[Talk.Id],
       description: Option[String],
       roti: Option[String],
@@ -47,7 +49,7 @@ object Event {
     def generate(after: DateTime): Data = {
       val nextDate = DateSrv.nextDate(after, 2, DateTimeConstants.TUESDAY, new LocalTime(19, 0))
       val nextTitle = Event.title(nextDate)
-      Event.Data(nextTitle, nextDate, None, List(), None, None, None)
+      Event.Data(nextTitle, nextDate, None, None, None, List(), None, None, None)
     }
   }
 
@@ -61,6 +63,8 @@ object Event {
     "title" -> nonEmptyText,
     "date" -> jodaDate(pattern = "dd/MM/yyyy HH:mm"),
     "venue" -> optional(of[Partner.Id]),
+    "location" -> ignored(Option.empty[GMapPlace]),
+    "apero" -> optional(of[Partner.Id]),
     "talks" -> list(of[Talk.Id]),
     "description" -> optional(text),
     "roti" -> optional(text),

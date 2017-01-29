@@ -1,7 +1,7 @@
 package com.humantalks.internal.events
 
 import com.humantalks.common.Conf
-import com.humantalks.common.values.Meta
+import com.humantalks.common.values.{ GMapPlace, Meta }
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
 import com.humantalks.internal.partners.Partner
@@ -65,8 +65,8 @@ case class EventRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposit
   private def partialUpdate(id: Event.Id, patch: JsObject, by: Person.Id): Future[WriteResult] =
     collection.partialUpdate(Json.obj("id" -> id), patch.deepMerge(Json.obj("$set" -> Json.obj("meta.updated" -> new DateTime(), "meta.updatedBy" -> by))))
 
-  def setVenue(id: Event.Id, partnerId: Partner.Id, by: Person.Id): Future[WriteResult] =
-    partialUpdate(id, Json.obj("$set" -> Json.obj("data.venue" -> partnerId)), by)
+  def setVenue(id: Event.Id, partnerId: Partner.Id, location: Option[GMapPlace], by: Person.Id): Future[WriteResult] =
+    partialUpdate(id, Json.obj("$set" -> Json.obj("data.venue" -> partnerId, "data.location" -> location)), by)
 
   def addTalk(id: Event.Id, talkId: Talk.Id, by: Person.Id): Future[WriteResult] =
     partialUpdate(id, Json.obj("$addToSet" -> Json.obj("data.talks" -> talkId)), by)

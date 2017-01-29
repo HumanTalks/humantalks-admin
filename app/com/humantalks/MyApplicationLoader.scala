@@ -65,7 +65,7 @@ class MyComponents(context: ApplicationLoader.Context)
   val partnerDbService = PartnerDbService(partnerRepository, eventRepository)
   val personDbService = PersonDbService(credentialsRepository, personRepository, talkRepository)
   val talkDbService = TalkDbService(talkRepository, eventRepository)
-  val eventDbService = EventDbService(talkRepository, eventRepository)
+  val eventDbService = EventDbService(talkRepository, partnerRepository, eventRepository)
   val configDbService = ConfigDbService(configRepository)
 
   val authSrv = AuthSrv(passwordHasherRegistry, credentialsProvider, authInfoRepository)

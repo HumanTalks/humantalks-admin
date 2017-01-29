@@ -1,4 +1,0 @@
-@import com.humantalks.internal.partners.Partner
-@import com.humantalks.internal.partners.routes.PartnerCtrl
-@(partnerOpt: Option[Partner.Id], partnerList: List[Partner], default: Html = Html(""))
-@partnerOpt.flatMap(id => partnerList.find(_.id == id)).map{ partner => chez <a href="@PartnerCtrl.get(partner.id)">@partner.data.name</a> }.getOrElse(default)
