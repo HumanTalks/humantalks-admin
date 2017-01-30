@@ -498,7 +498,13 @@ var GMapPlacePicker = (function(){
                     var place = autocomplete.getPlace(); // cf https://developers.google.com/maps/documentation/javascript/3.exp/reference?hl=fr#PlaceResult
                     updateField($elt, mapData, toLocation(place));
                 });
-                $input.on('change', function(){
+                // prevent form submit on enter
+                $input.on('keydown', function(e) {
+                    if (e && e.keyCode == 13) {
+                        e.preventDefault();
+                    }
+                });
+                $input.on('change', function() {
                     if($input.val() === ''){
                         updateField($elt, mapData, null);
                     }
