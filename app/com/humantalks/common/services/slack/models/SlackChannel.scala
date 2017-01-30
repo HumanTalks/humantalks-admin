@@ -1,13 +1,13 @@
-package com.humantalks.common.services.slack
+package com.humantalks.common.services.slack.models
 
 import play.api.libs.json.Json
 
-case class ChannelTopic(
+case class SlackChannelTopic(
   value: String,
   creator: String,
   last_set: Long // timestamp in seconds
 )
-case class Channel(
+case class SlackChannel(
   id: String,
   name: String,
   is_channel: Boolean,
@@ -17,11 +17,11 @@ case class Channel(
   is_general: Boolean,
   is_member: Boolean,
   members: List[String],
-  topic: ChannelTopic,
-  purpose: ChannelTopic,
+  topic: SlackChannelTopic,
+  purpose: SlackChannelTopic,
   num_members: Option[Int]
 )
-object Channel {
-  implicit val formatTopic = Json.format[ChannelTopic]
-  implicit val format = Json.format[Channel]
+object SlackChannel {
+  implicit val formatTopic = Json.format[SlackChannelTopic]
+  implicit val format = Json.format[SlackChannel]
 }
