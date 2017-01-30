@@ -73,7 +73,7 @@
         @if(event.data.talks.nonEmpty) {
             <h3>Talks @if(event.data.talks.length < 4 && event.data.date.isAfterNow) {<small>(<b class="text-danger">Il en manque @{4 - event.data.talks.length} !</b>)</small>}</h3>
             <ol>
-            @eventTalks.map { talk =>
+            @event.data.talks.flatMap(id => eventTalks.find(_.id == id)).map { talk =>
                 <li>
                     @helper.form(action=EventCtrl.doRemoveTalk(event.id, talk.id), 'class->"inline") { <button type="submit" class="btn btn-clear" title="Remove this talk from the meetup" confirm><i class="fa fa-trash"></i></button> }
                     @helper.form(action=EventCtrl.doMoveTalk(event.id, talk.id, true), 'class->"inline") { <button type="submit" class="btn btn-clear" title="Monter le talk dans la liste"><i class="fa fa-arrow-up"></i></button> }

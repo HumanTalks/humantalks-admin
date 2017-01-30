@@ -104,8 +104,8 @@ case class EventCtrl(
     eventForm.bindFromRequest.fold(
       formWithErrors => CtrlHelper.withItem(eventDbService)(id) { event => formView(BadRequest, formWithErrors, Some(event)) },
       eventData => CtrlHelper.withItem(eventDbService)(id) { event =>
-        eventDbService.update(event, eventData, req.identity.id).map {
-          case _ => Redirect(routes.EventCtrl.get(id))
+        eventDbService.update(event, eventData, req.identity.id).map { _ =>
+          Redirect(routes.EventCtrl.get(id))
         }
       }
     )
