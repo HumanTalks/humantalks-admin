@@ -107,15 +107,36 @@ case class PartnerCtrl(
   def createSponsor(id: Partner.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     implicit val user = Some(req.identity)
     CtrlHelper.withItem(partnerDbService)(id) { partner =>
-      sponsorFormView(Ok, sponsorForm, partner)
+      sponsorFormView(Ok, sponsorForm, None, partner)
     }
   }
 
   def doCreateSponsor(id: Partner.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     implicit val user = Some(req.identity)
     sponsorForm.bindFromRequest.fold(
-      formWithErrors => CtrlHelper.withItem(partnerDbService)(id) { partner => sponsorFormView(BadRequest, formWithErrors, partner) },
+      formWithErrors => CtrlHelper.withItem(partnerDbService)(id) { partner => sponsorFormView(BadRequest, formWithErrors, None, partner) },
       data => partnerDbService.addSponsor(id, data, req.identity.id).map { _ =>
+        Redirect(routes.PartnerCtrl.get(id))
+      }
+    )
+  }
+
+  def updateSponsor(id: Partner.Id, index: Int) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
+    CtrlHelper.withItem(partnerDbService)(id) { partner =>
+      partner.data.sponsoring.lift(index).map { sponsor =>
+        sponsorFormView(Ok, sponsorForm.fill(sponsor), Some(index), partner)
+      }.getOrElse {
+        Future.successful(Redirect(routes.PartnerCtrl.get(id)).flashing("error" -> s"Partner has not ${index + 1} sponsors"))
+      }
+    }
+  }
+
+  def doUpdateSponsor(id: Partner.Id, index: Int) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
+    sponsorForm.bindFromRequest.fold(
+      formWithErrors => CtrlHelper.withItem(partnerDbService)(id) { partner => sponsorFormView(BadRequest, formWithErrors, Some(index), partner) },
+      data => partnerDbService.updateSponsor(id, index, data, req.identity.id).map { _ =>
         Redirect(routes.PartnerCtrl.get(id))
       }
     )
@@ -135,7 +156,7 @@ case class PartnerCtrl(
     Future.successful(status(views.html.venueForm(venueForm, venueOpt, partner, personForm)))
   }
 
-  private def sponsorFormView(status: Status, sponsorForm: Form[Partner.Sponsor], partner: Partner)(implicit request: RequestHeader, userOpt: Option[Person]): Future[Result] = {
-    Future.successful(status(views.html.sponsorForm(sponsorForm, partner, personForm)))
+  private def sponsorFormView(status: Status, sponsorForm: Form[Partner.Sponsor], index: Option[Int], partner: Partner)(implicit request: RequestHeader, userOpt: Option[Person]): Future[Result] = {
+    Future.successful(status(views.html.sponsorForm(sponsorForm, index, partner, personForm)))
   }
 }

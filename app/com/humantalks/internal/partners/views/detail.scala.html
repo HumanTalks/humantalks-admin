@@ -52,6 +52,7 @@
                 @partner.data.sponsoring.sortBy(_.end.toDate.getTime).zipWithIndex.map { case (sponsor, index) =>
                     <li>
                         @messagesApi("sponsor.level."+sponsor.level), jusqu'au @date(sponsor.end), @person(sponsor.contact, personList)
+                        @helper.form(action=PartnerCtrl.updateSponsor(partner.id, index), 'class->"inline") { <button type="submit" class="btn btn-default" title="Modifier ce sponsor"><i class="fa fa-pencil-square-o"></i></button> }
                         @helper.form(action=PartnerCtrl.doDeleteSponsor(partner.id, index), 'class->"inline") { <button type="submit" class="btn btn-danger" title="Supprimer ce sponsor" confirm>&times;</button> }
                     </li>
                 }

@@ -48,6 +48,9 @@ case class PartnerRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Repos
   def addSponsor(id: Partner.Id, sponsor: Partner.Sponsor, by: Person.Id): Future[WriteResult] =
     partialUpdate(id, Json.obj("$addToSet" -> Json.obj("data.sponsoring" -> sponsor)), by)
 
+  def updateSponsor(id: Partner.Id, index: Int, sponsor: Partner.Sponsor, by: Person.Id): Future[WriteResult] =
+    partialUpdate(id, Json.obj("$set" -> Json.obj(s"data.sponsoring.$index" -> sponsor)), by)
+
   def removeSponsor(id: Partner.Id, index: Int, by: Person.Id): Future[WriteResult] =
     partialUpdate(id, Json.obj("$unset" -> Json.obj(s"data.sponsoring.$index" -> 1)), by).flatMap { _ =>
       partialUpdate(id, Json.obj("$pull" -> Json.obj(s"data.sponsoring" -> JsNull)), by)

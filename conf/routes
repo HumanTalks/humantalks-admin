@@ -37,6 +37,8 @@ GET     /partners/$id<.{36}>/venue/edit                             com.humantal
 POST    /partners/$id<.{36}>/venue/edit                             com.humantalks.internal.partners.PartnerCtrl.doUpdateVenue(id: Partner.Id)
 GET     /partners/$id<.{36}>/sponsor/create                         com.humantalks.internal.partners.PartnerCtrl.createSponsor(id: Partner.Id)
 POST    /partners/$id<.{36}>/sponsor/create                         com.humantalks.internal.partners.PartnerCtrl.doCreateSponsor(id: Partner.Id)
+GET     /partners/$id<.{36}>/sponsor/:index/edit                    com.humantalks.internal.partners.PartnerCtrl.updateSponsor(id: Partner.Id, index: Int)
+POST    /partners/$id<.{36}>/sponsor/:index/edit                    com.humantalks.internal.partners.PartnerCtrl.doUpdateSponsor(id: Partner.Id, index: Int)
 POST    /partners/$id<.{36}>/sponsor/:index/delete                  com.humantalks.internal.partners.PartnerCtrl.doDeleteSponsor(id: Partner.Id, index: Int)
 
 GET     /persons                                                    com.humantalks.internal.persons.PersonCtrl.find
