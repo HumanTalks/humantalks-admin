@@ -1,3 +1,4 @@
+@import org.joda.time.LocalDate
 @import com.humantalks.internal.partners.Partner
 @import com.humantalks.internal.persons.Person
 @import global.views.html.format._
@@ -21,7 +22,15 @@
                     <h4 class="media-heading"><a href="@PartnerCtrl.get(partner.id)">@partner.data.name</a></h4>
                     @partner.data.venue.map{v => <p>@v.location.formatted</p>}
                     @partner.data.comment.map{c => <p>@multiline(c)</p>}
-                    @if(partner.data.sponsorAperitif){<span class="label label-success">Sponsor apéro</span> }@twitter(partner.data.twitter)
+                    @partner.data.sponsoring.lastOption.map { sponsor =>
+                        @if(sponsor.end.isAfter(new LocalDate())){
+                            <span class="label label-success">Sponsor @messagesApi("sponsor.level."+sponsor.level) jusqu'au @date(sponsor.end)</span>
+                        } else {
+                            <span class="label label-danger">Plus sponsor depuis @date(sponsor.end)</span>
+                        }
+                    }
+                    @if(partner.data.sponsorAperitif){<span class="label label-success">Sponsor apéro</span>}
+                    @twitter(partner.data.twitter)
                 </div>
                 @partner.data.logo.map { logo =>
                     <div class="media-right">

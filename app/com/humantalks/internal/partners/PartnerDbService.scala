@@ -3,7 +3,8 @@ package com.humantalks.internal.partners
 import com.humantalks.internal.events.{ Event, EventRepository }
 import com.humantalks.internal.persons.Person
 import global.infrastructure.DbService
-import play.api.libs.json.{ Json, JsObject }
+import org.joda.time.LocalDate
+import play.api.libs.json.{ JsObject, Json }
 import reactivemongo.api.commands.WriteResult
 
 import scala.concurrent.Future
@@ -17,6 +18,7 @@ case class PartnerDbService(
 
   def find(filter: JsObject = Json.obj(), sort: JsObject = partnerRepository.defaultSort): Future[List[Partner]] = partnerRepository.find(filter, sort)
   def findByIds(ids: Seq[Partner.Id], sort: JsObject = partnerRepository.defaultSort): Future[List[Partner]] = partnerRepository.findByIds(ids, sort)
+  def findSponsors(date: LocalDate, sort: JsObject = partnerRepository.defaultSort): Future[List[Partner]] = partnerRepository.findSponsors(date, sort)
   def get(id: Partner.Id): Future[Option[Partner]] = partnerRepository.get(id)
   def create(elt: Partner.Data, by: Person.Id): Future[(WriteResult, Partner.Id)] = partnerRepository.create(elt, by)
   def update(elt: Partner, data: Partner.Data, by: Person.Id): Future[WriteResult] = partnerRepository.update(elt, data, by)

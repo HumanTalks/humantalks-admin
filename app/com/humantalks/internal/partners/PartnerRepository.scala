@@ -7,7 +7,7 @@ import global.Contexts
 import global.helpers.JsonHelper
 import global.infrastructure.{ Mongo, Repository }
 import global.values.Page
-import org.joda.time.DateTime
+import org.joda.time.{ DateTime, LocalDate }
 import play.api.libs.json._
 import reactivemongo.api.commands.WriteResult
 
@@ -28,6 +28,12 @@ case class PartnerRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Repos
 
   def findByIds(ids: Seq[Partner.Id], sort: JsObject = defaultSort): Future[List[Partner]] =
     collection.find(Json.obj("id" -> Json.obj("$in" -> ids.distinct)), sort)
+
+  def findSponsors(date: LocalDate, sort: JsObject = defaultSort): Future[List[Partner]] =
+    collection.find(Json.obj(
+      "data.sponsoring.start" -> Json.obj("$lt" -> date),
+      "data.sponsoring.end" -> Json.obj("$gt" -> date)
+    ), sort)
 
   def get(id: Partner.Id): Future[Option[Partner]] =
     collection.get(Json.obj("id" -> id))

@@ -83,7 +83,7 @@ class MyComponents(context: ApplicationLoader.Context)
     com.humantalks.exposed.Application(ctx),
     com.humantalks.exposed.talks.TalkCtrl(conf, ctx, personDbService, talkDbService, notificationSrv),
     com.humantalks.auth.AuthCtrl(ctx, silhouette, conf, authSrv, personRepository, credentialsRepository, authTokenRepository, avatarService, mailerSrv),
-    com.humantalks.internal.Application(ctx, silhouette),
+    com.humantalks.internal.Application(ctx, silhouette, personDbService, partnerDbService, talkDbService, eventDbService),
     PartnerCtrl(ctx, silhouette, partnerDbService, personDbService, eventDbService),
     PersonCtrl(ctx, silhouette, personDbService, talkDbService),
     TalkCtrl(ctx, silhouette, personDbService, talkDbService, eventDbService),

@@ -71,7 +71,7 @@ case class EventCtrl(
     implicit val user = Some(req.identity)
     CtrlHelper.withItem(eventDbService)(id) { event =>
       for {
-        partnerList <- partnerDbService.findByIds(event.data.venue.toSeq ++ event.data.apero.toSeq)
+        partnerList <- partnerDbService.findByIds(event.allPartners)
         eventTalks <- talkDbService.findByIds(event.data.talks)
         eventSpeakers <- personDbService.findByIds(eventTalks.flatMap(_.data.speakers))
         pendingTalks <- talkDbService.findPending()

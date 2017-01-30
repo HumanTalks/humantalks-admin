@@ -17,6 +17,7 @@ case class Event(
 ) {
   lazy val meetupUrl: Option[String] = meetupRef.map(r => s"http://www.meetup.com/fr-FR/${r.group}/events/${r.id}/")
   lazy val slackChannel: String = Event.slackChannel(data.date)
+  lazy val allPartners: List[Partner.Id] = data.venue.toList ++ data.apero.toList
 }
 object Event {
   case class Id(value: String) extends TypedId(value)
