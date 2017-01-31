@@ -16,9 +16,9 @@ case class PartnerDbService(
 ) extends DbService[Partner, Partner.Id, Partner.Data, Person.Id] {
   val name = partnerRepository.name
 
-  def find(filter: JsObject = Json.obj(), sort: JsObject = partnerRepository.defaultSort): Future[List[Partner]] = partnerRepository.find(filter, sort)
-  def findByIds(ids: Seq[Partner.Id], sort: JsObject = partnerRepository.defaultSort): Future[List[Partner]] = partnerRepository.findByIds(ids, sort)
-  def findSponsors(date: LocalDate, sort: JsObject = partnerRepository.defaultSort): Future[List[Partner]] = partnerRepository.findSponsors(date, sort)
+  def find(filter: JsObject = Json.obj(), sort: JsObject = PartnerRepository.defaultSort): Future[List[Partner]] = partnerRepository.find(filter, sort)
+  def findByIds(ids: Seq[Partner.Id], sort: JsObject = PartnerRepository.defaultSort): Future[List[Partner]] = partnerRepository.findByIds(ids, sort)
+  def findSponsors(date: LocalDate, sort: JsObject = PartnerRepository.defaultSort): Future[List[Partner]] = partnerRepository.findSponsors(date, sort)
   def get(id: Partner.Id): Future[Option[Partner]] = partnerRepository.get(id)
   def create(elt: Partner.Data, by: Person.Id): Future[(WriteResult, Partner.Id)] = partnerRepository.create(elt, by)
   def update(elt: Partner, data: Partner.Data, by: Person.Id): Future[WriteResult] = partnerRepository.update(elt, data, by)

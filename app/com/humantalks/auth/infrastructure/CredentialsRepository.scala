@@ -15,10 +15,9 @@ case class CredentialsRepository(conf: Conf, ctx: Contexts, db: Mongo) extends D
   import Contexts.dbToEC
   import ctx._
   private val collection = db.getCollection(conf.Repositories.credentials)
-  private val defaultSort = Json.obj("loginInfo.providerID" -> 1, "loginInfo.providerKey" -> 1)
   val name = collection.name
 
-  def find(filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[List[Credentials]] =
+  def find(filter: JsObject = Json.obj(), sort: JsObject = CredentialsRepository.defaultSort): Future[List[Credentials]] =
     collection.find(filter, sort)
 
   def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] =
@@ -35,4 +34,7 @@ case class CredentialsRepository(conf: Conf, ctx: Contexts, db: Mongo) extends D
 
   def remove(loginInfo: LoginInfo): Future[Unit] =
     collection.delete(Json.obj("loginInfo" -> loginInfo)).map(_ => ())
+}
+object CredentialsRepository {
+  val defaultSort = Json.obj("loginInfo.providerID" -> 1, "loginInfo.providerKey" -> 1)
 }

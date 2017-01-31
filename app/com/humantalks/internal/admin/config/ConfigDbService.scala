@@ -16,7 +16,7 @@ import scala.util.Try
 
 case class ConfigDbService(configRepository: ConfigRepository) extends DbService[Config, Config.Id, Config.Data, Person.Id] {
   val name = configRepository.name
-  def find(filter: JsObject = Json.obj(), sort: JsObject = configRepository.defaultSort): Future[List[Config]] = configRepository.find(filter, sort)
+  def find(filter: JsObject = Json.obj(), sort: JsObject = ConfigRepository.defaultSort): Future[List[Config]] = configRepository.find(filter, sort)
   def get(id: Config.Id): Future[Option[Config]] = configRepository.get(id)
   def getByRef(ref: String): Future[Option[Config]] = configRepository.getByRef(ref)
   def create(elt: Config.Data, by: Person.Id): Future[(WriteResult, Config.Id)] = configRepository.create(elt, by)

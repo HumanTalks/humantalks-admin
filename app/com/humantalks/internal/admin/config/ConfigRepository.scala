@@ -16,16 +16,15 @@ case class ConfigRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   import Contexts.dbToEC
   import ctx._
   private val collection = db.getCollection(conf.Repositories.config)
-  val defaultSort = Json.obj("data.ref" -> 1)
   val name = collection.name
 
-  def find(filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[List[Config]] =
+  def find(filter: JsObject = Json.obj(), sort: JsObject = ConfigRepository.defaultSort): Future[List[Config]] =
     collection.find(filter, sort)
 
-  def findPage(index: Page.Index, size: Page.Size, filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[Page[Config]] =
+  def findPage(index: Page.Index, size: Page.Size, filter: JsObject = Json.obj(), sort: JsObject = ConfigRepository.defaultSort): Future[Page[Config]] =
     collection.findPage(index, size, filter, sort)
 
-  def findByIds(ids: Seq[Config.Id], sort: JsObject = defaultSort): Future[List[Config]] =
+  def findByIds(ids: Seq[Config.Id], sort: JsObject = ConfigRepository.defaultSort): Future[List[Config]] =
     collection.find(Json.obj("id" -> Json.obj("$in" -> ids.distinct)), sort)
 
   def get(id: Config.Id): Future[Option[Config]] =
@@ -50,4 +49,7 @@ case class ConfigRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
 
   def delete(id: Config.Id): Future[WriteResult] =
     collection.delete(Json.obj("id" -> id))
+}
+object ConfigRepository {
+  val defaultSort = Json.obj("data.ref" -> 1)
 }

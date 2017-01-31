@@ -12,10 +12,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 case class TalkDbService(talkRepository: TalkRepository, eventRepository: EventRepository) extends DbService[Talk, Talk.Id, Talk.Data, Person.Id] {
   val name = talkRepository.name
 
-  def find(filter: JsObject = Json.obj(), sort: JsObject = talkRepository.defaultSort): Future[List[Talk]] = talkRepository.find(filter, sort)
-  def findPending(sort: JsObject = talkRepository.defaultSort): Future[List[Talk]] = talkRepository.findPending(sort)
-  def findByIds(ids: Seq[Talk.Id], sort: JsObject = talkRepository.defaultSort): Future[List[Talk]] = talkRepository.findByIds(ids, sort)
-  def findForPerson(id: Person.Id, sort: JsObject = talkRepository.defaultSort): Future[List[Talk]] = talkRepository.findForPerson(id, sort)
+  def find(filter: JsObject = Json.obj(), sort: JsObject = TalkRepository.defaultSort): Future[List[Talk]] = talkRepository.find(filter, sort)
+  def findPending(sort: JsObject = TalkRepository.defaultSort): Future[List[Talk]] = talkRepository.findPending(sort)
+  def findByIds(ids: Seq[Talk.Id], sort: JsObject = TalkRepository.defaultSort): Future[List[Talk]] = talkRepository.findByIds(ids, sort)
+  def findForPerson(id: Person.Id, sort: JsObject = TalkRepository.defaultSort): Future[List[Talk]] = talkRepository.findForPerson(id, sort)
   def get(id: Talk.Id): Future[Option[Talk]] = talkRepository.get(id)
   def getLastAccepted: Future[Option[Talk]] = talkRepository.getLastAccepted
   def getLastProposal: Future[Option[Talk]] = talkRepository.getLastProposal

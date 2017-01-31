@@ -6,6 +6,20 @@
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @(talkList: List[Talk], personList: List[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@filterLink(ref: String, name: String) = {
+    @request.getQueryString("filter") match {
+        case Some(v) if v == ref => {<a class="label label-primary" href="@TalkCtrl.find(None,      request.getQueryString("sort"))">@name</a>}
+        case Some(v) if v != ref => {<a class="label label-default" href="@TalkCtrl.find(Some(ref), request.getQueryString("sort"))">@name</a>}
+        case None =>                {<a class="label label-primary" href="@TalkCtrl.find(Some(ref), request.getQueryString("sort"))">@name</a>}
+    }
+}
+@sortLink(ref: String, name: String) = {
+    @request.getQueryString("sort") match {
+        case Some(v) if v == ref =>     {<a class="label label-primary" href="@TalkCtrl.find(request.getQueryString("filter"), Some("-"+ref))">@name</a>}
+        case Some(v) if v == "-"+ref => {<a class="label label-danger"  href="@TalkCtrl.find(request.getQueryString("filter"), Some(ref))">@name</a>}
+        case _ =>                       {<a class="label label-default" href="@TalkCtrl.find(request.getQueryString("filter"), Some(ref))">@name</a>}
+    }
+}
 @main("Talks") {
     @header("talk")
 
@@ -15,6 +29,12 @@
             <a href="@TalkCtrl.create" class="pull-right"><i class="fa fa-plus"></i></a>
             Liste des talks (@talkList.length)
         </h1>
+        <p>
+            Filtre: @Talk.Status.values.toList.map { v =>
+                @filterLink(v.toString, messagesApi("talk.status." + v))
+            }
+            Tri: @sortLink("date", "Date") @sortLink("title", "Titre")
+        </p>
         @talkList.map { talk =>
             <div class="media card">
                 <div class="media-body">

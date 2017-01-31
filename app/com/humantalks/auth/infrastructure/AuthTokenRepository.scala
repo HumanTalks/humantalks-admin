@@ -14,10 +14,9 @@ case class AuthTokenRepository(conf: Conf, ctx: Contexts, db: Mongo) {
   import Contexts.dbToEC
   import ctx._
   private val collection = db.getCollection(conf.Repositories.authToken)
-  private val defaultSort = Json.obj("expiry" -> 1)
   val name = collection.name
 
-  def find(filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[List[AuthToken]] =
+  def find(filter: JsObject = Json.obj(), sort: JsObject = AuthTokenRepository.defaultSort): Future[List[AuthToken]] =
     collection.find(filter, sort)
 
   def findExpired(): Future[Seq[AuthToken]] =
@@ -40,4 +39,7 @@ case class AuthTokenRepository(conf: Conf, ctx: Contexts, db: Mongo) {
 
   def deleteExpired(): Future[Unit] =
     collection.delete(Json.obj("expiry" -> Json.obj("$lt" -> new DateTime))).map(_ => ())
+}
+object AuthTokenRepository {
+  val defaultSort = Json.obj("expiry" -> 1)
 }

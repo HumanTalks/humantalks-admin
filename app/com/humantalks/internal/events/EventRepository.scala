@@ -18,31 +18,30 @@ case class EventRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposit
   import Contexts.dbToEC
   import ctx._
   private val collection = db.getCollection(conf.Repositories.event)
-  val defaultSort = Json.obj("data.date" -> -1)
   val name = collection.name
 
   /*def allIds(): Future[List[Event.Id]] =
     collection.jsonCollection().flatMap(_.find(Json.obj(), Json.obj("id" -> 1)).cursor[Event.Id](ReadPreference.primary).collect[List]())*/
 
-  def find(filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[List[Event]] =
+  def find(filter: JsObject = Json.obj(), sort: JsObject = EventRepository.defaultSort): Future[List[Event]] =
     collection.find(filter, sort)
 
-  def findPage(index: Page.Index, size: Page.Size, filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[Page[Event]] =
+  def findPage(index: Page.Index, size: Page.Size, filter: JsObject = Json.obj(), sort: JsObject = EventRepository.defaultSort): Future[Page[Event]] =
     collection.findPage(index, size, filter, sort)
 
-  def findByIds(ids: Seq[Event.Id], sort: JsObject = defaultSort): Future[List[Event]] =
+  def findByIds(ids: Seq[Event.Id], sort: JsObject = EventRepository.defaultSort): Future[List[Event]] =
     collection.find(Json.obj("id" -> Json.obj("$in" -> ids.distinct)), sort)
 
-  def findForTalk(id: Talk.Id, sort: JsObject = defaultSort): Future[List[Event]] =
+  def findForTalk(id: Talk.Id, sort: JsObject = EventRepository.defaultSort): Future[List[Event]] =
     collection.find(Json.obj("data.talks" -> id), sort)
 
-  def findForTalks(ids: Seq[Talk.Id], sort: JsObject = defaultSort): Future[List[Event]] =
+  def findForTalks(ids: Seq[Talk.Id], sort: JsObject = EventRepository.defaultSort): Future[List[Event]] =
     collection.find(Json.obj("data.talks" -> Json.obj("$in" -> ids.distinct)), sort)
 
-  def findForPartner(id: Partner.Id, sort: JsObject = defaultSort): Future[List[Event]] =
+  def findForPartner(id: Partner.Id, sort: JsObject = EventRepository.defaultSort): Future[List[Event]] =
     collection.find(Json.obj("data.venue" -> id), sort)
 
-  def findPast(sort: JsObject = defaultSort): Future[List[Event]] =
+  def findPast(sort: JsObject = EventRepository.defaultSort): Future[List[Event]] =
     collection.find(Json.obj("data.date" -> Json.obj("$lt" -> new DateTime())), sort)
 
   def get(id: Event.Id): Future[Option[Event]] =
@@ -98,4 +97,7 @@ case class EventRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposit
 
   def delete(id: Event.Id): Future[WriteResult] =
     collection.delete(Json.obj("id" -> id))
+}
+object EventRepository {
+  val defaultSort = Json.obj("data.date" -> -1)
 }

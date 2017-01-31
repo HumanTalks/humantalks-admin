@@ -17,19 +17,18 @@ case class PartnerRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Repos
   import Contexts.dbToEC
   import ctx._
   private val collection = db.getCollection(conf.Repositories.partner)
-  val defaultSort = Json.obj("data.name" -> 1)
   val name = collection.name
 
-  def find(filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[List[Partner]] =
+  def find(filter: JsObject = Json.obj(), sort: JsObject = PartnerRepository.defaultSort): Future[List[Partner]] =
     collection.find(filter, sort)
 
-  def findPage(index: Page.Index, size: Page.Size, filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[Page[Partner]] =
+  def findPage(index: Page.Index, size: Page.Size, filter: JsObject = Json.obj(), sort: JsObject = PartnerRepository.defaultSort): Future[Page[Partner]] =
     collection.findPage(index, size, filter, sort)
 
-  def findByIds(ids: Seq[Partner.Id], sort: JsObject = defaultSort): Future[List[Partner]] =
+  def findByIds(ids: Seq[Partner.Id], sort: JsObject = PartnerRepository.defaultSort): Future[List[Partner]] =
     collection.find(Json.obj("id" -> Json.obj("$in" -> ids.distinct)), sort)
 
-  def findSponsors(date: LocalDate, sort: JsObject = defaultSort): Future[List[Partner]] =
+  def findSponsors(date: LocalDate, sort: JsObject = PartnerRepository.defaultSort): Future[List[Partner]] =
     collection.find(Json.obj(
       "data.sponsoring.start" -> Json.obj("$lt" -> date),
       "data.sponsoring.end" -> Json.obj("$gt" -> date)
@@ -70,4 +69,7 @@ case class PartnerRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Repos
 
   def delete(id: Partner.Id): Future[WriteResult] =
     collection.delete(Json.obj("id" -> id))
+}
+object PartnerRepository {
+  val defaultSort = Json.obj("data.name" -> 1)
 }

@@ -9,6 +9,7 @@ import global.Contexts
 import global.helpers.CtrlHelper
 import play.api.data.Form
 import play.api.i18n.MessagesApi
+import play.api.libs.json.Json
 import play.api.mvc._
 
 import scala.concurrent.Future
@@ -25,10 +26,18 @@ case class TalkCtrl(
   val talkForm = Form(Talk.fields)
   val personForm = Form(Person.fields)
 
-  def find = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+  def find(filter: Option[String] = None, sort: Option[String] = None) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     implicit val user = Some(req.identity)
+    val f = filter.map(status => Json.obj("status" -> status)).getOrElse(Json.obj())
+    val s = sort match {
+      case Some("date") => Json.obj(s"meta.created" -> 1)
+      case Some("-date") => Json.obj(s"meta.created" -> -1)
+      case Some("title") => Json.obj(s"data.title" -> 1)
+      case Some("-title") => Json.obj(s"data.title" -> -1)
+      case _ => TalkRepository.defaultSort
+    }
     for {
-      talkList <- talkDbService.find()
+      talkList <- talkDbService.find(f, s)
       personList <- personDbService.findByIds(talkList.flatMap(_.data.speakers))
     } yield Ok(views.html.list(talkList, personList))
   }

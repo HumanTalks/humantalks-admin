@@ -13,12 +13,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 case class EventDbService(talkRepository: TalkRepository, partnerRepository: PartnerRepository, eventRepository: EventRepository) extends DbService[Event, Event.Id, Event.Data, Person.Id] {
   val name = eventRepository.name
 
-  def find(filter: JsObject = Json.obj(), sort: JsObject = eventRepository.defaultSort): Future[List[Event]] = eventRepository.find(filter, sort)
-  def findPast(sort: JsObject = eventRepository.defaultSort): Future[List[Event]] = eventRepository.findPast(sort)
-  def findByIds(ids: Seq[Event.Id], sort: JsObject = eventRepository.defaultSort): Future[List[Event]] = eventRepository.findByIds(ids, sort)
-  def findForTalk(id: Talk.Id, sort: JsObject = eventRepository.defaultSort): Future[List[Event]] = eventRepository.findForTalk(id, sort)
-  def findForTalks(ids: Seq[Talk.Id], sort: JsObject = eventRepository.defaultSort): Future[List[Event]] = eventRepository.findForTalks(ids, sort)
-  def findForPartner(id: Partner.Id, sort: JsObject = eventRepository.defaultSort): Future[List[Event]] = eventRepository.findForPartner(id, sort)
+  def find(filter: JsObject = Json.obj(), sort: JsObject = EventRepository.defaultSort): Future[List[Event]] = eventRepository.find(filter, sort)
+  def findPast(sort: JsObject = EventRepository.defaultSort): Future[List[Event]] = eventRepository.findPast(sort)
+  def findByIds(ids: Seq[Event.Id], sort: JsObject = EventRepository.defaultSort): Future[List[Event]] = eventRepository.findByIds(ids, sort)
+  def findForTalk(id: Talk.Id, sort: JsObject = EventRepository.defaultSort): Future[List[Event]] = eventRepository.findForTalk(id, sort)
+  def findForTalks(ids: Seq[Talk.Id], sort: JsObject = EventRepository.defaultSort): Future[List[Event]] = eventRepository.findForTalks(ids, sort)
+  def findForPartner(id: Partner.Id, sort: JsObject = EventRepository.defaultSort): Future[List[Event]] = eventRepository.findForPartner(id, sort)
   def get(id: Event.Id): Future[Option[Event]] = eventRepository.get(id)
   def getLast: Future[Option[Event]] = eventRepository.getLast
   def getNext: Future[Option[Event]] = eventRepository.getNext

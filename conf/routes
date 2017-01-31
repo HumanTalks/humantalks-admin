@@ -50,7 +50,7 @@ POST    /persons/$id<.{36}>/edit                                    com.humantal
 POST    /persons/$id<.{36}>/delete                                  com.humantalks.internal.persons.PersonCtrl.doDelete(id: Person.Id)
 GET     /persons/me                                                 com.humantalks.internal.persons.PersonCtrl.profil
 
-GET     /talks                                                      com.humantalks.internal.talks.TalkCtrl.find
+GET     /talks                                                      com.humantalks.internal.talks.TalkCtrl.find(filter: Option[String] ?= None, sort: Option[String] ?= None)
 GET     /talks/create                                               com.humantalks.internal.talks.TalkCtrl.create
 POST    /talks/create                                               com.humantalks.internal.talks.TalkCtrl.doCreate
 GET     /talks/$id<.{36}>                                           com.humantalks.internal.talks.TalkCtrl.get(id: Talk.Id)

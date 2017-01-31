@@ -18,16 +18,15 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   import Contexts.dbToEC
   import ctx._
   private val collection = db.getCollection(conf.Repositories.person)
-  val defaultSort = Json.obj("data.name" -> 1)
   val name = collection.name
 
-  def find(filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[List[Person]] =
+  def find(filter: JsObject = Json.obj(), sort: JsObject = PersonRepository.defaultSort): Future[List[Person]] =
     collection.find(filter, sort)
 
-  def findPage(index: Page.Index, size: Page.Size, filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[Page[Person]] =
+  def findPage(index: Page.Index, size: Page.Size, filter: JsObject = Json.obj(), sort: JsObject = PersonRepository.defaultSort): Future[Page[Person]] =
     collection.findPage(index, size, filter, sort)
 
-  def findByIds(ids: Seq[Person.Id], sort: JsObject = defaultSort): Future[List[Person]] =
+  def findByIds(ids: Seq[Person.Id], sort: JsObject = PersonRepository.defaultSort): Future[List[Person]] =
     collection.find(Json.obj("id" -> Json.obj("$in" -> ids.distinct)), sort)
 
   def get(id: Person.Id): Future[Option[Person]] =
@@ -56,7 +55,7 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
 
   /* Method used for Auth */
 
-  def findUsers(filter: JsObject = Json.obj(), sort: JsObject = defaultSort): Future[List[Person]] =
+  def findUsers(filter: JsObject = Json.obj(), sort: JsObject = PersonRepository.defaultSort): Future[List[Person]] =
     collection.find(Json.obj("auth" -> Json.obj("$exists" -> true)) ++ filter, sort)
 
   def retrieve(loginInfo: LoginInfo): Future[Option[Person]] =
@@ -101,4 +100,7 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
 
   def setRole(id: Person.Id, role: Option[Person.Role.Value], by: Person.Id): Future[WriteResult] =
     partialUpdate(id, Json.obj("$set" -> Json.obj("auth.role" -> role)), by)
+}
+object PersonRepository {
+  val defaultSort = Json.obj("data.name" -> 1)
 }

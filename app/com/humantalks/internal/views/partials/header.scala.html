@@ -31,10 +31,10 @@
             @* TODO : refactor to improve : https://github.com/adrianhurt/play-silhouette-credentials-seed/blob/9413cb25838a38623dc694003e8f82f81d975daf/app/views/tags/auth/withService.scala.html *@
             @if(userOpt.exists(_.isAuthorized(Person.Role.Organizer))){
                 <ul class="nav navbar-nav">
-                    <li @if(menu == "event"){class="active"}><a href="@com.humantalks.internal.events.routes.EventCtrl.find">Événements</a></li>
-                    <li @if(menu == "talk"){class="active"}><a href="@com.humantalks.internal.talks.routes.TalkCtrl.find">Talks</a></li>
-                    <li @if(menu == "person"){class="active"}><a href="@com.humantalks.internal.persons.routes.PersonCtrl.find">Personnes</a></li>
-                    <li @if(menu == "partner"){class="active"}><a href="@com.humantalks.internal.partners.routes.PartnerCtrl.find">Partenaires</a></li>
+                    <li @if(menu == "event"){class="active"}><a href="@com.humantalks.internal.events.routes.EventCtrl.find()">Événements</a></li>
+                    <li @if(menu == "talk"){class="active"}><a href="@com.humantalks.internal.talks.routes.TalkCtrl.find()">Talks</a></li>
+                    <li @if(menu == "person"){class="active"}><a href="@com.humantalks.internal.persons.routes.PersonCtrl.find()">Personnes</a></li>
+                    <li @if(menu == "partner"){class="active"}><a href="@com.humantalks.internal.partners.routes.PartnerCtrl.find()">Partenaires</a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-plus" style="color: #777;"></i></a>
                         <ul class="dropdown-menu">
