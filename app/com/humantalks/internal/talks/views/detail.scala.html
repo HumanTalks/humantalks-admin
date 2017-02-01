@@ -5,6 +5,7 @@
 @import global.views.html.partials._
 @import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
+@import com.humantalks.internal.persons.routes.PersonCtrl
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @import com.humantalks.internal.events.routes.EventCtrl
 @(talk: Talk, personList: List[Person], eventList: List[Event])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
@@ -22,7 +23,10 @@
             @talk.data.title
             @partials.status(talk)
         </h1>
-        <p>@speakers(talk.data.speakers, personList) @created(talk.meta.created)</p>
+        <p>
+            Speakers: @talk.data.speakers.flatMap(id => personList.find(_.id == id)).map{p => @personLink(p)}<br>
+            Créé par @personList.find(_.id == talk.meta.createdBy).map{p => @personLink(p)}.getOrElse{<i>Anonymous</i>} le @date(talk.meta.created.toLocalDate)
+        </p>
         @talk.data.description.map{d => <p>@multiline(d)</p>}
         @slidesEmbed(talk.data.slidesEmbedCode, talk.data.slides)
         @videoEmbed(talk.data.videoEmbedCode, talk.data.video)

@@ -25,14 +25,14 @@
         @partner.data.comment.map{c => <p>@multiline(c)</p>}
         @twitter(partner.data.twitter)
         @if(partner.data.contacts.nonEmpty) {
-            <p><b>Contacts</b>: @partner.data.contacts.map{id => @person(Some(id), personList)}</p>
+            <p><b>Contacts</b>: @partner.data.contacts.flatMap(id => personList.find(_.id == id)).map{p => @personLink(p)}</p>
         }
 
         @partner.data.venue.map { venue =>
             <h3>Salle</h3>
             <p>
                 @venue.location.formatted<br>
-                @venue.capacity.map{c => @c places}@venue.closeTime.map{t =>, fermeture à @time(t)}@person(venue.contact, personList)
+                @venue.capacity.map{c => @c places}@venue.closeTime.map{t =>, fermeture à @time(t)}@venue.contact.flatMap(id => personList.find(_.id == id)).map{p =>, contact: @personLink(p)}
             </p>
             @venue.comment.map{c => <p>@c</p>}
             <p>
@@ -51,7 +51,7 @@
                 <ul>
                 @partner.data.sponsoring.sortBy(_.end.toDate.getTime).zipWithIndex.map { case (sponsor, index) =>
                     <li>
-                        @messagesApi("sponsor.level."+sponsor.level), jusqu'au @date(sponsor.end), @person(sponsor.contact, personList)
+                        @messagesApi("sponsor.level."+sponsor.level), jusqu'au @date(sponsor.end)@sponsor.contact.flatMap(id => personList.find(_.id == id)).map{p =>, contact: @personLink(p)}
                         @helper.form(action=PartnerCtrl.updateSponsor(partner.id, index), 'class->"inline") { <button type="submit" class="btn btn-default" title="Modifier ce sponsor"><i class="fa fa-pencil-square-o"></i></button> }
                         @helper.form(action=PartnerCtrl.doDeleteSponsor(partner.id, index), 'class->"inline") { <button type="submit" class="btn btn-danger" title="Supprimer ce sponsor" confirm>&times;</button> }
                     </li>

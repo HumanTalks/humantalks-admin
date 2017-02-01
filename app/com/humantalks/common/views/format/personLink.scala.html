@@ -1,0 +1,4 @@
+@import com.humantalks.internal.persons.Person
+@import com.humantalks.internal.persons.routes.PersonCtrl
+@(person: Person)
+<a href="@PersonCtrl.get(person.id)">@person.data.name</a>

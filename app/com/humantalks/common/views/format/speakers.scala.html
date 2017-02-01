@@ -1,10 +1,9 @@
 @import com.humantalks.internal.persons.Person
-@import com.humantalks.internal.persons.routes.PersonCtrl
 @(speakerIds: List[Person.Id], personList: List[Person], shirt: Boolean = false)(implicit messagesApi: MessagesApi)
 @defining(speakerIds.flatMap(id => personList.find(_.id == id))) { speakers =>
     @if(speakers.nonEmpty){
         par @speakers.map { p =>
-            <a href="@PersonCtrl.get(p.id)">@p.data.name</a>
+            @personLink(p)
             @if(shirt) {
                 @p.data.shirt.map{s => (T-shirt: @messagesApi("person.shirt."+s))}
             }

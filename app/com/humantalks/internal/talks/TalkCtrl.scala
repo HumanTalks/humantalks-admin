@@ -61,7 +61,7 @@ case class TalkCtrl(
     implicit val user = Some(req.identity)
     CtrlHelper.withItem(talkDbService)(id) { talk =>
       for {
-        personList <- personDbService.findByIds(talk.data.speakers)
+        personList <- personDbService.findByIds(talk.meta.createdBy +: talk.data.speakers)
         eventList <- eventDbService.findForTalk(id)
       } yield Ok(views.html.detail(talk, personList, eventList))
     }
