@@ -6,7 +6,6 @@
 @import global.views.html.partials._
 @import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
-@import com.humantalks.internal.partners.routes.PartnerCtrl
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @import com.humantalks.internal.events.routes.EventCtrl
 @(sponsors: List[Partner], nextEvent: Option[Event], partnerList: List[Partner], talkList: List[Talk], personList: List[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
@@ -28,10 +27,10 @@
                     </h4>
                     <p>
                         @event.data.venue.flatMap(id => partnerList.find(_.id == id)).map{ partner =>
-                            chez <a href="@PartnerCtrl.get(partner.id)">@partner.data.name</a>
+                            chez @partnerLink(partner)
                         }.getOrElse{<b class="text-danger">Il manque une salle !</b>}
                         @event.data.apero.flatMap(id => partnerList.find(_.id == id)).map{ partner =>
-                            apéro par <a href="@PartnerCtrl.get(partner.id)">@partner.data.name</a>
+                            apéro par @partnerLink(partner)
                         }
                         le @date(event.data.date.toLocalDate),
                         @event.data.talks.length talks planifiés @if(event.data.talks.length < 4 && event.data.date.isAfterNow) {(<b class="text-danger">Il en manque @{4 - event.data.talks.length} !</b>)}
@@ -57,7 +56,7 @@
             <h3>Sponsors</h3>
             <ul>
                 @sponsors.sortBy(_.data.sponsoring.last.end.toDate.getTime).map{partner =>
-                    <li><a href="@PartnerCtrl.get(partner.id)">@partner.data.name</a> (jusqu'au @date(partner.data.sponsoring.last.end))</li>
+                    <li>@partnerLink(partner) (jusqu'au @date(partner.data.sponsoring.last.end))</li>
                 }
             </ul>
         }

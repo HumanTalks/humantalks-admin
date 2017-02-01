@@ -19,7 +19,7 @@
         @partnerList.map { partner =>
             <div class="media card">
                 <div class="media-body">
-                    <h4 class="media-heading"><a href="@PartnerCtrl.get(partner.id)">@partner.data.name</a></h4>
+                    <h4 class="media-heading">@partnerLink(partner)</h4>
                     @partner.data.venue.map{v => <p>@v.location.formatted</p>}
                     @partner.data.comment.map{c => <p>@multiline(c)</p>}
                     @partner.data.sponsoring.lastOption.map { sponsor =>

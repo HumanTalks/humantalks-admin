@@ -6,7 +6,6 @@
 @import global.views.html.partials._
 @import com.humantalks.common.views.html.format._
 @import com.humantalks.internal.views.html.partials._
-@import com.humantalks.internal.partners.routes.PartnerCtrl
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @import com.humantalks.internal.events.routes.EventCtrl
 @import com.humantalks.common.controllers.routes.Select2Ctrl
@@ -46,11 +45,11 @@
         </h1>
         <p>
             @event.data.venue.flatMap(id => partnerList.find(_.id == id)).map{ partner =>
-                chez <a href="@PartnerCtrl.get(partner.id)">@partner.data.name</a>
+                chez @partnerLink(partner)@partner.data.venue.flatMap(_.capacity).map{c =>, @c places}
             }.getOrElse{<b class="text-danger">Il manque une salle !</b>}
             @event.data.location.map { location => (@location.formatted) }
             @event.data.apero.flatMap(id => partnerList.find(_.id == id)).map{ partner =>
-                apéro par <a href="@PartnerCtrl.get(partner.id)">@partner.data.name</a>
+                apéro par @partnerLink(partner)
             }
             le @date(event.data.date.toLocalDate)
         </p>

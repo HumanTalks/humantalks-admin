@@ -1,0 +1,4 @@
+@import com.humantalks.internal.partners.Partner
+@import com.humantalks.internal.partners.routes.PartnerCtrl
+@(partner: Partner)
+<a href="@PartnerCtrl.get(partner.id)">@partner.data.name</a>
