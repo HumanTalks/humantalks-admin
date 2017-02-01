@@ -26,7 +26,7 @@ POST    /reset-password/:id                                         com.humantal
 
 GET     /home                                                       com.humantalks.internal.Application.index
 
-GET     /partners                                                   com.humantalks.internal.partners.PartnerCtrl.find
+GET     /partners                                                   com.humantalks.internal.partners.PartnerCtrl.find(filter: Option[String] ?= None, sort: Option[String] ?= None)
 GET     /partners/create                                            com.humantalks.internal.partners.PartnerCtrl.create
 POST    /partners/create                                            com.humantalks.internal.partners.PartnerCtrl.doCreate
 GET     /partners/$id<.{36}>                                        com.humantalks.internal.partners.PartnerCtrl.get(id: Partner.Id)

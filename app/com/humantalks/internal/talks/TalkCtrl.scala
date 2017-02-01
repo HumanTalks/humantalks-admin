@@ -30,10 +30,10 @@ case class TalkCtrl(
     implicit val user = Some(req.identity)
     val f = filter.map(status => Json.obj("status" -> status)).getOrElse(Json.obj())
     val s = sort match {
-      case Some("date") => Json.obj(s"meta.created" -> 1)
-      case Some("-date") => Json.obj(s"meta.created" -> -1)
-      case Some("title") => Json.obj(s"data.title" -> 1)
-      case Some("-title") => Json.obj(s"data.title" -> -1)
+      case Some("date") => Json.obj("meta.created" -> 1)
+      case Some("-date") => Json.obj("meta.created" -> -1)
+      case Some("title") => Json.obj("data.title" -> 1)
+      case Some("-title") => Json.obj("data.title" -> -1)
       case _ => TalkRepository.defaultSort
     }
     for {

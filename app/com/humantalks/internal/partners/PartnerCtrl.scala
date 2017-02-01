@@ -7,8 +7,10 @@ import com.humantalks.internal.persons.{ Person, PersonDbService }
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
 import global.helpers.CtrlHelper
+import org.joda.time.LocalDate
 import play.api.data.Form
 import play.api.i18n.MessagesApi
+import play.api.libs.json.Json
 import play.api.mvc._
 
 import scala.concurrent.Future
@@ -27,9 +29,21 @@ case class PartnerCtrl(
   val sponsorForm = Form(Partner.sponsorFields)
   val personForm = Form(Person.fields)
 
-  def find = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+  def find(filter: Option[String] = None, sort: Option[String] = None) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     implicit val user = Some(req.identity)
-    partnerDbService.find().map { partnerList =>
+    val f = filter match {
+      case Some("sponsor") => PartnerRepository.Filters.isSponsor(new LocalDate())
+      case Some("venue") => PartnerRepository.Filters.isVenue
+      case _ => Json.obj()
+    }
+    val s = sort match {
+      case Some("date") => Json.obj("meta.created" -> 1)
+      case Some("-date") => Json.obj("meta.created" -> -1)
+      case Some("name") => Json.obj("data.name" -> 1)
+      case Some("-name") => Json.obj("data.name" -> -1)
+      case _ => PartnerRepository.defaultSort
+    }
+    partnerDbService.find(f, s).map { partnerList =>
       Ok(views.html.list(partnerList))
     }
   }

@@ -7,6 +7,19 @@
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.partners.routes.PartnerCtrl
 @(partnerList: List[Partner])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@filterLink(ref: String, name: String) = {
+    @request.getQueryString("filter") match {
+        case Some(v) if v == ref => {<a class="label label-primary" href="@PartnerCtrl.find(None,      request.getQueryString("sort"))">@name</a>}
+        case _ =>                   {<a class="label label-default" href="@PartnerCtrl.find(Some(ref), request.getQueryString("sort"))">@name</a>}
+    }
+}
+@sortLink(ref: String, name: String) = {
+    @request.getQueryString("sort") match {
+        case Some(v) if v == ref =>     {<a class="label label-primary" href="@PartnerCtrl.find(request.getQueryString("filter"), Some("-"+ref))">@name</a>}
+        case Some(v) if v == "-"+ref => {<a class="label label-danger"  href="@PartnerCtrl.find(request.getQueryString("filter"), Some(ref))">@name</a>}
+        case _ =>                       {<a class="label label-default" href="@PartnerCtrl.find(request.getQueryString("filter"), Some(ref))">@name</a>}
+    }
+}
 @main("Partenaires") {
     @header("partner")
 
@@ -16,6 +29,10 @@
             <a href="@PartnerCtrl.create" class="pull-right"><i class="fa fa-plus"></i></a>
             Liste des partenaires (@partnerList.length)
         </h1>
+        <p>
+            Filtre: @filterLink("sponsor", "Sponsors") @filterLink("venue", "Salle")
+            Tri: @sortLink("date", "Date") @sortLink("name", "Name")
+        </p>
         @partnerList.map { partner =>
             <div class="media card">
                 <div class="media-body">
