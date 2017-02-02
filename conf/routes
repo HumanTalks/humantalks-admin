@@ -65,6 +65,8 @@ GET     /events/create                                              com.humantal
 POST    /events/create                                              com.humantalks.internal.events.EventCtrl.doCreate
 GET     /events/$id<.{36}>                                          com.humantalks.internal.events.EventCtrl.get(id: Event.Id)
 GET     /events/$id<.{36}>/description                              com.humantalks.internal.events.EventCtrl.getDescription(id: Event.Id)
+GET     /events/$id<.{36}>/roti                                     com.humantalks.internal.events.EventCtrl.getROTI(id: Event.Id)
+GET     /events/$id<.{36}>/rotipdf                                  com.humantalks.internal.events.EventCtrl.downloadROTI(id: Event.Id)
 GET     /events/$id<.{36}>/edit                                     com.humantalks.internal.events.EventCtrl.update(id: Event.Id)
 POST    /events/$id<.{36}>/edit                                     com.humantalks.internal.events.EventCtrl.doUpdate(id: Event.Id)
 POST    /events/$id<.{36}>/publish                                  com.humantalks.internal.events.EventCtrl.doPublish(id: Event.Id)

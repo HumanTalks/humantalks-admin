@@ -21,6 +21,7 @@ libraryDependencies ++= Seq(
   "com.mohiva" %% "play-silhouette-persistence" % "4.0.0",
   "com.mohiva" %% "play-silhouette-crypto-jca" % "4.0.0",
   "org.jsoup" % "jsoup" % "1.9.2",
+  "it.innove" % "play2-pdf" % "1.5.2",
   "com.github.spullara.mustache.java" % "compiler" % "0.9.2",
   "org.webjars" % "jquery" % "1.12.4",
   "org.webjars" % "bootstrap" % "3.3.7-1",

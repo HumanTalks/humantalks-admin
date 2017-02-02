@@ -6,12 +6,13 @@ import com.humantalks.common.Conf
 import com.humantalks.common.services.NotificationSrv
 import com.humantalks.common.services.meetup.MeetupSrv
 import com.humantalks.internal.admin.config.ConfigDbService
-import com.humantalks.internal.persons.{ PersonDbService, Person }
-import com.humantalks.internal.talks.{ TalkDbService, Talk }
+import com.humantalks.internal.persons.{ Person, PersonDbService }
+import com.humantalks.internal.talks.{ Talk, TalkDbService }
 import com.humantalks.internal.partners.{ Partner, PartnerDbService }
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
 import global.helpers.CtrlHelper
+import it.innove.play.pdf.PdfGenerator
 import org.joda.time.DateTime
 import play.api.data.Form
 import play.api.i18n.MessagesApi
@@ -30,6 +31,7 @@ case class EventCtrl(
     talkDbService: TalkDbService,
     eventDbService: EventDbService,
     meetupSrv: MeetupSrv,
+    pdfGenerator: PdfGenerator,
     notificationSrv: NotificationSrv
 )(implicit messageApi: MessagesApi) extends Controller {
   import Contexts.ctrlToEC
@@ -89,6 +91,26 @@ case class EventCtrl(
         personList <- personDbService.findByIds(talkList.flatMap(_.data.speakers))
         (Success(description), _) <- configDbService.buildMeetupEventDescription(Some(event), partnerOpt, talkList, personList)
       } yield Ok(views.html.description(event, description))
+    }
+  }
+
+  def getROTI(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
+    CtrlHelper.withItem(eventDbService)(id) { event =>
+      for {
+        talkList <- talkDbService.findByIds(event.data.talks)
+        personList <- personDbService.findByIds(talkList.flatMap(_.data.speakers))
+      } yield Ok(views.html.roti(event, talkList, personList))
+    }
+  }
+
+  def downloadROTI(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    implicit val user = Some(req.identity)
+    CtrlHelper.withItem(eventDbService)(id) { event =>
+      for {
+        talkList <- talkDbService.findByIds(event.data.talks)
+        personList <- personDbService.findByIds(talkList.flatMap(_.data.speakers))
+      } yield Ok(pdfGenerator.toBytes(views.html.roti(event, talkList, personList), "http://localhost:9000")).as("application/pdf")
     }
   }
 
