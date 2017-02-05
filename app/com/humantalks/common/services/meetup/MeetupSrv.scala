@@ -1,9 +1,9 @@
 package com.humantalks.common.services.meetup
 
 import com.humantalks.common.Conf
-import com.humantalks.common.services.meetup.models.{ MeetupEventCreate, MeetupEventCreate$, MeetupVenueCreate, MeetupVenueCreate$ }
+import com.humantalks.common.services.meetup.models._
 import com.humantalks.internal.admin.config.ConfigDbService
-import com.humantalks.internal.events.{ Event, EventDbService }
+import com.humantalks.internal.events.{ Attendee, Event, EventDbService }
 import com.humantalks.internal.persons.Person
 import com.humantalks.internal.talks.Talk
 import com.humantalks.internal.partners.{ Partner, PartnerDbService }
@@ -71,6 +71,12 @@ case class MeetupSrv(
       }
     }.getOrElse {
       Future.successful(Left(List(s"No meetup reference found for ${event.data.title}")))
+    }
+  }
+
+  def getAttendees(eventId: Event.Id, meetupId: Long): Future[Either[List[String], List[Attendee]]] = {
+    meetupApi.getRsvps(conf.Meetup.group, meetupId) map {
+      _.right.map(_.map(rsvp => Attendee.from(eventId, rsvp)))
     }
   }
 

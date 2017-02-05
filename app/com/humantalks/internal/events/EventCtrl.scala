@@ -16,6 +16,7 @@ import it.innove.play.pdf.PdfGenerator
 import org.joda.time.DateTime
 import play.api.data.Form
 import play.api.i18n.MessagesApi
+import play.api.libs.json.Json
 import play.api.mvc._
 
 import scala.concurrent.Future
@@ -220,6 +221,24 @@ case class EventCtrl(
       }
     }.getOrElse {
       Future.successful(Redirect(redirectUrl).flashing("error" -> "Missing parameter meetupId :("))
+    }
+  }
+
+  def doDownloadAttendeeList(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    val redirectUrl = CtrlHelper.getReferer(req.headers, routes.EventCtrl.get(id))
+    CtrlHelper.withItem(eventDbService)(id) { event =>
+      event.meetupRef.map { ref =>
+        meetupSrv.getAttendees(event.id, ref.id).map {
+          case Right(attendees) => {
+            Ok(Attendee.toCsv(attendees))
+              .withHeaders("Content-Disposition" -> s"""attachment;filename="participants-${event.data.title}.csv"""")
+              .as("text/csv;charset=utf-8")
+          }
+          case Left(errors) => Redirect(redirectUrl).flashing("error" -> errors.mkString(", "))
+        }
+      }.getOrElse {
+        Future.successful(Redirect(redirectUrl).flashing("error" -> "Event has no meetup linked !"))
+      }
     }
   }
 

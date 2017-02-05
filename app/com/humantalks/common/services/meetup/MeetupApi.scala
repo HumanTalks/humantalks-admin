@@ -83,7 +83,7 @@ case class MeetupApi(conf: Conf, ctx: Contexts, ws: WSClient) {
       Future.successful(Left(List(s"updateEvent forbidden in '${conf.App.env}'")))
     }
 
-  def getRsvps(groupUrlName: String, eventId: String): Future[Either[List[String], List[MeetupRsvp]]] =
+  def getRsvps(groupUrlName: String, eventId: Long): Future[Either[List[String], List[MeetupRsvp]]] =
     ws.url(s"$baseUrl/$groupUrlName/events/$eventId/rsvps")
       .withQueryString((authParams ++ Map("photo-host" -> "secure")).toList: _*)
       .get()
