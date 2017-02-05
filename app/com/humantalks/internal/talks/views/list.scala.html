@@ -45,7 +45,7 @@
                         @videoLink(talk.data.video)
                     </h4>
                     @talk.data.description.map{d => <p>@multiline(d)</p>}
-                    <p>@speakers(talk.data.speakers, personList) le @date(talk.meta.created.toLocalDate)</p>
+                    <p>@speakers(talk.data.speakers, personList) créé le @date(talk.meta.created.toLocalDate)</p>
                 </div>
             </div>
         }

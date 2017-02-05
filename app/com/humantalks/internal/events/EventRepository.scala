@@ -18,7 +18,7 @@ case class EventRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposit
   import Contexts.dbToEC
   import ctx._
   private val collection = db.getCollection(conf.Repositories.event)
-  val name = collection.name
+  val name: String = collection.name
 
   /*def allIds(): Future[List[Event.Id]] =
     collection.jsonCollection().flatMap(_.find(Json.obj(), Json.obj("id" -> 1)).cursor[Event.Id](ReadPreference.primary).collect[List]())*/
@@ -99,5 +99,11 @@ case class EventRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposit
     collection.delete(Json.obj("id" -> id))
 }
 object EventRepository {
-  val defaultSort = Json.obj("data.date" -> -1)
+  val defaultSort: JsObject = Json.obj("data.date" -> -1)
+  object Filters {
+    private val fields = List("title", "description", "location.formatted", "venue", "apero", "talks")
+    def search(q: String): JsObject = Json.obj("$or" -> fields.map { f =>
+      Json.obj(s"data.$f" -> Json.obj("$regex" -> (".*" + q + ".*"), "$options" -> "i"))
+    })
+  }
 }

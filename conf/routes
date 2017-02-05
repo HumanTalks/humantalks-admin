@@ -106,35 +106,35 @@ GET     /api/venues                                                 com.humantal
 GET     /api/venues/$id<.{36}>                                      com.humantalks.exposed.PublicApi.findPartner(id: Partner.Id, include: Option[String] ?= None)
 POST    /api/persons                                                com.humantalks.exposed.PublicApi.createPerson
 
-GET     /api/select2/partners                                       com.humantalks.common.controllers.Select2Ctrl.partners
-GET     /api/select2/persons                                        com.humantalks.common.controllers.Select2Ctrl.persons
-GET     /api/select2/talks                                          com.humantalks.common.controllers.Select2Ctrl.talks(pending: Boolean ?= false)
-GET     /api/select2/events                                         com.humantalks.common.controllers.Select2Ctrl.events
+GET     /api/select2/partners                                       com.humantalks.common.controllers.Select2Ctrl.partners(q: Option[String] ?= None)
+GET     /api/select2/persons                                        com.humantalks.common.controllers.Select2Ctrl.persons(q: Option[String] ?= None)
+GET     /api/select2/talks                                          com.humantalks.common.controllers.Select2Ctrl.talks(q: Option[String] ?= None, pending: Boolean ?= false)
+GET     /api/select2/events                                         com.humantalks.common.controllers.Select2Ctrl.events(q: Option[String] ?= None)
 
 GET     /api/internal                                               com.humantalks.internal.Application.apiRoot
 
-GET     /api/internal/partners                                      com.humantalks.internal.partners.PartnerApiCtrl.find
+GET     /api/internal/partners                                      com.humantalks.internal.partners.PartnerApiCtrl.find(q: Option[String] ?= None)
 POST    /api/internal/partners                                      com.humantalks.internal.partners.PartnerApiCtrl.create
 GET     /api/internal/partners/$id<.{36}>                           com.humantalks.internal.partners.PartnerApiCtrl.get(id: Partner.Id)
 PUT     /api/internal/partners/$id<.{36}>                           com.humantalks.internal.partners.PartnerApiCtrl.update(id: Partner.Id)
 DELETE  /api/internal/partners/$id<.{36}>                           com.humantalks.internal.partners.PartnerApiCtrl.delete(id: Partner.Id)
 POST    /api/internal/partners/duplicates                           com.humantalks.internal.partners.PartnerApiCtrl.duplicates(id: Option[String] ?= None)
 
-GET     /api/internal/persons                                       com.humantalks.internal.persons.PersonApiCtrl.find
+GET     /api/internal/persons                                       com.humantalks.internal.persons.PersonApiCtrl.find(q: Option[String] ?= None)
 POST    /api/internal/persons                                       com.humantalks.internal.persons.PersonApiCtrl.create
 GET     /api/internal/persons/$id<.{36}>                            com.humantalks.internal.persons.PersonApiCtrl.get(id: Person.Id)
 PUT     /api/internal/persons/$id<.{36}>                            com.humantalks.internal.persons.PersonApiCtrl.update(id: Person.Id)
 DELETE  /api/internal/persons/$id<.{36}>                            com.humantalks.internal.persons.PersonApiCtrl.delete(id: Person.Id)
 POST    /api/internal/persons/duplicates                            com.humantalks.internal.persons.PersonApiCtrl.duplicates(id: Option[String] ?= None)
 
-GET     /api/internal/talks                                         com.humantalks.internal.talks.TalkApiCtrl.find
+GET     /api/internal/talks                                         com.humantalks.internal.talks.TalkApiCtrl.find(q: Option[String] ?= None)
 POST    /api/internal/talks                                         com.humantalks.internal.talks.TalkApiCtrl.create
 GET     /api/internal/talks/$id<.{36}>                              com.humantalks.internal.talks.TalkApiCtrl.get(id: Talk.Id)
 PUT     /api/internal/talks/$id<.{36}>                              com.humantalks.internal.talks.TalkApiCtrl.update(id: Talk.Id)
 DELETE  /api/internal/talks/$id<.{36}>                              com.humantalks.internal.talks.TalkApiCtrl.delete(id: Talk.Id)
 POST    /api/internal/talks/duplicates                              com.humantalks.internal.talks.TalkApiCtrl.duplicates(id: Option[String] ?= None)
 
-GET     /api/internal/events                                        com.humantalks.internal.events.EventApiCtrl.find
+GET     /api/internal/events                                        com.humantalks.internal.events.EventApiCtrl.find(q: Option[String] ?= None)
 POST    /api/internal/events                                        com.humantalks.internal.events.EventApiCtrl.create
 GET     /api/internal/events/$id<.{36}>                             com.humantalks.internal.events.EventApiCtrl.get(id: Event.Id)
 PUT     /api/internal/events/$id<.{36}>                             com.humantalks.internal.events.EventApiCtrl.update(id: Event.Id)

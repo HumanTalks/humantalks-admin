@@ -8,5 +8,5 @@
 @fieldHorizontal(venueForm("attendeeList"), 'label -> "Liste des participants") { field => @inputRadio(field, Seq(("true", "Oui"), ("false", "Non"))) }
 @fieldHorizontal(venueForm("entranceCheck"), 'label -> "Vérification à l'entrée") { field => @inputRadio(field, Seq(("true", "Oui"), ("false", "Non"))) }
 @fieldHorizontal(venueForm("offeredAperitif"), 'label -> "Apéro offert") { field => @inputRadio(field, Seq(("true", "Oui"), ("false", "Non"))) }
-@fieldHorizontal(venueForm("contact"), 'label -> "Contact") { field => @inputSelect2(field, List(), 'remote -> Select2Ctrl.persons.toString, 'placeholder -> "Sélectionner le contact principal", 'onCreate -> "createPersonModal", 'onCreateLabel -> "Nouveau contact") }
+@fieldHorizontal(venueForm("contact"), 'label -> "Contact") { field => @inputSelect2(field, List(), 'remote -> Select2Ctrl.persons().toString, 'placeholder -> "Sélectionner le contact principal", 'onCreate -> "createPersonModal", 'onCreateLabel -> "Nouveau contact") }
 @fieldHorizontal(venueForm("comment"), 'label -> "Commentaire") { field => @inputTextarea(field, 'rows -> "5", 'placeholder -> "ex: Super ambiance, à refaire !") }

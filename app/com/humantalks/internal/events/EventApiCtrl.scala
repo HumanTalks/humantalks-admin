@@ -17,7 +17,7 @@ case class EventApiCtrl(
   import Contexts.wsToEC
   import ctx._
 
-  def find = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req => ApiHelper.find(eventDbService) }
+  def find(q: Option[String] = None) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req => ApiHelper.find(eventDbService, q.map(EventRepository.Filters.search).getOrElse(Json.obj())) }
   def get(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req => ApiHelper.get(eventDbService, id) }
   def create = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async(parse.json) { implicit req => ApiHelper.create(eventDbService, req.identity.id, req.body) }
   def update(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async(parse.json) { implicit req => ApiHelper.update(eventDbService, req.identity.id, id, req.body) }

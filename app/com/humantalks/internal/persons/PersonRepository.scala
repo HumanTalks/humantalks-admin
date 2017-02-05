@@ -18,7 +18,7 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
   import Contexts.dbToEC
   import ctx._
   private val collection = db.getCollection(conf.Repositories.person)
-  val name = collection.name
+  val name: String = collection.name
 
   def find(filter: JsObject = Json.obj(), sort: JsObject = PersonRepository.defaultSort): Future[List[Person]] =
     collection.find(filter, sort)
@@ -102,5 +102,11 @@ case class PersonRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Reposi
     partialUpdate(id, Json.obj("$set" -> Json.obj("auth.role" -> role)), by)
 }
 object PersonRepository {
-  val defaultSort = Json.obj("data.name" -> 1)
+  val defaultSort: JsObject = Json.obj("data.name" -> 1)
+  object Filters {
+    private val fields = List("name", "twitter", "email", "description")
+    def search(q: String): JsObject = Json.obj("$or" -> fields.map { f =>
+      Json.obj(s"data.$f" -> Json.obj("$regex" -> (".*" + q + ".*"), "$options" -> "i"))
+    })
+  }
 }

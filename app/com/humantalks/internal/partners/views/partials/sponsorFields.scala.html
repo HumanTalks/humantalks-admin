@@ -4,4 +4,4 @@
 @(sponsorForm: Form[Partner.Sponsor])(implicit messagesApi: MessagesApi)
 @fieldHorizontal(sponsorForm("start"), 'label -> "Période") { field => @inputDateRange(field, sponsorForm("end"), 'yearInterval -> "1") }
 @fieldHorizontal(sponsorForm("level"), 'label -> "Niveau") { field => @inputRadio(field, Partner.SponsorLevel.values.toList.map(v => (v.toString, messagesApi("sponsor.level."+v)))) }
-@fieldHorizontal(sponsorForm("contact"), 'label -> "Contact") { field => @inputSelect2(field, List(), 'remote -> Select2Ctrl.persons.toString, 'placeholder -> "Sélectionner le contact principal", 'onCreate -> "createPersonModal", 'onCreateLabel -> "Nouveau contact") }
+@fieldHorizontal(sponsorForm("contact"), 'label -> "Contact") { field => @inputSelect2(field, List(), 'remote -> Select2Ctrl.persons().toString, 'placeholder -> "Sélectionner le contact principal", 'onCreate -> "createPersonModal", 'onCreateLabel -> "Nouveau contact") }

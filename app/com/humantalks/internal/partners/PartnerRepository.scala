@@ -17,7 +17,7 @@ case class PartnerRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Repos
   import Contexts.dbToEC
   import ctx._
   private val collection = db.getCollection(conf.Repositories.partner)
-  val name = collection.name
+  val name: String = collection.name
 
   def find(filter: JsObject = Json.obj(), sort: JsObject = PartnerRepository.defaultSort): Future[List[Partner]] =
     collection.find(filter, sort)
@@ -68,7 +68,7 @@ case class PartnerRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Repos
     collection.delete(Json.obj("id" -> id))
 }
 object PartnerRepository {
-  val defaultSort = Json.obj("data.name" -> 1)
+  val defaultSort: JsObject = Json.obj("data.name" -> 1)
   object Filters {
     def isSponsor(date: LocalDate): JsObject = Json.obj(
       "data.sponsoring.start" -> Json.obj("$lt" -> date),
@@ -77,5 +77,9 @@ object PartnerRepository {
     def isVenue: JsObject = Json.obj(
       "data.venue" -> Json.obj("$exists" -> true)
     )
+    private val fields = List("name", "twitter", "comment", "contacts", "venue.location.formatted", "venue.contact", "venue.comment")
+    def search(q: String): JsObject = Json.obj("$or" -> fields.map { f =>
+      Json.obj(s"data.$f" -> Json.obj("$regex" -> (".*" + q + ".*"), "$options" -> "i"))
+    })
   }
 }

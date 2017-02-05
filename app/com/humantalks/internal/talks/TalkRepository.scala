@@ -17,7 +17,7 @@ case class TalkRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: EmbedS
   import Contexts.dbToEC
   import ctx._
   private val collection = db.getCollection(conf.Repositories.talk)
-  val name = collection.name
+  val name: String = collection.name
 
   def find(filter: JsObject = Json.obj(), sort: JsObject = TalkRepository.defaultSort): Future[List[Talk]] =
     collection.find(filter, sort)
@@ -88,5 +88,11 @@ case class TalkRepository(conf: Conf, ctx: Contexts, db: Mongo, embedSrv: EmbedS
   }
 }
 object TalkRepository {
-  val defaultSort = Json.obj("data.title" -> 1)
+  val defaultSort: JsObject = Json.obj("data.title" -> 1)
+  object Filters {
+    private val fields = List("title", "description", "speakers")
+    def search(q: String): JsObject = Json.obj("$or" -> fields.map { f =>
+      Json.obj(s"data.$f" -> Json.obj("$regex" -> (".*" + q + ".*"), "$options" -> "i"))
+    })
+  }
 }

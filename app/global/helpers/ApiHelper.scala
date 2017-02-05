@@ -15,8 +15,8 @@ object ApiHelper {
 
   /* Endpoint helpers */
 
-  def find[T, Id, Data, User](srv: DbService[T, Id, Data, User])(implicit ec: ExecutionContext, w: OWrites[T], req: RequestHeader): Future[Result] = {
-    resultList(toEitherList(srv.find()), Ok, NotFound)
+  def find[T, Id, Data, User](srv: DbService[T, Id, Data, User], filter: JsObject = Json.obj(), sort: JsObject = Json.obj())(implicit ec: ExecutionContext, w: OWrites[T], req: RequestHeader): Future[Result] = {
+    resultList(toEitherList(srv.find(filter, sort)), Ok, NotFound)
   }
 
   def get[T, Id, Data, User](srv: DbService[T, Id, Data, User], id: Id)(implicit ec: ExecutionContext, w: OWrites[T], req: RequestHeader) = {

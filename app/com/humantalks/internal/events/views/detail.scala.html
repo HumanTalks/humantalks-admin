@@ -57,7 +57,7 @@
             @helper.form(action=EventCtrl.doAddVenueForm(event.id), 'class->"form-inline") {
                 <div class="row">
                     <div class="col-md-8">
-                        <select class="form-control select2" id="partnerId" name="partnerId" remote="@Select2Ctrl.partners" placeholder="Sélectionner un lieu">
+                        <select class="form-control select2" id="partnerId" name="partnerId" remote="@Select2Ctrl.partners()" placeholder="Sélectionner un lieu">
                             <option></option>
                         </select>
                     </div>

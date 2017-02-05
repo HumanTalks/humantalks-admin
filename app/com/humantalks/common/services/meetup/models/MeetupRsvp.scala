@@ -33,7 +33,7 @@ case class MeetupRsvp(
   event: MeetupRsvpEvent,
   group: MeetupRsvpGroup,
   venue: MeetupVenue,
-  response: String, // TODO enum (waitlist)
+  response: String, // TODO enum (yes, no, waitlist)
   guests: Int,
   created: DateTime,
   updated: DateTime

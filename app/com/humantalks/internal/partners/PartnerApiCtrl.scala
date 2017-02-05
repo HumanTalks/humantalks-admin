@@ -17,7 +17,7 @@ case class PartnerApiCtrl(
   import Contexts.wsToEC
   import ctx._
 
-  def find = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req => ApiHelper.find(partnerDbService) }
+  def find(q: Option[String] = None) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req => ApiHelper.find(partnerDbService, q.map(PartnerRepository.Filters.search).getOrElse(Json.obj())) }
   def get(id: Partner.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req => ApiHelper.get(partnerDbService, id) }
   def create = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async(parse.json) { implicit req => ApiHelper.create(partnerDbService, req.identity.id, req.body) }
   def update(id: Partner.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async(parse.json) { implicit req => ApiHelper.update(partnerDbService, req.identity.id, id, req.body) }

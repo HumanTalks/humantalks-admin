@@ -5,6 +5,6 @@
 @fieldHorizontal(partnerForm("name"), 'label -> "Nom") { field => @inputText(field, 'placeholder -> "ex: Google", 'autofocus -> "") }
 @fieldHorizontal(partnerForm("twitter"), 'label -> "Compte twitter") { field => @inputText(field, 'twitterScraper -> "", 'avatar -> "logo", 'placeholder -> "ex: @google") }
 @fieldHorizontal(partnerForm("logo"), 'label -> "Logo") { field => @inputImageUrl(field, 'placeholder -> "ex: https://image.freepik.com/free-icon/male-user-shadow_318-34042.png") }
-@fieldHorizontal(partnerForm("contacts"), 'label -> "Contact(s)") { field => @inputSelectMulti2(field, List(), 'remote -> Select2Ctrl.persons.toString, 'placeholder -> "Sélectionner les contacts", 'onCreate -> "createPersonModal", 'onCreateLabel -> "Nouveau contact") }
+@fieldHorizontal(partnerForm("contacts"), 'label -> "Contact(s)") { field => @inputSelectMulti2(field, List(), 'remote -> Select2Ctrl.persons().toString, 'placeholder -> "Sélectionner les contacts", 'onCreate -> "createPersonModal", 'onCreateLabel -> "Nouveau contact") }
 @fieldHorizontal(partnerForm("comment"), 'label -> "Commentaire") { field => @inputTextarea(field, 'rows -> "5", 'placeholder -> "ex: Super ambiance, à refaire !") }
 @fieldHorizontal(partnerForm("sponsorAperitif"), 'label -> "", 'constraints -> "false") { field => @inputCheckbox(field, 'label -> "sponsor apéro potentiel") }

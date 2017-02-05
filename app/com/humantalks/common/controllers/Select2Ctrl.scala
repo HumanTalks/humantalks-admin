@@ -2,10 +2,10 @@ package com.humantalks.common.controllers
 
 import com.humantalks.auth.authorizations.WithRole
 import com.humantalks.auth.silhouette.SilhouetteEnv
-import com.humantalks.internal.events.EventDbService
-import com.humantalks.internal.persons.{ Person, PersonDbService }
-import com.humantalks.internal.talks.{ Talk, TalkDbService }
-import com.humantalks.internal.partners.PartnerDbService
+import com.humantalks.internal.events.{ EventDbService, EventRepository }
+import com.humantalks.internal.persons.{ Person, PersonDbService, PersonRepository }
+import com.humantalks.internal.talks.{ Talk, TalkDbService, TalkRepository }
+import com.humantalks.internal.partners.{ PartnerDbService, PartnerRepository }
 import com.mohiva.play.silhouette.api.Silhouette
 import global.Contexts
 import global.helpers.ApiHelper
@@ -27,9 +27,9 @@ case class Select2Ctrl(
   import ctx._
   implicit val format = Json.format[Select2Option]
 
-  def partners = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+  def partners(q: Option[String] = None) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     ApiHelper.resultList({
-      partnerDbService.find().map { partners =>
+      partnerDbService.find(q.map(PartnerRepository.Filters.search).getOrElse(Json.obj())).map { partners =>
         val options = partners
           .filter(_.data.venue.isDefined)
           .map(v => Select2Option(v.id.value, v.data.name + v.data.venue.map(v => " (" + v.location.formatted + ")").getOrElse("")))
@@ -38,17 +38,17 @@ case class Select2Ctrl(
     })
   }
 
-  def persons = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+  def persons(q: Option[String] = None) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     ApiHelper.resultList({
-      personDbService.find().map { persons =>
+      personDbService.find(q.map(PersonRepository.Filters.search).getOrElse(Json.obj())).map { persons =>
         Right(persons.map(p => Select2Option(p.id.value, p.data.name)))
       }
     })
   }
 
-  def talks(pending: Boolean) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+  def talks(q: Option[String] = None, pending: Boolean) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     ApiHelper.resultList({
-      (if (pending) talkDbService.findPending() else talkDbService.find()).flatMap { talks =>
+      (if (pending) talkDbService.findPending() else talkDbService.find(q.map(TalkRepository.Filters.search).getOrElse(Json.obj()))).flatMap { talks =>
         personDbService.findByIds(talks.flatMap(_.data.speakers)).map { personList =>
           Right(talks.map(t => {
             val speakers = t.data.speakers.flatMap(id => personList.find(_.id == id))
@@ -62,9 +62,9 @@ case class Select2Ctrl(
     })
   }
 
-  def events = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+  def events(q: Option[String] = None) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     ApiHelper.resultList({
-      eventDbService.find().map { events =>
+      eventDbService.find(q.map(EventRepository.Filters.search).getOrElse(Json.obj())).map { events =>
         Right(events.map(m => Select2Option(m.id.value, m.data.title)))
       }
     })

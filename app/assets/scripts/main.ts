@@ -1,6 +1,7 @@
 declare const $: any;
 declare const google: any;
 declare const config: any;
+declare const Bloodhound: any;
 
 class Utils {
     static setSafe(obj: any, path: string | string[], value: any) {
@@ -413,37 +414,40 @@ var createPersonModal = buildSelect2CreateModal('#create-person-modal', 'name', 
 
 // omni-search with https://twitter.github.io/typeahead.js/
 (function(){
-    const states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
-        'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
-        'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
-        'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
-        'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
-        'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',
-        'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
-        'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
-        'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-    ];
-    function substringMatcher(strs) {
-        return function findMatches(q, cb) {
-            const regex = new RegExp(q, 'i');
-            cb(strs.filter(str => regex.test(str)));
-        };
-    }
-    $('.omni-search').typeahead({
-        minLength: 2,
-        hint: true,
-        highlight: true
-    }, {
-        name: 'states-1',
-        source: substringMatcher(states),
-        templates: {
-            header: '<h3>Dataset 1</h3>'
+    const $typeahead = $('.omni-search');
+    const sourceBuilder = url => new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.whitespace,
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        remote: {
+            wildcard: '%QUERY',
+            url: config.api.root+'/'+url+'?q=%QUERY',
+            transform: response => response.data.map(item => {
+                item._url = `/${url}/${item.id}`;
+                return item;
+            })
         }
-    }, {
-        name: 'states-2',
-        source: substringMatcher(states),
+    });
+    const datasetBuilder = (url, title, toValue) => ({
+        name: url,
+        source: sourceBuilder(url),
+        display: toValue,
         templates: {
-            header: '<h3>Dataset 2</h3>'
+            header: '<b class="tt-header">'+title+'</b>',
+            //pending: '<b>'+title+' <i class="fa fa-spinner fa-spin"></i></b>',
+            suggestion: item => '<a href="'+item._url+'">'+toValue(item)+'</a>'
+        },
+        limit: 10
+    });
+    $typeahead.typeahead(
+        {minLength: 2, hint: true, highlight: true},
+        datasetBuilder('persons', 'Personnes', p => p.data.name),
+        datasetBuilder('partners', 'Partenaires', p => p.data.name),
+        datasetBuilder('talks', 'Talks', t => t.data.title),
+        datasetBuilder('events', 'Événements', e => e.data.title)
+    );
+    $typeahead.bind('typeahead:select', (evt, item) => {
+        if(item._url) {
+            window.location.href = item._url;
         }
     });
 })();
