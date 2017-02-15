@@ -6,7 +6,7 @@ import com.humantalks.common.Conf
 import com.humantalks.common.services.NotificationSrv
 import com.humantalks.common.services.meetup.MeetupSrv
 import com.humantalks.internal.admin.config.ConfigDbService
-import com.humantalks.internal.attendees.Attendee
+import com.humantalks.internal.attendees.{ Attendee, AttendeeDbService }
 import com.humantalks.internal.persons.{ Person, PersonDbService }
 import com.humantalks.internal.talks.{ Talk, TalkDbService }
 import com.humantalks.internal.partners.{ Partner, PartnerDbService }
@@ -32,6 +32,7 @@ case class EventCtrl(
     personDbService: PersonDbService,
     talkDbService: TalkDbService,
     eventDbService: EventDbService,
+    attendeeDbService: AttendeeDbService,
     meetupSrv: MeetupSrv,
     pdfGenerator: PdfGenerator,
     notificationSrv: NotificationSrv
@@ -222,6 +223,23 @@ case class EventCtrl(
       }
     }.getOrElse {
       Future.successful(Redirect(redirectUrl).flashing("error" -> "Missing parameter meetupId :("))
+    }
+  }
+
+  def doImportAttendeeList(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+    val redirectUrl = CtrlHelper.getReferer(req.headers, routes.EventCtrl.get(id))
+    CtrlHelper.withItem(eventDbService)(id) { event =>
+      event.meetupRef.map { ref =>
+        meetupSrv.getAttendees(event.id, ref.id).flatMap {
+          case Right(attendees) =>
+            attendeeDbService.importForEvent(id, attendees).map { _ =>
+              Redirect(redirectUrl).flashing("success" -> "Liste des participants impotée")
+            }
+          case Left(errors) => Future.successful(Redirect(redirectUrl).flashing("error" -> errors.mkString(", ")))
+        }
+      }.getOrElse {
+        Future.successful(Redirect(redirectUrl).flashing("error" -> "Event has no meetup linked !"))
+      }
     }
   }
 

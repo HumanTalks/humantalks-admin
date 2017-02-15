@@ -82,7 +82,8 @@ POST    /events/$id<.{36}>/talks/$talkId<.{36}>/add                 com.humantal
 POST    /events/$id<.{36}>/talks/$talkId<.{36}>/move                com.humantalks.internal.events.EventCtrl.doMoveTalk(id: Event.Id, talkId: Talk.Id, up: Boolean)
 POST    /events/$id<.{36}>/talks/$talkId<.{36}>/delete              com.humantalks.internal.events.EventCtrl.doRemoveTalk(id: Event.Id, talkId: Talk.Id)
 POST    /events/$id<.{36}>/meetupRef                                com.humantalks.internal.events.EventCtrl.doAddMeetupRef(id: Event.Id)
-POST    /events/$id<.{36}>/attendeeList                             com.humantalks.internal.events.EventCtrl.doDownloadAttendeeList(id: Event.Id)
+POST    /events/$id<.{36}>/importAttendeeList                       com.humantalks.internal.events.EventCtrl.doImportAttendeeList(id: Event.Id)
+POST    /events/$id<.{36}>/downloadAttendeeList                     com.humantalks.internal.events.EventCtrl.doDownloadAttendeeList(id: Event.Id)
 
 GET     /admin/users                                                com.humantalks.internal.admin.AdminCtrl.users
 POST    /admin/users/$id<.{36}>/role                                com.humantalks.internal.admin.AdminCtrl.setRole(id: Person.Id)
