@@ -1,29 +1,32 @@
-package com.humantalks.internal.events
+package com.humantalks.internal.attendees
 
 import com.humantalks.common.services.meetup.models.MeetupRsvp
+import com.humantalks.internal.events.Event
 import org.joda.time.DateTime
 import play.api.libs.json.Json
 
 case class Attendee(
+  event: Event.Id,
   id: Long,
   name: String,
   avatar: Option[String],
-  event: Event.Id,
   group: String,
   meetup: String,
   status: String,
+  checkin: Boolean,
   created: DateTime,
   updated: DateTime
 )
 object Attendee {
   def from(eventId: Event.Id, rsvp: MeetupRsvp): Attendee = Attendee(
+    event = eventId,
     id = rsvp.member.id,
     name = rsvp.member.name,
     avatar = rsvp.member.photo.map(_.photo_link),
-    event = eventId,
     group = rsvp.group.urlname,
     meetup = rsvp.event.id,
     status = rsvp.response,
+    checkin = false,
     created = rsvp.created,
     updated = rsvp.updated
   )

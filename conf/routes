@@ -8,6 +8,7 @@ GET     /submit-talk                                                com.humantal
 POST    /submit-talk                                                com.humantalks.exposed.talks.TalkCtrl.doCreate
 GET     /submit-talk/$id<.{36}>/edit                                com.humantalks.exposed.talks.TalkCtrl.update(id: Talk.Id)
 POST    /submit-talk/$id<.{36}>/edit                                com.humantalks.exposed.talks.TalkCtrl.doUpdate(id: Talk.Id)
+GET     /checkin/$id<.{36}>                                         com.humantalks.exposed.attendees.AttendeeCtrl.checkin(id: Event.Id)
 
 GET     /register                                                   com.humantalks.auth.AuthCtrl.register
 POST    /register                                                   com.humantalks.auth.AuthCtrl.doRegister

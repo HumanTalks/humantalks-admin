@@ -1,0 +1,10 @@
+@import com.humantalks.internal.events.Event
+@import com.humantalks.internal.attendees.Attendee
+@import com.humantalks.exposed.views.html.partials._
+@(event: Event, attendeeList: List[Attendee])(implicit request: RequestHeader, messagesApi: MessagesApi)
+@main("Checkin "+event.data.title) {
+    <h1>Checkin @event.data.title</h1>
+    <ul>
+        @attendeeList.map{a => <li>@a.name</li>}
+    </ul>
+}

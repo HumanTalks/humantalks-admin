@@ -6,6 +6,7 @@ import com.humantalks.common.Conf
 import com.humantalks.common.services.NotificationSrv
 import com.humantalks.common.services.meetup.MeetupSrv
 import com.humantalks.internal.admin.config.ConfigDbService
+import com.humantalks.internal.attendees.Attendee
 import com.humantalks.internal.persons.{ Person, PersonDbService }
 import com.humantalks.internal.talks.{ Talk, TalkDbService }
 import com.humantalks.internal.partners.{ Partner, PartnerDbService }
