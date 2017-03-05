@@ -1,0 +1,81 @@
+body {
+  font-family: "Open Sans", sans-serif, helvetica, arial, sans-serif;
+  line-height: 1.875;
+}
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+a {
+  color: #790257;
+  text-decoration: none;
+}
+
+.navbar-humantalks {
+  border-top: 5px solid #790257;
+  .container {
+    border-bottom: 1px solid rgba(195,195,195,0.27);
+  }
+  .navbar-brand {
+    height: auto;
+  }
+  .nav-link {
+    padding: 28px 0;
+    color: #262626;
+    text-transform: uppercase;
+    font-family: "brandon-grotesque", sans-serif;
+    &:hover {
+      text-shadow: 0 0 0px #262626;
+      background-color: transparent;
+    }
+  }
+}
+
+.page-header {
+  font-family: "brandon-grotesque", sans-serif;
+  text-align: center;
+  border: none;
+  text-transform: uppercase;
+  font-weight: 300;
+}
+
+.talk-form {
+  margin: 2.5em 0;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #61c258;
+  border-color: #61c258;
+}
+.btn-primary:hover {
+  color: #fff;
+  background-color: #47a93e;
+  border-color: #44a23b;
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.5em 0.75em;
+  line-height: 1.25;
+  color: #393939;
+  background-color: #fff;
+  background-image: none;
+  background-clip: padding-box;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 0.5rem;
+}
+.form-control:focus {
+  color: #393939;
+  background-color: #fff;
+  border-color: #66afe9;
+  outline: none;
+  box-shadow: none;
+}
+
+.form-group label {
+  font-family: "brandon-grotesque", sans-serif;
+  font-size: 17px;
+  font-weight: bold;
+}

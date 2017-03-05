@@ -5,18 +5,12 @@
 @import com.humantalks.exposed.talks.routes.TalkCtrl
 @(talkForm: Form[Talk.Data], talkOpt: Option[Talk], personList: List[Person], nextDates: List[LocalDate], personForm: Form[Person.Data])(implicit messagesApi: MessagesApi)
 @main(talkOpt.map(t => "Modifier sa proposition de talk").getOrElse("Nouvelle proposition de talk")) {
-    <nav class="navbar navbar-default navbar-fixed-top">
+    <nav class="navbar navbar-humantalks">
         <div class="container">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="@com.humantalks.exposed.routes.Application.index">HumanTalks Paris</a>
-            </div>
-            <div id="navbar" class="collapse navbar-collapse">
+                <a class="navbar-brand" href="@com.humantalks.exposed.routes.Application.index">
+                    <img src="/assets/HumanTalks-logo.svg" />
+                </a>
             </div>
         </div>
     </nav>
@@ -29,11 +23,17 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="col-md-offset-2 col-md-10">
-                    Les HumanTalks sont un événement pour les développeurs de tous horizons.<br>
-                    Tous les 2ème mardis du mois, on vous présente 4 talks de 10 minutes sur des sujets liés de près et parfois de loin au métier de développeur.<br>
-                    Les HumanTalks se veulent avant tout un événement convivial et permettant à tout le monde (y compris aux débutants) de venir présenter un sujet qui leur tient à coeur.<br>
-                    Pour toute question, n'hésitez pas à nous contacter : <a href="https://twitter.com/HumanTalksParis" target="_blank">@@HumanTalksParis</a> - <a href="https://www.meetup.com/fr-FR/HumanTalks-Paris/" target="_blank">Meetup</a> - <a href="mailto:paris@@humantalks.com" target="_blank">paris@@humantalks.com</a><br>
-                    <br>
+                    <p>
+                        Les HumanTalks sont un événement pour les développeurs de tous horizons.<br>
+                        Tous les 2ème mardis du mois, on vous présente 4 talks de 10 minutes sur des sujets liés de près et parfois de loin au métier de développeur.<br>
+                        Les HumanTalks se veulent avant tout un événement convivial et permettant à tout le monde (y compris aux débutants) de venir présenter un sujet qui leur tient à coeur.
+                    </p>
+                    <p>
+                        Pour toute question, n'hésitez pas à nous contacter :
+                        <a href="https://twitter.com/HumanTalksParis" target="_blank">@@HumanTalksParis</a> -
+                        <a href="https://www.meetup.com/fr-FR/HumanTalks-Paris/" target="_blank">Meetup</a> -
+                        <a href="mailto:paris@@humantalks.com" target="_blank">paris@@humantalks.com</a>
+                    </p>
                 </div>
                 @helper.form(action=talkOpt.map(p => TalkCtrl.doUpdate(p.id)).getOrElse(TalkCtrl.doCreate()), 'class->"form-horizontal talk-form") {
                     @partials.fields(talkForm, personList, nextDates)
