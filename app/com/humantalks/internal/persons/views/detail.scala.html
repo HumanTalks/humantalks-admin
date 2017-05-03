@@ -12,17 +12,26 @@
 
     <div class="container">
         @flash()
-        <h1>
-            <span class="pull-right">
-                <a href="@PersonCtrl.update(person.id)" class="btn btn-default" title="Modifier cette personnes"><i class="fa fa-pencil-square-o"></i></a>
-                @helper.form(action=PersonCtrl.doDelete(person.id), 'class->"inline") { <button type="submit" class="btn btn-danger" title="Supprimer cette personne" confirm><i class="fa fa-trash"></i></button> }
-            </span>
-            @person.data.name
-        </h1>
-        @person.data.shirt.map{shirt => <p>Taille de t-shirt: @messagesApi("person.shirt."+shirt)</p>}
-        @person.data.description.map{d => <p>@multiline(d)</p>}
-        @email(person.data.email)
-        @twitter(person.data.twitter)
+        <div class="media" style="margin-top: 20px;">
+            <div class="media-left">
+                @person.data.avatar.map { avatar =>
+                    <img class="media-object" src="@avatar" alt="Image de profil">
+                }
+            </div>
+            <div class="media-body">
+                <h1 style="margin-top: 0;">
+                    <span class="pull-right">
+                        <a href="@PersonCtrl.update(person.id)" class="btn btn-default" title="Modifier cette personnes"><i class="fa fa-pencil-square-o"></i></a>
+                        @helper.form(action=PersonCtrl.doDelete(person.id), 'class->"inline") { <button type="submit" class="btn btn-danger" title="Supprimer cette personne" confirm><i class="fa fa-trash"></i></button> }
+                    </span>
+                    @person.data.name
+                </h1>
+                @person.data.shirt.map{shirt => <p>Taille de t-shirt: @messagesApi("person.shirt."+shirt)</p>}
+                @person.data.description.map{d => <p>@multiline(d)</p>}
+                @email(person.data.email)
+                @twitter(person.data.twitter)
+            </div>
+        </div>
         @if(talkList.nonEmpty){
             <h3>Talks</h3>
             <ul>
