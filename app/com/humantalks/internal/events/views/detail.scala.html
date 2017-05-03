@@ -123,7 +123,7 @@
         @if(pendingTalks.nonEmpty) {
             <h3>Talks non planifiés</h3>
             <ul>
-                @pendingTalks.map { talk =>
+                @pendingTalks.sortBy(_.meta.created.getMillis).map { talk =>
                     <li>
                         @helper.form(action=EventCtrl.doAddTalk(event.id, talk.id), 'class->"inline") {
                             <button type="submit" class="btn btn-link" title="Add talk to this meetup"><i class="fa fa-plus"></i></button>
@@ -131,6 +131,7 @@
                         @com.humantalks.internal.talks.views.html.partials.status(talk)
                         <a href="@TalkCtrl.get(talk.id)">@talk.data.title</a>
                         @speakers(talk.data.speakers, pendingSpeakers)
+                        (créé le @date(talk.meta.created.toLocalDate))
                         @slidesLink(talk.data.slides)
                         @videoLink(talk.data.video)
                     </li>
