@@ -35,6 +35,7 @@ object Person {
   case class Data(
       name: String,
       twitter: Option[String],
+      linkedin: Option[String],
       email: Option[String], // to match existing person when submiting a new talk
       phone: Option[String],
       avatar: Option[String],
@@ -44,6 +45,7 @@ object Person {
     def trim: Data = copy(
       name = name.trim,
       twitter = twitter.map(TwitterSrv.toAccount),
+      linkedin = linkedin,
       email = email.map(_.trim),
       phone = phone.map(_.trim),
       avatar = avatar.map(_.trim),
@@ -76,6 +78,7 @@ object Person {
       data = Data(
         name = register.name,
         twitter = None,
+        linkedin = None,
         email = Some(register.email),
         phone = None,
         avatar = avatar,
@@ -106,6 +109,7 @@ object Person {
   val fields = mapping(
     "name" -> nonEmptyText,
     "twitter" -> optional(text),
+    "linkedin" -> optional(text),
     "email" -> optional(email),
     "phone" -> optional(text),
     "avatar" -> optional(text),
