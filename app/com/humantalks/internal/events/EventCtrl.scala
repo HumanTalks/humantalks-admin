@@ -97,13 +97,14 @@ case class EventCtrl(
     }
   }
 
-  def getROTI(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
+  def roti(id: Event.Id) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     implicit val user = Some(req.identity)
     CtrlHelper.withItem(eventDbService)(id) { event =>
       for {
+        venueOpt <- event.data.venue.map(id => partnerDbService.get(id)).getOrElse(Future.successful(None))
         talkList <- talkDbService.findByIds(event.data.talks)
         personList <- personDbService.findByIds(talkList.flatMap(_.data.speakers))
-      } yield Ok(views.html.roti(event, talkList, personList))
+      } yield Ok(views.html.roti(event, talkList, personList, venueOpt))
     }
   }
 
@@ -111,9 +112,10 @@ case class EventCtrl(
     implicit val user = Some(req.identity)
     CtrlHelper.withItem(eventDbService)(id) { event =>
       for {
+        venueOpt <- event.data.venue.map(id => partnerDbService.get(id)).getOrElse(Future.successful(None))
         talkList <- talkDbService.findByIds(event.data.talks)
         personList <- personDbService.findByIds(talkList.flatMap(_.data.speakers))
-      } yield Ok(pdfGenerator.toBytes(views.html.roti(event, talkList, personList), "http://localhost:9000")).as("application/pdf")
+      } yield Ok(pdfGenerator.toBytes(views.html.roti(event, talkList, personList, venueOpt), "http://localhost:9000")).as("application/pdf")
     }
   }
 
