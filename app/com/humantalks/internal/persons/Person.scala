@@ -34,6 +34,7 @@ object Person {
 
   case class Data(
       name: String,
+      company: Option[String],
       twitter: Option[String],
       linkedin: Option[String],
       email: Option[String], // to match existing person when submiting a new talk
@@ -44,8 +45,9 @@ object Person {
   ) {
     def trim: Data = copy(
       name = name.trim,
+      company = company.map(_.trim),
       twitter = twitter.map(TwitterSrv.toAccount),
-      linkedin = linkedin,
+      linkedin = linkedin.map(_.trim),
       email = email.map(_.trim),
       phone = phone.map(_.trim),
       avatar = avatar.map(_.trim),
@@ -77,6 +79,7 @@ object Person {
       meetupRef = None,
       data = Data(
         name = register.name,
+        company = None,
         twitter = None,
         linkedin = None,
         email = Some(register.email),
@@ -108,6 +111,7 @@ object Person {
   implicit val format = Json.format[Person]
   val fields = mapping(
     "name" -> nonEmptyText,
+    "company" -> optional(text),
     "twitter" -> optional(text),
     "linkedin" -> optional(text),
     "email" -> optional(email),

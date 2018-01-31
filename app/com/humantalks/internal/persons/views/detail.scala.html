@@ -28,6 +28,7 @@
                 </h1>
                 @person.data.shirt.map{shirt => <p>Taille de t-shirt: @messagesApi("person.shirt."+shirt)</p>}
                 @person.data.description.map{d => <p>@multiline(d)</p>}
+                @person.data.company
                 @email(person.data.email)
                 @twitter(person.data.twitter)
                 @linkedin(person.data.linkedin)

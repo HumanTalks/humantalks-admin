@@ -24,6 +24,7 @@
                 <div class="media-body">
                     <h4 class="media-heading"><a href="@PersonCtrl.get(person.id)">@person.data.name</a></h4>
                     @person.data.description.map{d => <p>@multiline(d)</p>}
+                    @person.data.company
                     @email(person.data.email)
                     @twitter(person.data.twitter)
                 </div>

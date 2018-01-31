@@ -41,7 +41,7 @@ case class Select2Ctrl(
   def persons(q: Option[String] = None) = silhouette.SecuredAction(WithRole(Person.Role.Organizer)).async { implicit req =>
     ApiHelper.resultList({
       personDbService.find(q.map(PersonRepository.Filters.search).getOrElse(Json.obj())).map { persons =>
-        Right(persons.map(p => Select2Option(p.id.value, p.data.name)))
+        Right(persons.map(p => Select2Option(p.id.value, p.data.name + p.data.company.map(c => s" ($c)").getOrElse(""))))
       }
     })
   }

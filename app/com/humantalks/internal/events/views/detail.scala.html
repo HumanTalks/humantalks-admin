@@ -130,9 +130,9 @@
                             <button type="submit" class="btn btn-link" title="Add talk to this meetup"><i class="fa fa-plus"></i></button>
                         }
                         @com.humantalks.internal.talks.views.html.partials.status(talk)
-                        <a href="@TalkCtrl.get(talk.id)">@talk.data.title</a>
-                        @speakers(talk.data.speakers, pendingSpeakers)
                         (créé le @date(talk.meta.created.toLocalDate))
+                        <a href="@TalkCtrl.get(talk.id)">@talk.data.title</a>
+                        @speakers(talk.data.speakers, pendingSpeakers, company = true)
                         @slidesLink(talk.data.slides)
                         @videoLink(talk.data.video)
                     </li>

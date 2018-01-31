@@ -2,6 +2,7 @@
 @import global.views.html.form._
 @(personForm: Form[Person.Data])(implicit messagesApi: MessagesApi)
 @fieldHorizontal(personForm("name"), 'label -> "Nom") { field => @inputText(field, 'placeholder -> "ex: John Doe", 'autofocus -> "") }
+@fieldHorizontal(personForm("company"), 'label -> "Société") { field => @inputText(field, 'placeholder -> "ex: Awesome corp.") }
 @fieldHorizontal(personForm("email"), 'label -> "Email") { field => @inputEmail(field, 'emailScraper -> "", 'avatar -> "avatar", 'fullname -> "name", 'bio -> "description", 'twitter -> "twitter", 'placeholder -> "ex: john@doe.com", 'required -> "true") }
 @fieldHorizontal(personForm("twitter"), 'label -> "Compte twitter") { field => @inputText(field, 'twitterScraper -> "", 'avatar -> "avatar", 'fullname -> "name", 'bio -> "description", 'placeholder -> "ex: @johndoe") }
 @fieldHorizontal(personForm("linkedin"), 'label -> "Compte linkedin") { field => @inputText(field, 'placeholder -> "ex: https://www.linkedin.com/in/johndoe/") }

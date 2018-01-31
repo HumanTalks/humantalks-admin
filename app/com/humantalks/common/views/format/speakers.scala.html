@@ -1,11 +1,14 @@
 @import com.humantalks.internal.persons.Person
-@(speakerIds: List[Person.Id], personList: List[Person], shirt: Boolean = false)(implicit messagesApi: MessagesApi)
+@(speakerIds: List[Person.Id], personList: List[Person], shirt: Boolean = false, company: Boolean = false)(implicit messagesApi: MessagesApi)
 @defining(speakerIds.flatMap(id => personList.find(_.id == id))) { speakers =>
-    @if(speakers.nonEmpty){
+    @if(speakers.nonEmpty) {
         par @speakers.map { p =>
             @personLink(p)
+            @if(company) {
+                @p.data.company.map { c => (@c) }
+            }
             @if(shirt) {
-                @p.data.shirt.map{s => (T-shirt: @messagesApi("person.shirt."+s))}
+                @p.data.shirt.map { s => (T-shirt: @messagesApi("person.shirt." + s)) }
             }
         }
     }
