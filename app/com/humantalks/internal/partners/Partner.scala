@@ -2,20 +2,26 @@ package com.humantalks.internal.partners
 
 import com.humantalks.common.services.TwitterSrv
 import com.humantalks.common.values.{ GMapPlace, Meta }
+import com.humantalks.internal.partners.Partner.Sponsor
 import com.humantalks.internal.persons.Person
 import global.helpers.EnumerationHelper
 import global.helpers.FormHelper._
 import global.values.{ TypedId, TypedIdHelper }
-import org.joda.time.{ LocalTime, LocalDate }
+import org.joda.time.{ LocalDate, LocalTime }
 import play.api.data.Forms._
 import play.api.libs.json.Json
 
 case class Partner(
-  id: Partner.Id,
-  meetupRef: Option[Partner.MeetupRef],
-  data: Partner.Data,
-  meta: Meta
-)
+    id: Partner.Id,
+    meetupRef: Option[Partner.MeetupRef],
+    data: Partner.Data,
+    meta: Meta
+) {
+  def isSponsor(date: LocalDate): Boolean =
+    data.sponsoring.exists(s => s.start.isBefore(date) && s.end.isAfter(date))
+  def lastSponsor(): Option[Sponsor] =
+    data.sponsoring.sortBy(-_.end.toDate.getTime).headOption
+}
 
 object Partner {
   case class Id(value: String) extends TypedId(value)
@@ -62,11 +68,16 @@ object Partner {
   }
 
   case class Sponsor(
-    start: LocalDate,
-    end: LocalDate,
-    level: SponsorLevel.Value,
-    contact: Option[Person.Id]
-  )
+      start: LocalDate,
+      end: LocalDate,
+      level: SponsorLevel.Value,
+      contact: Option[Person.Id]
+  ) {
+    def expireSoon(): Boolean =
+      end.minusMonths(2).isBefore(new LocalDate())
+    def expiredNotLongAgo(): Boolean =
+      end.plusMonths(4).isAfter(new LocalDate())
+  }
 
   object SponsorLevel extends Enumeration {
     val Standard, Premium = Value

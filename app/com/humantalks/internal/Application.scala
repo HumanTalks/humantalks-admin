@@ -30,14 +30,19 @@ case class Application(
     implicit val user = Some(req.identity)
     if (req.identity.isAuthorized(Person.Role.Organizer)) {
       for {
-        sponsors <- partnerDbService.findSponsors(new LocalDate())
         nextEvent <- eventDbService.getNext
         partnerList <- nextEvent.map(e => partnerDbService.findByIds(e.allPartners)).getOrElse(Future.successful(List()))
         talkList <- nextEvent.map(e => talkDbService.findByIds(e.data.talks)).getOrElse(Future.successful(List()))
         personList <- personDbService.findByIds(talkList.flatMap(_.data.speakers))
-      } yield Ok(views.html.index(sponsors, nextEvent, partnerList, talkList, personList))
+        sponsors <- partnerDbService.findSponsors()
+      } yield {
+        val (currentSponsors, oldSponsors) = sponsors
+          .sortBy(_.lastSponsor().map(_.end.toDate.getTime).getOrElse(0l))
+          .partition(_.isSponsor(new LocalDate()))
+        Ok(views.html.index(nextEvent, partnerList, talkList, personList, currentSponsors, oldSponsors))
+      }
     } else {
-      Future.successful(Ok(views.html.index(List(), None, List(), List(), List())))
+      Future.successful(Ok(views.html.index(None, List(), List(), List(), List(), List())))
     }
   }
 

@@ -8,7 +8,7 @@
 @import com.humantalks.internal.views.html.partials._
 @import com.humantalks.internal.talks.routes.TalkCtrl
 @import com.humantalks.internal.events.routes.EventCtrl
-@(sponsors: List[Partner], nextEvent: Option[Event], partnerList: List[Partner], talkList: List[Talk], personList: List[Person])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
+@(nextEvent: Option[Event], partnerList: List[Partner], talkList: List[Talk], personList: List[Person], currentSponsors: List[Partner], oldSponsors: List[Partner])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 @main("") {
     @header("index")
 
@@ -52,12 +52,28 @@
                 </div>
             </div>
         }
-        @if(sponsors.nonEmpty) {
+        @if(currentSponsors.nonEmpty) {
             <h3>Sponsors</h3>
             <ul>
-                @sponsors.sortBy(_.data.sponsoring.last.end.toDate.getTime).map{partner =>
-                    <li>@partnerLink(partner) (jusqu'au @date(partner.data.sponsoring.last.end))</li>
-                }
+            @currentSponsors.map{ partner =>
+                <li>
+                    @partner.lastSponsor().map { s => jusqu'au @date(s.end)@if(s.expireSoon()){ <i class="fa fa-exclamation-triangle text-warning" title="expire bientôt"></i>} : }
+                    @partnerLink(partner)
+                    (@partner.data.sponsoring.length fois sponsor)
+                </li>
+            }
+            </ul>
+        }
+        @if(oldSponsors.nonEmpty) {
+            <h3>Ancien sponsors</h3>
+            <ul>
+            @oldSponsors.reverse.map { partner =>
+                <li>
+                    @partner.lastSponsor.map { s => s'est terminé le @date(s.end)@if(s.expiredNotLongAgo()){ <i class="fa fa-exclamation-triangle text-danger" title="à expiré il y a peu"></i>} : }
+                    @partnerLink(partner)
+                    (@partner.data.sponsoring.length fois sponsor)
+                </li>
+            }
             </ul>
         }
     </div>

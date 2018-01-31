@@ -28,7 +28,10 @@ case class PartnerRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Repos
   def findByIds(ids: Seq[Partner.Id], sort: JsObject = PartnerRepository.defaultSort): Future[List[Partner]] =
     collection.find(Json.obj("id" -> Json.obj("$in" -> ids.distinct)), sort)
 
-  def findSponsors(date: LocalDate, sort: JsObject = PartnerRepository.defaultSort): Future[List[Partner]] =
+  def findSponsors(sort: JsObject = PartnerRepository.defaultSort): Future[List[Partner]] =
+    collection.find(PartnerRepository.Filters.isSponsor(), sort)
+
+  def findSponsorsAtDate(date: LocalDate, sort: JsObject = PartnerRepository.defaultSort): Future[List[Partner]] =
     collection.find(PartnerRepository.Filters.isSponsor(date), sort)
 
   def get(id: Partner.Id): Future[Option[Partner]] =
@@ -70,6 +73,9 @@ case class PartnerRepository(conf: Conf, ctx: Contexts, db: Mongo) extends Repos
 object PartnerRepository {
   val defaultSort: JsObject = Json.obj("data.name" -> 1)
   object Filters {
+    def isSponsor(): JsObject = Json.obj(
+      "data.sponsoring.1" -> Json.obj("$exists" -> true)
+    )
     def isSponsor(date: LocalDate): JsObject = Json.obj(
       "data.sponsoring.start" -> Json.obj("$lt" -> date),
       "data.sponsoring.end" -> Json.obj("$gt" -> date)
