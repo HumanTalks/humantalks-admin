@@ -4,6 +4,7 @@
 @import com.humantalks.internal.partners.Partner
 @import global.views.html.partials._
 @import com.humantalks.internal.views.html.partials._
+@import java.util.Locale
 @(event: Event, talkList: List[Talk], personList: List[Person], venueOpt: Option[Partner])(implicit request: RequestHeader, messagesApi: MessagesApi, userOpt: Option[Person])
 <!doctype html>
 <html lang="en">
@@ -112,7 +113,7 @@
             <h1>Donnez votre avis !</h1>
         </div>
         <div class="grid">
-            <div class="date">@event.data.date.toString("MMM")<br/>@event.data.date.toString("YYYY")</div>
+            <div class="date">@event.data.date.toString("MMMM", Locale.FRANCE)<br/>@event.data.date.toString("YYYY")</div>
             <div class="good"><svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 5.8208332 5.8208335"><g transform="translate(-11.33-290.78)"><circle r="5.5" cy="542.35" cx="488.27" stroke="black" fill="white"stroke-width="0.5" transform="matrix(.43294 0 0 .43294-197.15 58.882)"/><g transform="translate(-12.12 3.336)" fill="none" fill-rule="evenodd" stroke="#414141" stroke-linecap="round" stroke-width=".132"><path d="m24.674 290.11c.003-.572.683-.632.815-.107"/><path d="m27.24 289.86c.003-.572.683-.632.815-.107"/><path d="m25.03 290.76c.755.849 1.97.693 2.676-.081"/></g></g></svg></div>
             <div class="average"><svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 5.8208332 5.8208335"><g transform="matrix(-.43294 0 0 .43294 209.54-231.57)"><circle cx="469.83" cy="542.55" r="5.5" transform="translate(7.44-.975)" stroke="black" fill="white"stroke-width="0.5"/><g transform="translate(-10.87)" fill="#414141"><circle cx="485.13" cy="542.3" r=".6"/><circle cx="491.15" cy="542.3" r=".6"/></g><path d="m475.38 544.35c0 0 .19-.614 1.402-.55.267.014.678.165.938.393.653.573 1.452.309 1.452.309" fill="none" fill-rule="evenodd" stroke="#414141" stroke-linecap="round" stroke-width=".275"/></g></svg></div>
             <div class="bad"><svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 5.8208332 5.8208335"><g transform="matrix(.29032 0 0 .29032 2.065-82.47)"><g transform="matrix(1.49127 0 0 1.49127-725.23-514.71)"><circle r="5.5" cy="542.35" cx="488.27" stroke="black" fill="white"stroke-width="0.5"/><g fill="#414141"><circle cx="485.18" cy="542.3" r=".6"/><circle cx="491.35" cy="542.3" r=".6"/></g></g><path d="m1.455 298.59c.476-1.323 2.476-1.323 2.91 0" fill="none" fill-rule="evenodd" stroke="#414141" stroke-linejoin="round" stroke-linecap="round" stroke-width=".503"/></g></svg></div>
