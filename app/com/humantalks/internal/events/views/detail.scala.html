@@ -158,4 +158,5 @@
     @if(event.data.venue.isEmpty){ @com.humantalks.internal.partners.views.html.partials.createModal(partnerForm, Some(EventCtrl.doCreateVenue(event.id))) }
     @com.humantalks.internal.talks.views.html.partials.createModal(talkForm, Some(EventCtrl.doCreateTalk(event.id)))
     @com.humantalks.internal.persons.views.html.partials.createModal(personForm)
+    @footer()
 }
