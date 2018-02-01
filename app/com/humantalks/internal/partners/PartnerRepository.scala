@@ -74,7 +74,7 @@ object PartnerRepository {
   val defaultSort: JsObject = Json.obj("data.name" -> 1)
   object Filters {
     def isSponsor(): JsObject = Json.obj(
-      "data.sponsoring.1" -> Json.obj("$exists" -> true)
+      "data.sponsoring.0" -> Json.obj("$exists" -> true)
     )
     def isSponsor(date: LocalDate): JsObject = Json.obj(
       "data.sponsoring.start" -> Json.obj("$lt" -> date),
