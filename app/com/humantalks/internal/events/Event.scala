@@ -3,11 +3,11 @@ package com.humantalks.internal.events
 import java.util.Locale
 
 import com.humantalks.common.services.DateSrv
-import com.humantalks.common.values.{GMapPlace, Meta}
+import com.humantalks.common.values.{ GMapPlace, Meta }
 import com.humantalks.internal.talks.Talk
 import com.humantalks.internal.partners.Partner
-import global.values.{TypedId, TypedIdHelper}
-import org.joda.time.{DateTime, DateTimeConstants, LocalTime}
+import global.values.{ TypedId, TypedIdHelper }
+import org.joda.time.{ DateTime, DateTimeConstants, LocalTime }
 import play.api.data.Forms._
 import play.api.libs.json.Json
 
@@ -56,7 +56,7 @@ object Event {
     }
   }
 
-  def title(date: DateTime): String = "HumanTalks Paris " + date.toString("MMMM YYYY", Locale.FRANCE)
+  def title(date: DateTime): String = "HumanTalks Paris " + date.toString("MMMM YYYY", Locale.FRANCE).capitalize
   def slackChannel(date: DateTime): String = date.toString("YYYY_MM")
 
   implicit val formatData = Json.format[Data]
