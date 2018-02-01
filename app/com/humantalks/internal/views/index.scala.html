@@ -1,5 +1,6 @@
 @import com.humantalks.internal.persons.Person
 @import com.humantalks.internal.partners.Partner
+@import com.humantalks.internal.partners.Partner._
 @import com.humantalks.internal.talks.Talk
 @import com.humantalks.internal.events.Event
 @import global.views.html.format._
@@ -59,6 +60,10 @@
                 <li>
                     @partner.lastSponsor().map { s => jusqu'au @date(s.end)@if(s.expireSoon()){ <i class="fa fa-exclamation-triangle text-warning" title="expire bientôt"></i>} : }
                     @partnerLink(partner)
+                    @partner.lastSponsor().map(_.level match {
+                        case SponsorLevel.Standard => <i>sponsor Standard</i>
+                        case SponsorLevel.Premium => <b>sponsor Premium</b>
+                    })
                     (@partner.data.sponsoring.length fois sponsor)
                 </li>
             }
@@ -71,6 +76,10 @@
                 <li>
                     @partner.lastSponsor.map { s => s'est terminé le @date(s.end)@if(s.expiredNotLongAgo()){ <i class="fa fa-exclamation-triangle text-danger" title="à expiré il y a peu"></i>} : }
                     @partnerLink(partner)
+                    @partner.lastSponsor().map(_.level match {
+                        case SponsorLevel.Standard => <i>sponsor Standard</i>
+                        case SponsorLevel.Premium => <b>sponsor Premium</b>
+                    })
                     (@partner.data.sponsoring.length fois sponsor)
                 </li>
             }
