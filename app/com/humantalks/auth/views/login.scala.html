@@ -8,6 +8,11 @@
     @flash()
     <fieldset class="col-md-6 col-md-offset-3">
         <legend>@messagesApi("auth.login.title")</legend>
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            This app is not in maintenance mode, please create an account in <a href="http://gospeak.fr">gospeak.fr</a> with your backend email address so you will find all your data there.<br>
+            <b>No update</b> should be performed here, the data will be lost!!!
+        </div>
         @helper.form(action=AuthCtrl.doLogin(), 'class -> "form-horizontal") {
             @fieldHorizontal(loginForm("email"), 'label -> messagesApi("gbl.form.email.label")) { field => @inputEmail(field, 'placeholder -> messagesApi("gbl.form.email.placeholder")) }
             @fieldHorizontal(loginForm("password"), 'label -> messagesApi("gbl.form.password.label")) { field => @inputText(field, 'type -> "password") }

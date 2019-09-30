@@ -22,19 +22,26 @@
 
         <div class="row">
             <div class="col-md-12">
-                <div class="col-md-offset-2 col-md-10">
-                    <p>
-                        Les HumanTalks sont un événement pour les développeurs de tous horizons.<br>
-                        Tous les 2ème mardis du mois, on vous présente 4 talks de 10 minutes sur des sujets liés de près et parfois de loin au métier de développeur.<br>
-                        Les HumanTalks se veulent avant tout un événement convivial et permettant à tout le monde (y compris aux débutants) de venir présenter un sujet qui leur tient à coeur.
-                    </p>
-                    <p>
-                        Pour toute question, n'hésitez pas à nous contacter :
-                        <a href="https://twitter.com/HumanTalksParis" target="_blank">@@HumanTalksParis</a> -
-                        <a href="https://www.meetup.com/fr-FR/HumanTalks-Paris/" target="_blank">Meetup</a> -
-                        <a href="mailto:paris@@humantalks.com" target="_blank">paris@@humantalks.com</a>
-                    </p>
-                </div>
+                <p>
+                    Les HumanTalks sont un événement pour les développeurs de tous horizons.<br>
+                    Tous les 2ème mardis du mois, on vous présente 4 talks de 10 minutes sur des sujets liés de près et parfois de loin au métier de développeur.<br>
+                    Les HumanTalks se veulent avant tout un événement convivial et permettant à tout le monde (y compris aux débutants) de venir présenter un sujet qui leur tient à coeur.
+                </p>
+                <p>
+                    Pour toute question, n'hésitez pas à nous contacter :
+                    <a href="https://twitter.com/HumanTalksParis" target="_blank">@@HumanTalksParis</a> -
+                    <a href="https://www.meetup.com/fr-FR/HumanTalks-Paris/" target="_blank">Meetup</a> -
+                    <a href="mailto:paris@@humantalks.com" target="_blank">paris@@humantalks.com</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="alert alert-danger text-center lead" role="alert">
+            The <b>HumanTalks Paris</b> CFP has moved to <b><a href="http://gospeak.fr/cfps/humantalks-paris">Gospeak</a></b>, please submit there.
+        </div>
+
+        @* <div class="row">
+            <div class="col-md-12">
                 @helper.form(action=talkOpt.map(p => TalkCtrl.doUpdate(p.id)).getOrElse(TalkCtrl.doCreate()), 'class->"form-horizontal talk-form") {
                     @partials.fields(talkForm, personList, nextDates)
                     <div class="form-group">
@@ -44,7 +51,7 @@
                     </div>
                 }
             </div>
-        </div>
+        </div> *@
     </div>
 
     @com.humantalks.internal.persons.views.html.partials.createModal(personForm)
