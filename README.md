@@ -25,7 +25,7 @@
 When packages changes, heroku may be lost.
 If so, use [clean build](https://devcenter.heroku.com/articles/scala-support#clean-builds)
 
-ex :
+example :
 
 ```
 heroku config:set SBT_CLEAN=true --app humantalksparis
